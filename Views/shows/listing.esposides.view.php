@@ -1,30 +1,57 @@
-<section class="container w-100 mt-5" id="title-show" data="my show">
+<?php
+
+use GlobalsFunctions\Globals;
+use Modules\Shows\ShowsHandlers;
+
+if(Globals::method() === 'POST'){
+    Globals::redirect('index');
+}
+
+$show_id = Globals::get('show');
+
+$showFound = (new ShowsHandlers())->showById($show_id);
+$fullShowForDropDown = (new ShowsHandlers())->listingShow($show_id);
+
+$totalEpisode = 0;
+
+foreach ($fullShowForDropDown as $key=>$value){
+    $totalEpisode += count($value);
+}
+
+$showName = $showFound['title'] ?? null;
+$showCover = $showFound['show_cover_image'] ?? null;
+$showDescription = $showFound['description'] ?? null;
+
+?>
+<section class="container w-100 mt-5" id="title-show" data="<?php echo $showName; ?>">
     <div class="container text-white">
         <div class="row mt-3 mb-3">
             <div class="col">
-                <img src="https://stream.quickapistorage.com/Files/logo.png" class="img-thumbnail zoom" alt="show">
+                <img src="<?php echo $showCover; ?>" class="img-thumbnail zoom" alt="<?php echo $showName; ?>">
             </div>
             <div class="col">
-                <h2 class="display-7">My show title</h2>
-                <p class="lead">Lorem ipsum dolor sit amet consectetur adipiscing elit sodales, congue pulvinar nisl aenean eu odio penatibus, rhoncus inceptos urna vitae et ridiculus magna. Porta non feugiat nisl cras quam sollicitudin integer, morbi blandit vestibulum tempus orci posuere at, purus curabitur pretium ut lacinia turpis.</p>
+                <h2 class="display-7"><?php echo $showName; ?></h2>
+                <p class="lead"><?php echo $showDescription; ?></p>
                 <div class="mt-4">
-                    <i class="fa-solid fa-video d-block mb-4"> 12 episodes</i>
+                    <i class="fa-solid fa-video d-block mb-4"> <?php echo $totalEpisode > 0 ? $totalEpisode.' episodes' : null; ?></i>
                     <i class="fa-solid fa-photo-film-music d-block mb-4"> Mp4</i>
                 </div>
             </div>
         </div>
         <div class="row mt-lg-5">
-            <div class="col">
+            <div class="col"><?php foreach ($fullShowForDropDown as $key=>$value): ?>
                 <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                        Dropdown button
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton<?php echo str_replace(' ','-',$key); ?>" data-bs-toggle="dropdown" aria-expanded="false">
+                        <?php echo $key; ?>
                     </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                        <li><a class="dropdown-item" href="watch?w=my show watch">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Another action</a></li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton<?php echo str_replace(' ','-',$key); ?>">
+                       <?php foreach ($value as $k=>$v): ?>
+                        <li>
+                            <a class="dropdown-item" href="watch?w=<?php echo $v['episode_id'] ?? null; ?>"><?php echo $v['title'] ?? null;  ?></a>
+                        </li>
+                        <?php endforeach; ?>
                     </ul>
-                </div>
+                </div><?php endforeach; ?>
             </div>
             <div class="col">
                <textarea cols="4" rows="4" id="comment" class="form-control">Type comment or request here</textarea>

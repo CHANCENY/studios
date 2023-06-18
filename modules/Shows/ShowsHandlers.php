@@ -9,6 +9,9 @@ use Modules\StorageDefinitions\Storage;
 
 class ShowsHandlers extends Storage
 {
+    /**
+     * @var array 'tv_shows', 'movies', 'related', 'seasons', 'episodes','genres'
+     */
     private array $schema;
     private string $message;
 
@@ -151,6 +154,38 @@ class ShowsHandlers extends Storage
    public function getSeason($show_id):array
    {
        return Selection::selectById($this->schema['tables'][3], ['show_id'=>$show_id]) ?? [];
+   }
+
+   public function getEpisodes(int $season_id): array
+   {
+       return Selection::selectById($this->schema['tables'][4],['season_id'=>$season_id]) ?? [];
+   }
+
+   public function getEpisode(int $episode_id): array
+   {
+       return Selection::selectById($this->schema['tables'][4],['episode_id'=>$episode_id]) ?? [];
+   }
+
+   public function getSeasons(int $show_id): array
+   {
+       return Selection::selectById($this->schema['tables'][3],['show_id'=>$show_id]) ?? [];
+   }
+
+   public function listingShow($show_id): array
+   {
+       $seasons = $this->getSeasons($show_id);
+       $fullShow = [];
+       foreach ($seasons as $key=>$value){
+           $sid = $value['season_id'];
+           $episodes = $this->getEpisodes($sid);
+           $fullShow[$value['season_name']] = $episodes;
+       }
+       return $fullShow;
+   }
+
+   public function getGenre($type): string
+   {
+       return Selection::selectById($this->schema['tables'][5], ['genre_id'=>$type])[0]['genre_name'] ?? "";
    }
 
 }

@@ -50,4 +50,4 @@ Allow: /okay
 Allow: /adding-shows
 
 # This is sitemap location indicator
-Sitemap: https://localhost/eco.com/
+Sitemap: http://localhost/eco.com/
