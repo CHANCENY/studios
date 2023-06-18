@@ -20,7 +20,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/my-styles/css/styles.css">
 </head>
-<body class="bg-dark" style="overflow-x: hidden;">
+<body class="bg-dark text-white" style="overflow-x: hidden;">
 <nav class="navbar navbar-expand-lg navbar-light bg-dark text-white border-bottom border-dark rounded shadow">
     <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,6 +40,11 @@
                 <li class="nav-item">
                     <a class="nav-link text-white-50" id="menu-3" href="#">Request</a>
                 </li>
+                <?php if(!empty(\GlobalsFunctions\Globals::user())): ?>
+                    <li class="nav-item">
+                        <a class="nav-link text-white-50" id="menu-3" href="adding-shows">Upload Shows</a>
+                    </li>
+                <?php endif; ?>
             </ul>
             <div class="float-end">
                 <input type="search" placeholder="Type search" id="search-box" class="form-control">

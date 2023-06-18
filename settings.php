@@ -59,7 +59,7 @@ ini_set('upload_max_filesize', '200');
  * home host
  */
 global $HOME;
-$HOME = '/';
+$HOME = '/eco.com';
 
 /**
  * add sitemap file name to SITEMAP global variable below for example sitemap.xml

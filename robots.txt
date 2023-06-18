@@ -47,6 +47,7 @@ Allow: /watch
 Allow: /view-tv-show
 Allow: /movie-stream
 Allow: /okay
+Allow: /adding-shows
 
 # This is sitemap location indicator
-Sitemap: https://stream.quickapistorage.com//
+Sitemap: https://localhost/eco.com/
