@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="WEB_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/Core/Alerts" isTestSource="false" packagePrefix="Alerts\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/Alias" isTestSource="false" packagePrefix="Alias\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/ApiHandler" isTestSource="false" packagePrefix="ApiHandler\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/Assest" isTestSource="false" packagePrefix="Assest\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/Commerce" isTestSource="false" packagePrefix="Commerce\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/ConfigurationSetting" isTestSource="false" packagePrefix="ConfigurationSetting\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/ContentType" isTestSource="false" packagePrefix="ContentType\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/Curl" isTestSource="false" packagePrefix="Curls\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/CustomInstallation" isTestSource="false" packagePrefix="CustomInstallation\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/Datainterface" isTestSource="false" packagePrefix="Datainterface\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/Datainterface/mysql" isTestSource="false" packagePrefix="Datainterface\mysql\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/ErrorLogger" isTestSource="false" packagePrefix="ErrorLogger\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/ExcelHandler" isTestSource="false" packagePrefix="ExcelHandler\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/Faker" isTestSource="false" packagePrefix="Faker\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/FileHandler" isTestSource="false" packagePrefix="FileHandler\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/Forms" isTestSource="false" packagePrefix="FormViewCreation\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/Globals" isTestSource="false" packagePrefix="GlobalsFunctions\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/Installation" isTestSource="false" packagePrefix="Installation\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/Json" isTestSource="false" packagePrefix="Json\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/Mailling" isTestSource="false" packagePrefix="Mailling\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/Markdown" isTestSource="false" packagePrefix="Markdown\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/Middleware" isTestSource="false" packagePrefix="MiddlewareSecurity\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/Modules" isTestSource="false" packagePrefix="Modules\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/PDF" isTestSource="false" packagePrefix="PDF\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/Robot" isTestSource="false" packagePrefix="Robot\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/Router/RouterController" isTestSource="false" packagePrefix="Core\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/Sessions" isTestSource="false" packagePrefix="Sessions\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/Site" isTestSource="false" packagePrefix="Site\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/SiteMap" isTestSource="false" packagePrefix="SiteMap\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/UI" isTestSource="false" packagePrefix="UI\" />
+      <sourceFolder url="file://$MODULE_DIR$/Core/User" isTestSource="false" packagePrefix="User\" />
+      <sourceFolder url="file://$MODULE_DIR$/Views/DefaultViews" isTestSource="false" packagePrefix="Manipulator\" />
+      <sourceFolder url="file://$MODULE_DIR$/includes" isTestSource="false" packagePrefix="formFunction\" />
+      <sourceFolder url="file://$MODULE_DIR$/spec" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/brick/math" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/myclabs/deep-copy" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/composer" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/dompdf/dompdf" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/paragonie/random_compat" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/mpdf/mpdf" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/setasign/fpdi" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/psr/log" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/erusev/parsedown" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/masterminds/html5" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/psr/http-message" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/ramsey/collection" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/ramsey/uuid" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phenx/php-font-lib" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpmailer/phpmailer" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phenx/php-svg-lib" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sabberworm/php-css-parser" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/php-http/message-factory" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="bootstrap" level="application" />
+    <orderEntry type="library" name="@popperjs/core" level="application" />
+  </component>
+</module>
