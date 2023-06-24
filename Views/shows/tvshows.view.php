@@ -28,14 +28,14 @@ if(!empty($position)){
 ?>
 
 <section class="w-100 mt-lg-5 ms-lg-3">
-    <div class="row m-auto justify-content-center"><?php foreach ($tvShows as $key=>$show): ?>
+    <div class="row m-auto justify-content-center"><?php if(!empty($tvShows)): ?><?php foreach ($tvShows as $key=>$show): ?>
         <div class="card bg-dark mx-1 mt-3" style="width: 18rem;">
             <a href="view-tv-show?show=<?php echo $show['show_id'] ?? null; ?>"><img src="<?php echo $show['show_cover_image'] ?? null; ?>" class="card-img-top m-auto zoom" alt="<?php echo $show['title'] ?? null; ?>"></a>
             <div class="card-body">
                 <p class="card-text text-white-50"><a href="view-tv-show?show=<?php echo $show['show_id'] ?? null; ?>" class="text-decoration-none text-white-50"><?php echo $show['title'] ?? null; ?></a></p>
                 <p class="card-text text-white-50"><?php echo $show['release_date'] ?? null; ?></p>
             </div>
-        </div><?php endforeach; ?>
+        </div><?php endforeach; ?><?php endif; ?>
     </div>
 
     <?php if(!empty($pagination) && count($pagination) > 1): ?>

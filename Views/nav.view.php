@@ -44,6 +44,12 @@
                     <li class="nav-item">
                         <a class="nav-link text-white-50" id="menu-3" href="adding-shows">Upload Shows</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white-50" id="menu-4" href="movie-movie-upload">Upload Movie</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white-50" id="menu-4" href="tmdb-search">TMDB</a>
+                    </li>
                 <?php endif; ?>
             </ul>
             <div class="float-end">

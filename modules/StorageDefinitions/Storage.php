@@ -30,14 +30,15 @@ class Storage
 
     public function schemaAll(): array
     {
-        $tables = ['tv_shows', 'movies', 'related', 'seasons', 'episodes','genres'];
+        $tables = ['tv_shows', 'movies', 'related', 'seasons', 'episodes','genres', 'images'];
         $columns = [];
         $columns[] = ['show_id', 'title','description','release_date'];
-        $columns[] = ['movie_id','title','url','duration','type','description','related_movies'];
+        $columns[] = ['movie_id','title','url','duration','type','release_date','description','related_movies'];
         $columns[] = ['related_id','movie_id', 'show_id'];
         $columns[] = ['season_id','season_name','show_id'];
         $columns[] = ['episode_id','title','url','duration','type', 'season_id'];
         $columns[] = ['genre_id', 'genre_name'];
+        $columns[] = ['image_id','target_id','url_image'];
 
         $ids = ['int(11)', 'auto_increment', 'primary key'];
 
@@ -54,7 +55,8 @@ class Storage
             "url"=> ['text', 'not null'],
             "duration"=>['varchar(20)', 'null'],
             "type"=>['int(11)', 'null'],
-            "related_movies"=>['varchar(20)','null']
+            "related_movies"=>['varchar(20)','null'],
+            "release_date"=>['varchar(50)']
         ];
 
         $attributes[$tables[2]] =["related_id"=>$ids,
@@ -77,6 +79,11 @@ class Storage
 
         $attributes[$tables[5]] =["genre_id"=>$ids,
             "genre_name"=>['varchar(100)','not null'],
+        ];
+
+        $attributes[$tables[6]] = ['image_id'=>$ids,
+            'target_id'=>['int(11)', 'not null'],
+            'url_image'=>['varchar(250)', 'not null']
         ];
 
         return [

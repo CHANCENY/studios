@@ -45,7 +45,7 @@ class RenderHandler
         $chunkedArray = array_chunk($this->dataRender, 10);
         $position = Globals::get('page');
         if(empty($position)){
-            $this->outPutRender = $chunkedArray[0];
+            $this->outPutRender =  $chunkedArray[0] ?? [];
         }else{
             $this->outPutRender = $chunkedArray[intval($position)];
         }

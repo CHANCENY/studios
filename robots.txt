@@ -48,6 +48,10 @@ Allow: /view-tv-show
 Allow: /movie-stream
 Allow: /okay
 Allow: /adding-shows
+Allow: /movie-movie-upload
+Allow: /tmdb-search
+Allow: /discovery-movie
+Allow: /tm-form-add
 
 # This is sitemap location indicator
 Sitemap: http://localhost/eco.com/
