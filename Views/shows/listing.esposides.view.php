@@ -19,7 +19,7 @@ foreach ($fullShowForDropDown as $key=>$value){
 }
 
 $showName = $showFound['title'] ?? null;
-$showCover = $showFound['show_cover_image'] ?? null;
+$showCover = $showFound['show_image'] ?? null;
 $showDescription = $showFound['description'] ?? null;
 
 ?>
@@ -46,9 +46,11 @@ $showDescription = $showFound['description'] ?? null;
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton<?php echo str_replace(' ','-',$key); ?>">
                        <?php foreach ($value as $k=>$v): ?>
-                        <li>
-                            <a class="dropdown-item" href="watch?w=<?php echo $v['episode_id'] ?? null; ?>"><?php echo $v['title'] ?? null;  ?></a>
-                        </li>
+                           <?php if($v['publish'] === 'yes'): ?>
+                               <li>
+                                   <a class="dropdown-item" href="watch?w=<?php echo $v['episode_id'] ?? null; ?>"><?php echo $v['title'] ?? null;  ?></a>
+                               </li>
+                           <?php endif; ?>
                         <?php endforeach; ?>
                     </ul>
                 </div><?php endforeach; ?>

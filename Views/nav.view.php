@@ -48,7 +48,13 @@
                         <a class="nav-link text-white-50" id="menu-4" href="movie-movie-upload">Upload Movie</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white-50" id="menu-4" href="tmdb-search">TMDB</a>
+                        <a class="nav-link text-white-50" id="menu-5" href="tmdb-search">TMDB</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white-50" id="menu-6" href="tv-discover">TM TV</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white-50" id="menu-7" href="url-tv-attachment">URLS</a>
                     </li>
                 <?php endif; ?>
             </ul>

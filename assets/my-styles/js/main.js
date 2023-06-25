@@ -31,6 +31,10 @@ for(let i = 0; i < 20; i++){
 
 const clicked = localStorage.getItem('clicked');
 if(clicked !== null){
+    const url = window.location.href;
+    if(url.includes('index')){
+        localStorage.removeItem('clicked');
+    }
     const active = document.getElementById(clicked);
     active.removeAttribute('class');
     active.setAttribute('class', 'nav-link text-white');

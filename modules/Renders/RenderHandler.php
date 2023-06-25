@@ -47,7 +47,12 @@ class RenderHandler
         if(empty($position)){
             $this->outPutRender =  $chunkedArray[0] ?? [];
         }else{
-            $this->outPutRender = $chunkedArray[intval($position)];
+            if(isset($chunkedArray[intval($position)])){
+                $this->outPutRender = $chunkedArray[intval($position)] ??  $chunkedArray[0];
+            }else{
+                 Globals::redirect(Globals::url());
+            }
+            
         }
         $this->positions = array_keys($chunkedArray);
     }

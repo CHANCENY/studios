@@ -21,3 +21,34 @@
     text-align: center !important;
     padding: 50px !important;
 }
+
+.my-list{
+    border: none !important;
+    background-color: inherit !important;
+
+}
+.my-block{
+    margin-left: 0 !important;
+    border: 1px solid black !important;
+}
+
+.my-movies{
+    width: fit-content !important;
+}
+
+.m-m{
+    margin-left: 4%;
+}
+
+@media only screen and (max-width: 600px) {
+    .my-block {
+        display: none;
+    }
+    .card{
+        width: 18rem !important;
+    }
+    .pagination{
+        text-align: center !important;
+        margin-left: inherit !important;
+    }
+}

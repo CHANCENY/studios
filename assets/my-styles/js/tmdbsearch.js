@@ -1,11 +1,20 @@
 const searchInput = document.getElementById('search');
 const resultBoxTag = document.getElementById('result-box');
 
+const tvInputTag = document.getElementById('tv-search');
+
 
 if(searchInput !== null){
     searchInput.addEventListener('blur', (e)=>{
         const textString = e.target.value;
         requestSend(textString, 'discover');
+    })
+}
+
+if(tvInputTag !== null){
+    tvInputTag.addEventListener('blur', (e)=>{
+        const textString = e.target.value;
+        requestSend(textString, 'tv');
     })
 }
 
@@ -27,7 +36,7 @@ function requestSend(string, type){
                 const body = data.body.results;
                 console.log(body);
                 body.forEach((item)=>{
-                    createCards(item);
+                    createCards(item, type);
                 })
             }
         }
@@ -36,11 +45,11 @@ function requestSend(string, type){
 }
 
 
-function createCards(item){
+function createCards(item, type='tv'){
     console.log(item)
     let div = document.createElement('div');
     div.className = "card m-auto bg-dark";
-    div.style.width = "18rem";
+    div.style.width = "12rem";
 
     let img = document.createElement('img');
     let imge = item.poster_path !== null ? item.poster_path : item.backdrop_path;
@@ -50,10 +59,10 @@ function createCards(item){
 
     let  h5 = document.createElement('h5');
     h5.className = "card-title";
-    h5.textContent = item.original_title;
+    h5.textContent = item.original_title || item.name;
 
     let p = document.createElement('p');
-    p.textContent = item.release_date;
+    p.textContent = item.release_date || item.first_air_date;
     p.className = "card-text";
 
     let bodydiv = document.createElement('div');
@@ -62,9 +71,9 @@ function createCards(item){
     const params = new URLSearchParams(item);
 
     let link = document.createElement('a');
-    link.href = "tm-form-add?"+params;
+    link.href = type === 'discover' ? "tm-form-add?"+params : "tm-tv-save?"+params;
     link.target = "_blank";
-    link.textContent = "ADD MOVIE";
+    link.textContent = type === 'discover' ? "ADD MOVIE" : "ADD SHOW";
     link.className = "btn btn-primary";
 
     bodydiv.appendChild(h5);

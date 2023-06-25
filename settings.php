@@ -43,7 +43,7 @@ $ROOT = $_SERVER['DOCUMENT_ROOT'];
 /**
  * This is for changing the execution time
  */
-ini_set('max_execution_time', '90');
+ini_set('max_execution_time', '200');
 
 /**
  * This for post request data it can carry
@@ -53,7 +53,7 @@ ini_set('post_max_size','200');
 /**
  * This is for max filesize can be uploaded
  */
-ini_set('upload_max_filesize', '200');
+ini_set('upload_max_filesize', '500');
 
 /**
  * home host
