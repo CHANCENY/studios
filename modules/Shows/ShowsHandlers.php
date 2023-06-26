@@ -2,6 +2,7 @@
 
 namespace Modules\Shows;
 
+use Datainterface\Delete;
 use Datainterface\Insertion;
 use Datainterface\Query;
 use Datainterface\Selection;
@@ -311,12 +312,14 @@ class ShowsHandlers extends Storage
                }
 
                foreach ($seasonId as $key=>$v){
-                   $epis = $episodes[$v['season_number']];
-                   for($i = 0; $i < count($epis); $i++){
-                       $esp = $epis[$i];
-                       $esp['season_id'] = $v['id'];
-                       Insertion::insertRow('episodes',$esp);
-                       $outPut[] = "Added Episode ({$esp['epso_number']})";
+                   if(isset($v['season_number'])){
+                       $epis = $episodes[$v['season_number']] ?? [];
+                       for($i = 0; $i < count($epis); $i++){
+                           $esp = $epis[$i];
+                           $esp['season_id'] = $v['id'];
+                           Insertion::insertRow('episodes',$esp);
+                           $outPut[] = "Added Episode ({$esp['epso_number']})";
+                       }
                    }
                }
            }
@@ -328,5 +331,74 @@ class ShowsHandlers extends Storage
         return Updating::update('episodes',$episode, ['episode_id'=>$episode_id]);
    }
 
+    public function deleteShow(string $showId): bool
+    {
+        $query = "SELECT * from seasons WHERE show_id = :id";
+        $resultSeason = Query::query($query, ['id'=>$showId]);
 
+        $query = "SELECT * FROM tv_shows WHERE show_id = :id";
+        $resultshow = Query::query($query, ['id'=>$showId]);
+
+
+        $seasonFiles = [];
+        $seasonIds = [];
+
+        foreach ($resultSeason as $key=>$value){
+            $seasonIds[] = $value['season_id'];
+            $seasonFiles[] = $value['season_image'];
+        }
+
+        $esposideIds = [];
+        $esposideFiles = [];
+
+        $queryEpisodes = "SELECT * FROM episodes WHERE season_id = :id";
+        foreach ($seasonIds as $key=>$value){
+            $result = Query::query($queryEpisodes,['id'=>$value]);
+            foreach ($result as $k=>$v){
+                $esposideIds[] = $v['episode_id'];
+                $esposideFiles[] = $v['epso_image'];
+            }
+        }
+
+        $filesAll = $seasonFiles + $esposideFiles;
+        if($resultshow){
+            $filesAll[] = $resultshow[0]['show_image'];
+        }
+
+        $flag = false;
+
+        if($this->deleteFiles($filesAll)){
+            foreach ($esposideIds as $key=>$value){
+                if(Delete::delete('episodes', ['episode_id'=>$value])){
+                    $flag = true;
+                }
+            }
+
+            foreach ($seasonIds as $key=>$value){
+                if(Delete::delete('seasons',['season_id'=>$value])){
+                    $flag = true;
+                }
+            }
+
+            if($flag){
+              return Delete::delete('tv_shows',['show_id'=>$resultshow[0]['show_id']]);
+            }
+        }
+        return  false;
+    }
+
+    public function deleteFiles(array $files): bool
+    {
+        $flag = false;
+        for($i = 0; $i < count($files); $i++){
+            if(file_exists($files[$i])){
+                unlink($files[$i]);
+                $flag = true;
+            }
+            if(filter_var($files[$i], FILTER_VALIDATE_URL)){
+                $flag = true;
+            }
+        }
+        return $flag;
+    }
 }

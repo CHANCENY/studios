@@ -63,11 +63,7 @@ function generateImage($link):string
     if(empty($link)){
         return "";
     }
-    $file = (new SplFileInfo($link))->getExtension();
-    $file = "file.".$file;
-    $gene = \FileHandler\FileHandler::saveFile($file,"https://image.tmdb.org/t/p/w500". $link);
-    $list = explode('/', $gene);
-    return "Files/". end($list);
+    return "https://image.tmdb.org/t/p/w500". $link;
 }
 
 

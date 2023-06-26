@@ -56,6 +56,8 @@ Allow: /block
 Allow: /tv-discover
 Allow: /tm-tv-save
 Allow: /url-tv-attachment
+Allow: /change-movie-url
+Allow: /edit-all
 
 # This is sitemap location indicator
 Sitemap: http://localhost/eco.com/

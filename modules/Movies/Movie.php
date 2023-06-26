@@ -5,6 +5,7 @@ namespace Modules\Movies;
 use Datainterface\Insertion;
 use Datainterface\Query;
 use Datainterface\Selection;
+use Datainterface\Updating;
 use FileHandler\FileHandler;
 use GlobalsFunctions\Globals;
 use Modules\StorageDefinitions\Storage;
@@ -108,6 +109,11 @@ class Movie extends Storage
         $typeT = $this->schema['tables'][5];
         $query = "SELECT * FROM $movieT AS m LEFT JOIN $imageT AS im ON im.target_id = m.movie_id LEFT JOIN $typeT AS g ON g.genre_id = m.type WHERE m.movie_id = :id";
         return Query::query($query,['id'=>$movie_id]);
+    }
+
+    public function updateMovie($data, $movie_id): bool
+    {
+       return Updating::update('movies',$data, ['movie_id'=>$movie_id]);
     }
 
 }

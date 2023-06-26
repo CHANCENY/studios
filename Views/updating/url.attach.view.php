@@ -10,7 +10,28 @@ $shows = [];
 $seasons = [];
 $episodes = [];
 
+$pagination = 0;
+
+$position = Globals::get('page');
+
+$previous = 0;
+$next = 0;
+
 $eids = [];
+
+if(!empty(Globals::get('delete'))){
+    $showId = Globals::get('delete');
+    if(!empty($showId)){
+        $result = (new ShowsHandlers())->deleteShow($showId);
+        if($result){
+            echo \Alerts\Alerts::alert('info', "Show deleted Completely");
+            Globals::redirect(Globals::url());
+        }else{
+            echo \Alerts\Alerts::alert('danger','Failed to delete show');
+            Globals::redirect(Globals::url());
+        }
+    }
+}
 
 if(!empty(Globals::get('seasonId')) && !empty('action')){
     $d = Globals::get('action') === 'publish' ? 'yes' : 'no';
@@ -37,11 +58,6 @@ if(empty(Globals::get('show')) && empty(Globals::get('season'))){
     $renders = new RenderHandler($shows);
     $shows= $renders->getOutPutRender();
     $pagination = $renders->getPositions();
-
-    $position = Globals::get('page');
-
-    $previous = 0;
-    $next = 0;
     if(!empty($position)){
         $previous = intval($position) - 1;
         $next = intval($position) + 1;
@@ -75,19 +91,47 @@ if(!empty(Globals::get('season'))){
             <th>Action</th>
         </tr>
         </thead>
-        <tbody class="text-white-50">
+        <tbody class="text-white-50" id="total" data="<?php echo count($shows ?? []); ?>">
         <?php if(!empty($shows)): ?>
-        <?php foreach ($shows as $key=>$value): ?>
+        <?php $i = 0; foreach ($shows as $key=>$value): ?>
                 <tr>
                     <td><?php echo $value['title'] ?? null; ?></td>
                     <td><?php echo $value['release_date'] ?? null; ?></td>
-                    <td><a href="<?php echo Globals::url()."?show=".$value['show_id'] ?? null; ?>">Edit</a></td>
+                    <td>
+                        <a href="<?php echo Globals::url()."?show=".$value['show_id'] ?? null; ?>">Edit</a>
+                        <a href="<?php echo Globals::url()."?delete=".$value['show_id'] ?? null; ?>" class="ms-5" id="delete-link-<?php echo $i; ?>">Delete</a>
+                    </td>
                 </tr>
-        <?php endforeach; ?>
+        <?php $i++; endforeach; ?>
         <?php endif; ?>
         </tbody>
     </table>
+
+    <?php if(!empty($pagination) && count($pagination) > 1): ?>
+        <nav aria-label="..." class="mt-lg-5 w-100 mb-lg-5">
+            <ul class="pagination m-auto">
+                <?php if(!empty($position)): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="<?php echo Globals::url(); ?>?page=<?php echo strval($previous); ?>">Previous</a>
+                    </li>
+                <?php endif; ?>
+                <?php foreach ($pagination as $key=>$page): ?>
+                    <li class="page-item <?php echo $page == $position ? 'active' : null; ?>">
+                        <a class="page-link" href="<?php echo Globals::url(); ?>?page=<?php echo $page; ?>"><?php echo $page; ?></a>
+                    </li>
+                <?php endforeach; ?>
+                <?php if(!empty($position)): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="<?php echo Globals::url(); ?>?page=<?php echo $next; ?>">Next</a>
+                    </li>
+                <?php endif; ?>
+            </ul>
+        </nav>
+    <?php endif; ?>
+
+
 </section>
+<script src="assets/my-styles/js/deleteshow.js"></script>
 <?php endif; ?>
 
 <?php if(!empty($seasons)): ?>

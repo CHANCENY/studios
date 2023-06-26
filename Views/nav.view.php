@@ -56,6 +56,9 @@
                     <li class="nav-item">
                         <a class="nav-link text-white-50" id="menu-7" href="url-tv-attachment">URLS</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white-50" id="menu-8" href="change-movie-url">URL Change Movie</a>
+                    </li>
                 <?php endif; ?>
             </ul>
             <div class="float-end">
