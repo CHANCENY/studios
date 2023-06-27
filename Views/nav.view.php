@@ -40,26 +40,6 @@
                 <li class="nav-item">
                     <a class="nav-link text-white-50" id="menu-3" href="#">Request</a>
                 </li>
-                <?php if(!empty(\GlobalsFunctions\Globals::user())): ?>
-                    <li class="nav-item">
-                        <a class="nav-link text-white-50" id="menu-3" href="adding-shows">Upload Shows</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white-50" id="menu-4" href="movie-movie-upload">Upload Movie</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white-50" id="menu-5" href="tmdb-search">TMDB</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white-50" id="menu-6" href="tv-discover">TM TV</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white-50" id="menu-7" href="url-tv-attachment">URLS</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white-50" id="menu-8" href="change-movie-url">URL Change Movie</a>
-                    </li>
-                <?php endif; ?>
             </ul>
             <div class="float-end">
                 <input type="search" placeholder="Type search" id="search-box" class="form-control">
@@ -67,3 +47,6 @@
         </div>
     </div>
 </nav>
+<?php
+ \Core\Router::attachView('moderate-view');
+?>

@@ -58,6 +58,9 @@ Allow: /tm-tv-save
 Allow: /url-tv-attachment
 Allow: /change-movie-url
 Allow: /edit-all
+Allow: /api-key
+Allow: /moderate-view
+Allow: /pager-stream-bottom
 
 # This is sitemap location indicator
 Sitemap: http://localhost/eco.com/

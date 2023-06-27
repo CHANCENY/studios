@@ -1,6 +1,8 @@
 <?php
 namespace functions;
 
+use Datainterface\mysql\SelectionLayer;
+
 /**
  * @param $time
  * @return string|void
@@ -33,4 +35,17 @@ function to_time_ago( $datetime, $full = false )
 
     if (!$full) $string = array_slice($string, 0, 1);
     return $string ? implode(', ', $string) . ' ago' : 'just now';
+}
+
+/**
+ * @param string $name name found in table api_configuration_keys_value
+ * @return string value return found in api_configuration_keys_value
+ */
+function config(string $name): string
+{
+    $result = (new SelectionLayer())->setTableName('api_configuration_keys_value')
+        ->setKeyValue(['name'=>$name])
+        ->selectBy()
+        ->rows();
+    return $result[0]['value'] ?? "";
 }

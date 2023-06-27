@@ -19,7 +19,7 @@ if($type === 'tv'){
 }
 
 function discover(string $search): array
-{
+{$authToken = \functions\config('TMDB');
     $curl = curl_init();
 
     curl_setopt_array($curl, [
@@ -31,7 +31,7 @@ function discover(string $search): array
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_CUSTOMREQUEST => "GET",
         CURLOPT_HTTPHEADER => [
-            "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZDExNTI3ZDkwYmIxMWVhYTI0NGE2MzUwNTQwYWQyMSIsInN1YiI6IjY0OTZkMDg1YjM0NDA5MDBmZmViZTVlOSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.VIHnt5aWjblsCAB__DD9hQEWzZblm0X5BjmtOtJBbJY",
+            "Authorization: $authToken",
             "accept: application/json"
         ],
     ]);
@@ -49,6 +49,7 @@ function discover(string $search): array
 
 function tv(string $search): array
 {
+    $authToken = \functions\config('TMDB');
     $curl = curl_init();
     curl_setopt_array($curl, [
         CURLOPT_URL => "https://api.themoviedb.org/3/search/tv?query=$search&include_adult=false&language=en-US&page=1",
@@ -59,7 +60,7 @@ function tv(string $search): array
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_CUSTOMREQUEST => "GET",
         CURLOPT_HTTPHEADER => [
-            "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZDExNTI3ZDkwYmIxMWVhYTI0NGE2MzUwNTQwYWQyMSIsInN1YiI6IjY0OTZkMDg1YjM0NDA5MDBmZmViZTVlOSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.VIHnt5aWjblsCAB__DD9hQEWzZblm0X5BjmtOtJBbJY",
+            "Authorization: $authToken",
             "accept: application/json"
         ],
     ]);

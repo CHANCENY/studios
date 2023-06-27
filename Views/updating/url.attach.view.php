@@ -9,14 +9,6 @@ use Modules\Shows\ShowsHandlers;
 $shows = [];
 $seasons = [];
 $episodes = [];
-
-$pagination = 0;
-
-$position = Globals::get('page');
-
-$previous = 0;
-$next = 0;
-
 $eids = [];
 
 if(!empty(Globals::get('delete'))){
@@ -57,11 +49,8 @@ if(empty(Globals::get('show')) && empty(Globals::get('season'))){
 
     $renders = new RenderHandler($shows);
     $shows= $renders->getOutPutRender();
-    $pagination = $renders->getPositions();
-    if(!empty($position)){
-        $previous = intval($position) - 1;
-        $next = intval($position) + 1;
-    }
+    $_SESSION['urlrender'] = $renders;
+
 }
 if(!empty(Globals::get('show'))){
    $showId = Globals::get('show');
@@ -106,30 +95,7 @@ if(!empty(Globals::get('season'))){
         <?php endif; ?>
         </tbody>
     </table>
-
-    <?php if(!empty($pagination) && count($pagination) > 1): ?>
-        <nav aria-label="..." class="mt-lg-5 w-100 mb-lg-5">
-            <ul class="pagination m-auto">
-                <?php if(!empty($position)): ?>
-                    <li class="page-item">
-                        <a class="page-link" href="<?php echo Globals::url(); ?>?page=<?php echo strval($previous); ?>">Previous</a>
-                    </li>
-                <?php endif; ?>
-                <?php foreach ($pagination as $key=>$page): ?>
-                    <li class="page-item <?php echo $page == $position ? 'active' : null; ?>">
-                        <a class="page-link" href="<?php echo Globals::url(); ?>?page=<?php echo $page; ?>"><?php echo $page; ?></a>
-                    </li>
-                <?php endforeach; ?>
-                <?php if(!empty($position)): ?>
-                    <li class="page-item">
-                        <a class="page-link" href="<?php echo Globals::url(); ?>?page=<?php echo $next; ?>">Next</a>
-                    </li>
-                <?php endif; ?>
-            </ul>
-        </nav>
-    <?php endif; ?>
-
-
+    <?php Modules\Renders\RenderHandler::pager($_SESSION['urlrender']) ?? (new Modules\Renders\RenderHandler($shows)); ?>
 </section>
 <script src="assets/my-styles/js/deleteshow.js"></script>
 <?php endif; ?>

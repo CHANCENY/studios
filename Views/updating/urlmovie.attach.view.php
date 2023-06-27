@@ -11,19 +11,9 @@ if(!empty(Globals::get('movieId')) && Globals::get('movieUrl')){
 }
 
 $movies = (new Movie())->movies();
-
-$position = Globals::get('page');
-
 $render = new \Modules\Renders\RenderHandler($movies);
 $movies = $render->getOutPutRender();
-$pagination = $render->getPositions();
 
-$previous = 0;
-$next = 0;
-if(!empty($position)){
-    $previous = intval($position) - 1;
-    $next = intval($position) + 1;
-}
 ?>
 <section class="container w-100 mt-lg-5">
     <div class="d-inline-flex float-end" id="msg"></div>
@@ -55,26 +45,7 @@ if(!empty($position)){
          <?php $i++; endforeach; ?>
          <?php endif; ?>
          </tbody>
-     </table><?php if(!empty($pagination) && count($pagination) > 1): ?>
-     <nav aria-label="..." class="mt-lg-5 w-100 mb-lg-5">
-             <ul class="pagination m-auto">
-                 <?php if(!empty($position)): ?>
-                     <li class="page-item">
-                         <a class="page-link" href="<?php echo Globals::url(); ?>?page=<?php echo strval($previous); ?>">Previous</a>
-                     </li>
-                 <?php endif; ?>
-                 <?php foreach ($pagination as $key=>$page): ?>
-                     <li class="page-item <?php echo $page == $position ? 'active' : null; ?>">
-                         <a class="page-link" href="<?php echo Globals::url(); ?>?page=<?php echo $page; ?>"><?php echo $page; ?></a>
-                     </li>
-                 <?php endforeach; ?>
-                 <?php if(!empty($position)): ?>
-                     <li class="page-item">
-                         <a class="page-link" href="<?php echo Globals::url(); ?>?page=<?php echo $next; ?>">Next</a>
-                     </li>
-                 <?php endif; ?>
-             </ul>
-         </nav><?php endif; ?>
+     </table><?php Modules\Renders\RenderHandler::pager($render); ?>
  </div>
     <script src="assets/my-styles/js/movie-update.js"></script>
 </section>

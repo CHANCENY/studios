@@ -9,6 +9,7 @@ use Datainterface\Selection;
 use Datainterface\Updating;
 use GlobalsFunctions\Globals;
 use Modules\StorageDefinitions\Storage;
+use function functions\config;
 
 class ShowsHandlers extends Storage
 {
@@ -193,8 +194,7 @@ class ShowsHandlers extends Storage
 
    public static function getShowTmDB($showId): array
    {
-
-
+       $authToken = config('TMDB');
        $curl = curl_init();
 
        curl_setopt_array($curl, [
@@ -206,7 +206,7 @@ class ShowsHandlers extends Storage
            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
            CURLOPT_CUSTOMREQUEST => "GET",
            CURLOPT_HTTPHEADER => [
-               "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZDExNTI3ZDkwYmIxMWVhYTI0NGE2MzUwNTQwYWQyMSIsInN1YiI6IjY0OTZkMDg1YjM0NDA5MDBmZmViZTVlOSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.VIHnt5aWjblsCAB__DD9hQEWzZblm0X5BjmtOtJBbJY",
+               "Authorization: $authToken",
                "accept: application/json"
            ],
        ]);
@@ -223,8 +223,7 @@ class ShowsHandlers extends Storage
 
 
    public static function getAllEpisodesTmDB($show, $season): array{
-
-
+        $authToken = config('TMDB');
        $curl = curl_init();
 
        curl_setopt_array($curl, [
@@ -236,7 +235,7 @@ class ShowsHandlers extends Storage
            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
            CURLOPT_CUSTOMREQUEST => "GET",
            CURLOPT_HTTPHEADER => [
-               "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZDExNTI3ZDkwYmIxMWVhYTI0NGE2MzUwNTQwYWQyMSIsInN1YiI6IjY0OTZkMDg1YjM0NDA5MDBmZmViZTVlOSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.VIHnt5aWjblsCAB__DD9hQEWzZblm0X5BjmtOtJBbJY",
+               "Authorization: $authToken",
                "accept: application/json"
            ],
        ]);

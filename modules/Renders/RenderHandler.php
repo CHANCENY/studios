@@ -2,11 +2,17 @@
 
 namespace Modules\Renders;
 
+use Core\Router;
 use GlobalsFunctions\Globals;
 
 class RenderHandler
 {
     private array $dataRender;
+
+    public static function pager(RenderHandler $render)
+    {
+        Router::attachView('pager-stream-bottom', ['render'=>$render]);
+    }
 
     /**
      * @return array
