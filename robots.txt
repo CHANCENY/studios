@@ -61,6 +61,7 @@ Allow: /edit-all
 Allow: /api-key
 Allow: /moderate-view
 Allow: /pager-stream-bottom
+Allow: /listing-card
 
 # This is sitemap location indicator
 Sitemap: http://localhost/eco.com/

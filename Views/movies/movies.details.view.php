@@ -9,9 +9,9 @@ $m = $movieDetails[0] ?? [];
 ?>
 <section class="container w-100 mt-5" id="title-show" data="my show">
     <div class="container text-white">
-        <div class="row mt-3 mb-3">
+        <div class="row mt-3 mb-3 my-row">
             <div class="col">
-                <img src="<?php echo $m['url_image'] ?? null; ?>" class="img-thumbnail zoom" alt="show">
+                <img src="<?php echo $m['url_image'] ?? null; ?>" class="img-thumbnail zoom my-image-in-card" style="width: 20rem" alt="show">
             </div>
             <div class="col">
                 <h2 class="display-7"><?php echo $m['title'] ?? null; ?></h2>
@@ -24,14 +24,8 @@ $m = $movieDetails[0] ?? [];
             </div>
         </div>
         <div class="row mt-lg-5">
-            <div class="col">
-                <a class="btn btn-outline-light w-100 p-2" href="watch?m=<?php echo $m['movie_id'] ?? null; ?>" role="button"> <i class="fa-solid fa-play"></i></a>
-            </div>
-            <div class="col">
-                <textarea cols="4" rows="4" id="comment" class="form-control">Type comment or request here</textarea>
-            </div>
-            <div class="col">
-                <button id="comment-send" type="button" class="btn btn-outline-light mb-4">Send Comment</button>
+            <div class="col-1 m-auto">
+                <a class="btn btn-outline-light w-100 p-2 my-play-button" href="watch?m=<?php echo $m['movie_id'] ?? null; ?>" role="button"> <i class="fa-solid fa-play"></i></a>
             </div>
         </div>
     </div>

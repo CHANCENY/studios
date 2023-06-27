@@ -51,4 +51,15 @@
         text-align: center !important;
         margin-left: inherit !important;
     }
+    .my-row{
+        display: block !important;
+    }
+    .my-image-in-card{
+        display: block; !important;
+        width: 100% !important;
+        margin-bottom: 10px;
+    }
+    .my-play-button{
+        width: fit-content !important;
+    }
 }
