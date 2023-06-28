@@ -7,6 +7,7 @@ if(totalTag !== null){
 
 for(let i= 0; i < total; i++){
     const saveLink = document.getElementById('save-'+i);
+    const deleteLinked = document.getElementById('delete-movie-'+i);
     if(saveLink !== null){
         saveLink.addEventListener('click', (e)=>{
             e.preventDefault();
@@ -14,6 +15,16 @@ for(let i= 0; i < total; i++){
             const movieId = document.getElementById('movie-id-'+i).value;
             statusIcons(true);
             sendUpdate(new URLSearchParams({movieUrl, movieId}));
+        })
+    }
+
+    if(deleteLinked !== null){
+        deleteLinked.addEventListener('click', (e)=>{
+            if(!window.confirm("Are you sure you want to delete this movie permanently ?")){
+                e.preventDefault();
+            }else{
+                window.location.replace(e.target.href);
+            }
         })
     }
 }

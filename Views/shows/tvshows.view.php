@@ -28,7 +28,7 @@ $here = Globals::url();
                     <p class="card-text text-white-50"><?php echo (new \DateTime($value['release_date']))->format('M d, Y') ?? null; ?></p>
                 </div>
                 </div><?php endforeach; ?><?php endif; ?>
-        </div><?php \Core\Router::attachView('block', ['from'=>Globals::url(), 'list'=>count($tvShows)]); ?>
+        </div>
     </div>
     <?php Modules\Renders\RenderHandler::pager($render); ?>
 </section>

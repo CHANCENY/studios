@@ -62,6 +62,10 @@ Allow: /api-key
 Allow: /moderate-view
 Allow: /pager-stream-bottom
 Allow: /listing-card
+Allow: /delete-movie
+Allow: /individual-episodes
+Allow: /request-show-movie
+Allow: /card
 
 # This is sitemap location indicator
-Sitemap: http://localhost/eco.com/
+Sitemap: https://localhost/eco.com/

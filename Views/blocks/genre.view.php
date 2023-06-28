@@ -1,19 +1,9 @@
 <?php
+//$result = (new \Modules\Genres\Genre())->filteredListGenre();
 
-$callingFrom = $options['from'] ?? "";
-$list = $options['list'] ?? 0;
 ?>
-<?php if(!str_contains($callingFrom, 'index') && $list > 0 ): ?>
-<div class="float-end w-25 rounded my-block">
-     <h4 class="display-7 text-white-50 text-center">Genre</h4>
-    <ul class="list-group">
-        <li class="list-group-item text-white-50 my-list">
-            One item
-        </li>
-
-        <li class="list-group-item text-white-50 my-list">
-            One too
-        </li>
-    </ul>
-</div>
-<?php endif; ?>
+<section class="container w-100 mt-2">
+    <ul class="row text-white-50 d-inline-flex list-unstyled"><?php if(!empty($result)): ?><?php foreach ($result as $key=>$value): ?>
+        <li class="col"><?php echo $value ?? null; ?></li>
+        <?php endforeach; ?><?php endif; ?></ul>
+</section>

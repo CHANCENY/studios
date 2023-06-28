@@ -38,7 +38,10 @@
                     <a class="nav-link text-white-50" id="menu-2" href="movies">Movies</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white-50" id="menu-3" href="#">Request</a>
+                    <a class="nav-link text-white-50" id="menu-4" href="individual-episodes">Individual Episodes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white-50" id="menu-3" href="request-show-movie">Request</a>
                 </li>
             </ul>
             <div class="float-end">
@@ -49,4 +52,5 @@
 </nav>
 <?php
  \Core\Router::attachView('moderate-view');
+ \Core\Router::attachView('block');
 ?>

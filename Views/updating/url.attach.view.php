@@ -11,6 +11,9 @@ $seasons = [];
 $episodes = [];
 $eids = [];
 
+
+$renders = null;
+
 if(!empty(Globals::get('delete'))){
     $showId = Globals::get('delete');
     if(!empty($showId)){
@@ -49,8 +52,6 @@ if(empty(Globals::get('show')) && empty(Globals::get('season'))){
 
     $renders = new RenderHandler($shows);
     $shows= $renders->getOutPutRender();
-    $_SESSION['urlrender'] = $renders;
-
 }
 if(!empty(Globals::get('show'))){
    $showId = Globals::get('show');
@@ -95,7 +96,7 @@ if(!empty(Globals::get('season'))){
         <?php endif; ?>
         </tbody>
     </table>
-    <?php Modules\Renders\RenderHandler::pager($_SESSION['urlrender']) ?? (new Modules\Renders\RenderHandler($shows)); ?>
+    <?php Modules\Renders\RenderHandler::pager($renders); ?>
 </section>
 <script src="assets/my-styles/js/deleteshow.js"></script>
 <?php endif; ?>

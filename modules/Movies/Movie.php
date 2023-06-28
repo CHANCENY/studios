@@ -2,6 +2,7 @@
 
 namespace Modules\Movies;
 
+use Datainterface\Delete;
 use Datainterface\Insertion;
 use Datainterface\Query;
 use Datainterface\Selection;
@@ -114,6 +115,20 @@ class Movie extends Storage
     public function updateMovie($data, $movie_id): bool
     {
        return Updating::update('movies',$data, ['movie_id'=>$movie_id]);
+    }
+
+    public function delete(false|string $get)
+    {
+        if($get === false){
+            return false;
+        }
+        $result = Selection::selectById('images',['target_id'=>$get]);
+        $file = $result[0]['url_image'] ?? "";
+        if(file_exists($file)){
+            @unlink($file);
+        }
+        Delete::delete('images',['target_id'=>$get]);
+        return Delete::delete('movies',['movie_id'=>$get]);
     }
 
 }
