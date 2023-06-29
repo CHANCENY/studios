@@ -66,6 +66,8 @@ Allow: /delete-movie
 Allow: /individual-episodes
 Allow: /request-show-movie
 Allow: /card
+Allow: /stream-get-title
+Allow: /query-stream-search-result
 
 # This is sitemap location indicator
 Sitemap: https://localhost/eco.com/

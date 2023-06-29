@@ -169,5 +169,6 @@
 
 
 <script src="assets/my-styles/js/main.js"></script>
+<script src="assets/my-styles/js/searching.js"></script>
 </body>
 </html>

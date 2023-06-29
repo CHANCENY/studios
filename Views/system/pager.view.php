@@ -12,7 +12,7 @@ if(!empty($position)){
 ?>
 <?php if(!empty($pagination) && count($pagination) > 1): ?>
     <nav aria-label="..." class="mt-lg-5 w-100 mb-lg-5">
-        <ul class="pagination m-auto">
+        <ul class="pagination m-auto" style="width: fit-content">
             <?php if(!empty($position)): ?>
                 <li class="page-item">
                     <a class="page-link" href="<?php echo Globals::url(); ?>?page=<?php echo strval($previous); ?>">Previous</a>

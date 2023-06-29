@@ -45,7 +45,12 @@
                 </li>
             </ul>
             <div class="float-end">
-                <input type="search" placeholder="Type search" id="search-box" class="form-control">
+<!--                <input type="search" placeholder="Type search" id="myInput" class="dropdown-content form-control">-->
+                <form autocomplete="off" action="">
+                    <div class="autocomplete bg-dark" style="width:300px;">
+                        <input class="form-control" id="myInput" type="text" name="myCountry" placeholder="Search">
+                    </div>
+                </form>
             </div>
         </div>
     </div>

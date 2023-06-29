@@ -3,7 +3,10 @@
 namespace Modules\Renders;
 
 use Core\Router;
+use Datainterface\mysql\TablesLayer;
+use Datainterface\Tables;
 use GlobalsFunctions\Globals;
+use function functions\config;
 
 class RenderHandler
 {
@@ -48,7 +51,7 @@ class RenderHandler
 
     public function preRender(): void
     {
-        $chunkedArray = array_chunk($this->dataRender, 10);
+        $chunkedArray = array_chunk($this->dataRender, intval(config('PAGERLIMIT')));
         $position = Globals::get('page');
         if(empty($position)){
             $this->outPutRender =  $chunkedArray[0] ?? [];
@@ -67,4 +70,5 @@ class RenderHandler
     {
         return $this->positions;
     }
+
 }
