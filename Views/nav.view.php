@@ -19,6 +19,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/my-styles/css/styles.css">
+    <link rel="stylesheet" href="assets/my-styles/css/fonts/Open_Sans/static/OpenSans-Light.ttf">
 </head>
 <body class="bg-dark text-white" style="overflow-x: hidden;">
 <nav class="navbar navbar-expand-lg navbar-light bg-dark text-white border-bottom border-dark rounded shadow">

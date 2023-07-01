@@ -68,6 +68,7 @@ Allow: /request-show-movie
 Allow: /card
 Allow: /stream-get-title
 Allow: /query-stream-search-result
+Allow: /config-config-api
 
 # This is sitemap location indicator
-Sitemap: https://localhost/eco.com/
+Sitemap: http://localhost/eco.com/
