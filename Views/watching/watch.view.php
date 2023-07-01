@@ -1,5 +1,6 @@
 <?php
 
+use Datainterface\Selection;
 use GlobalsFunctions\Globals;
 use Modules\Shows\ShowsHandlers;
 
@@ -13,9 +14,10 @@ if(!empty(Globals::get('w'))){
     /**
      * bring show season episode
      */
-    $showEpisode = (new ShowsHandlers())->getEpisode(Globals::get('w'))[0] ?? [];
-    $list = explode('/',$showEpisode['url']);
-    $videoId = $list[4];
+    $ep = Selection::selectById('episodes',['episode_uuid'=>Globals::get('w')])[0]['episode_id'] ?? 0;
+    $showEpisode = (new ShowsHandlers())->getEpisode($ep)[0] ?? [];
+    $list = explode('/',$showEpisode['url'] ?? "");
+    $videoId = $list[4] ?? null;
     $title = $showEpisode['title'];
     $link ="https://streamtape.com/e/$videoId";
     $link2 = $showEpisode['url'];
@@ -23,9 +25,10 @@ if(!empty(Globals::get('w'))){
     /**
      * bring movie
      */
-    $movie = (new \Modules\Movies\Movie())->getMovie(Globals::get('m'))[0] ?? [];
-    $list = explode('/', $movie['url']);
-    $videoId = $list[4];
+    $m = Selection::selectById('movies',['movie_uuid'=>Globals::get('m')])[0]['movie_id'] ?? 0;
+    $movie = (new \Modules\Movies\Movie())->getMovie($m)[0] ?? [];
+    $list = explode('/', $movie['url'] ?? "");
+    $videoId = $list[4] ?? null;
     $title = $movie['title'];
     $link ="https://streamtape.com/e/$videoId";
     $link2 = $movie['url'];
@@ -35,7 +38,9 @@ if(!empty(Globals::get('w'))){
 <section class="container w-100 m-auto text-center">
     <iframe src="<?php echo $link ?? null; ?>/" width="1000" height="800" style="margin: auto" allowfullscreen allowtransparency allow="autoplay"  scrolling="no" frameborder="0"></iframe>
     <div class='mt-lg-5'>
+        <?php if(empty($link2)): ?>
         <a href='<?php echo $link2 ?? null; ?>' target='_blank' class='mt-lg-5 text-decoration-none'>Play here if top player failed</a>
+        <?php endif; ?>
     </div>
 </section>
 <section class="container mt-lg-5">

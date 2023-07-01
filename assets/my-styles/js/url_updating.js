@@ -32,6 +32,7 @@ function sendRequests(url, publish, eid){
         if(this.status === 200){
             let datain = [];
            try {
+            console.log(this.responseText);
                datain = JSON.parse(this.responseText);
            }catch (e) {
               console.error("Failed to parse json");
@@ -100,7 +101,6 @@ function sendOnButtonClicked(params){
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onload = function (){
         if(this.status === 200){
-            console.log(this.responseText);
             const data = JSON.parse(this.responseText);
             if(data.status === true){
                 statusIcon(false);

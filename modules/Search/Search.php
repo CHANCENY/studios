@@ -23,9 +23,9 @@ class Search
         $this->searching = htmlspecialchars(strip_tags($search));
         $query = null;
         if($type === 'movie'){
-            $query = "SELECT movie_id, title, release_date FROM movies ".$this->buildSearchQuery($type, $others);
+            $query = "SELECT movie_id, title, release_date, movie_uuid FROM movies ".$this->buildSearchQuery($type, $others);
         }else{
-           $query = "SELECT show_id, title, release_date, show_image FROM tv_shows ". $this->buildSearchQuery($type, $others);
+           $query = "SELECT show_id, title, release_date, show_image, show_uuid FROM tv_shows ". $this->buildSearchQuery($type, $others);
         }
 
         return Query::query($query);

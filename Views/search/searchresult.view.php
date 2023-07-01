@@ -16,7 +16,7 @@ function image($movie_id){
   <div class="card-body">
     <h5 class="card-title"><?php echo $value['title'] ?? null; ?></h5>
     <p class="card-text text-white-50"><?php $date = (new DateTime($value['release_date']))->format('m-d-Y'); echo $date ?? null; ?></p>
-    <a href="<?php echo isset($value['show_id']) ? 'view-tv-show?show='.$value['show_id'] : 'movie-stream?movie='.$value['movie_id'] ?? null; ?>" class="btn btn-primary">See More...</a>
+    <a href="<?php echo isset($value['show_id']) ? 'view-tv-show?show='.$value['show_uuid'] : 'movie-stream?movie='.$value['movie_uuid'] ?? null; ?>" class="btn btn-primary">See More...</a>
   </div>
 </div>
 <?php endforeach; ?></div>

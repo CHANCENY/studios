@@ -1,10 +1,14 @@
 <?php
 
 
-use ApiHandler\ApiHandlerClass;
+use Json\Json;
+use Datainterface\Updating;
+use Datainterface\Selection;
+use Sessions\SessionManager;
 use GlobalsFunctions\Globals;
-use Modules\Renders\RenderHandler;
+use ApiHandler\ApiHandlerClass;
 use Modules\Shows\ShowsHandlers;
+use Modules\Renders\RenderHandler;
 
 $shows = [];
 $seasons = [];
@@ -30,6 +34,7 @@ if(!empty(Globals::get('delete'))){
 
 if(!empty(Globals::get('seasonId')) && !empty('action')){
     $d = Globals::get('action') === 'publish' ? 'yes' : 'no';
+    Updating::update('tv_shows',['show_uuid'=>Json::uuid()], ['show_id'=>SessionManager::getSession('update-id')]);
     $query = "UPDATE episodes SET publish = :action WHERE season_id = :id";
     $result = \Datainterface\Query::query($query, ['id'=>Globals::get('seasonId'), 'action'=>$d]);
     echo ApiHandlerClass::stringfiyData(['status'=>empty($result)]);
@@ -42,6 +47,7 @@ if(!empty(isset($_GET['episode_id']) && isset($_GET['url']) && isset($_GET['publ
             'url'=>Globals::get('url'),
         'publish'=>Globals::get('publish')
     ];
+    Updating::update('tv_shows',['show_uuid'=>Json::uuid()], ['show_id'=>SessionManager::getSession('update-id')]);
     $result = ShowsHandlers::updateEpisode($data,Globals::get('episode_id'));
     echo ApiHandlerClass::stringfiyData(['status'=>$result]);
     exit;
@@ -55,6 +61,7 @@ if(empty(Globals::get('show')) && empty(Globals::get('season'))){
 }
 if(!empty(Globals::get('show'))){
    $showId = Globals::get('show');
+   SessionManager::setSession('update-id', $showId);
    $seasons = (new ShowsHandlers())->getSeasons($showId);
 }
 

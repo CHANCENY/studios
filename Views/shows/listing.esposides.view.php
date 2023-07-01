@@ -1,5 +1,6 @@
 <?php
 
+use Datainterface\Selection;
 use GlobalsFunctions\Globals;
 use Modules\Shows\ShowsHandlers;
 
@@ -8,6 +9,8 @@ if(Globals::method() === 'POST'){
 }
 
 $show_id = Globals::get('show');
+
+$show_id = Selection::selectById('tv_shows',['show_uuid'=>$show_id])[0]['show_id'] ?? 0;
 
 $showFound = (new ShowsHandlers())->showById($show_id);
 $fullShowForDropDown = (new ShowsHandlers())->listingShow($show_id);

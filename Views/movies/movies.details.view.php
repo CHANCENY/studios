@@ -1,9 +1,12 @@
 <?php
 
-use GlobalsFunctions\Globals;
 use Modules\Movies\Movie;
+use Datainterface\Selection;
+use GlobalsFunctions\Globals;
 
-$movieDetails = (new Movie())->getMovie(Globals::get('movie') ?? 0);
+$m = Selection::selectById('movies', ['movie_uuid'=>Globals::get('movie')])[0]['movie_id'] ?? 0;
+
+$movieDetails = (new Movie())->getMovie($m);
 $m = $movieDetails[0] ?? [];
 
 ?>
@@ -25,7 +28,7 @@ $m = $movieDetails[0] ?? [];
         </div>
         <div class="row mt-lg-5">
             <div class="col-1 m-auto">
-                <a class="btn btn-outline-light w-100 p-2 my-play-button" href="watch?m=<?php echo $m['movie_id'] ?? null; ?>" role="button"> <i class="fa-solid fa-play"></i></a>
+                <a class="btn btn-outline-light w-100 p-2 my-play-button" href="watch?m=<?php echo $m['movie_uuid'] ?? null; ?>" role="button"> <i class="fa-solid fa-play"></i></a>
             </div>
         </div>
     </div>

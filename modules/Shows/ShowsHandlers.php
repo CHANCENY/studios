@@ -2,14 +2,15 @@
 
 namespace Modules\Shows;
 
-use Datainterface\Delete;
-use Datainterface\Insertion;
+use Json\Json;
 use Datainterface\Query;
-use Datainterface\Selection;
+use Datainterface\Delete;
 use Datainterface\Updating;
+use Datainterface\Insertion;
+use Datainterface\Selection;
 use GlobalsFunctions\Globals;
-use Modules\StorageDefinitions\Storage;
 use function functions\config;
+use Modules\StorageDefinitions\Storage;
 
 class ShowsHandlers extends Storage
 {
@@ -28,7 +29,8 @@ class ShowsHandlers extends Storage
     public function shows(): array
    {
        $table = $this->schema['tables'][0];
-       return Selection::selectAll($table);
+       $query = "SELECT * FROM {$table} ORDER BY show_changed DESC";
+       return Query::query($query);
    }
 
    public function showById($show_id): array
@@ -53,6 +55,7 @@ class ShowsHandlers extends Storage
            $data['title'] = Globals::post('title');
            $data['description'] = Globals::post('description');
            $data['release_date'] = Globals::post('release-date');
+           $data['show_uuid'] = Json::uuid();
            $showId = Insertion::insertRow($tables[0],$data);
        }else{
            if(!empty(Globals::post('available'))){
@@ -72,6 +75,7 @@ class ShowsHandlers extends Storage
            if(!empty(Globals::post('season'))){
                $data['season_name'] = Globals::post('season');
                $data['show_id'] = $showId;
+               $data['season_uuid'] = Json::uuid();
                $seasonId = Insertion::insertRow($tables[3], $data);
            }else{
                if(!empty(Globals::post('season-available'))){
@@ -118,6 +122,7 @@ class ShowsHandlers extends Storage
 
            if(!$flagError){
                $data['season_id'] = $seasonId;
+               $data['episode_uuid'] = Json::uuid();
                $episodeId = Insertion::insertRow($tables[4], $data);
            }
        }
@@ -262,7 +267,7 @@ class ShowsHandlers extends Storage
 
            if(!empty($alreadyExist)){
                $showId  = $alreadyExist[0]['show_id'];
-
+               $show['show_uuid'] = Json::uuid();
                Updating::update('tv_shows', $show, ['show_id'=>$showId]);
                $newSeason = [];
                $outPut[] = "Updated Show ({$show['title']})";
@@ -274,10 +279,12 @@ class ShowsHandlers extends Storage
                    $seasonIds = Query::query($query);
                    if(!empty($seasonIds)){
                        $newSeason[] =['id'=>$seasonIds[0]['sid'], 'n'=>$seasonIds[0]['n']];
+                       $value['season_uuid'] = Json::uuid();
                        Updating::update('seasons', $value, ['season_id'=>$seasonIds[0]['sid']]);
                        $outPut[] = "Updated Season ({$seasonIds[0]['n']})";
                    }else{
-                      $newSeason[] =['id'=>Insertion::insertRow('seasons', $value),'n'=>$value['season_number']];
+                       $value['season_uuid'] = Json::uuid();
+                       $newSeason[] =['id'=>Insertion::insertRow('seasons', $value),'n'=>$value['season_number']];
                        $outPut[] = "Added Season ({$value['season_number']})";
                    }
                }
@@ -288,9 +295,11 @@ class ShowsHandlers extends Storage
                        $query = "SELECT * FROM episodes WHERE season_id = {$value['id']} AND epso_number = {$v['epso_number']}";
                        $result = Query::query($query);
                        if(!empty($result)){
+                           $v['episode_uuid'] = Json::uuid();
                            Updating::update('episodes',$v,['episode_id'=>$result[0]['episode_id']]);
                            $outPut[] = "Updated Episode ({$v['epso_number']})";
                        }else{
+                           $v['episode_uuid'] = Json::uuid();
                            Insertion::insertRow('episodes', $v);
                            $outPut[] = "Added Episode ({$v['epso_number']})";
                        }
@@ -300,12 +309,14 @@ class ShowsHandlers extends Storage
            }
 
            if(empty($alreadyExist)){
+               $show['show_uuid'] = Json::uuid();
                $showId = Insertion::insertRow('tv_shows',$show);
                $outPut[] = "Added show ({$show['title']})";
                $seasonId = [];
 
                foreach ($seasons as $key=>$value){
                    $value['show_id'] = $showId;
+                   $value['season_uuid'] = Json::uuid();
                    $seasonId[] = ['id'=>Insertion::insertRow('seasons', $value), 'season_number'=>$value['season_number']];
                    $outPut[] = "Added Season ({$value['season_number']})";
                }
@@ -316,6 +327,7 @@ class ShowsHandlers extends Storage
                        for($i = 0; $i < count($epis); $i++){
                            $esp = $epis[$i];
                            $esp['season_id'] = $v['id'];
+                           $esp['episode_uuid'] = Json::uuid();
                            Insertion::insertRow('episodes',$esp);
                            $outPut[] = "Added Episode ({$esp['epso_number']})";
                        }

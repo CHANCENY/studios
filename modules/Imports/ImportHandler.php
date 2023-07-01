@@ -2,8 +2,12 @@
 
 namespace Modules\Imports;
 
-use ExcelHandler\ExcelHandler;
+use Json\Json;
+use Datainterface\Query;
 use Modules\Movies\Movie;
+use Datainterface\Updating;
+use Datainterface\Selection;
+use ExcelHandler\ExcelHandler;
 use Modules\StorageDefinitions\Storage;
 use function Sodium\randombytes_uniform;
 
@@ -87,5 +91,72 @@ class ImportHandler extends Storage
            return json_decode($response, true);
 
         }
+    }
+
+    public function changeTables(): bool
+    {
+        $query = "ALTER TABLE tv_shows
+        ADD show_uuid varchar(200)";
+        Query::query($query);
+
+        $query = "ALTER TABLE tv_shows
+        ADD show_changed TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP";
+        Query::query($query);
+
+        $query = "ALTER TABLE movies
+        ADD movie_uuid varchar(200)";
+        Query::query($query);
+
+        $query = "ALTER TABLE movies
+        ADD movie_changed TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP";
+        Query::query($query);
+
+        $query = "ALTER TABLE seasons
+        ADD season_uuid varchar(200)";
+        Query::query($query);
+
+        $query = "ALTER TABLE seasons
+        ADD changed TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP";
+        Query::query($query);
+
+
+        $query = "ALTER TABLE episodes
+        ADD episode_uuid varchar(200)";
+        Query::query($query);
+
+        $query = "ALTER TABLE episodes
+        ADD changed TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP";
+        Query::query($query);
+
+        return true;
+    }
+
+    public function updateUUID()
+    {
+        $shows = Selection::selectAll('tv_shows');
+        $movies = Selection::selectAll('movies');
+        $episodes = Selection::selectAll('episodes');
+        $seasons = Selection::selectAll('seasons');
+
+        foreach($shows as $key=>$value){
+            $id = $value['show_id'];
+            Updating::update('tv_shows',['show_uuid'=>Json::uuid()], ['show_id'=>$id]);
+        }
+
+        foreach($movies as $key=>$value){
+            $id = $value['movie_id'];
+            Updating::update('movies',['movie_uuid'=>Json::uuid()], ['movie_id'=>$id]);
+        }
+
+        foreach($episodes as $key=>$value){
+            $id = $value['episode_id'];
+            Updating::update('episodes',['episode_uuid'=>Json::uuid()], ['episode_id'=>$id]);
+        }
+
+        foreach($seasons as $key=>$value){
+            $id = $value['season_id'];
+            Updating::update('seasons',['season_uuid'=>Json::uuid()], ['season_id'=>$id]);
+        }
+
     }
 }

@@ -104,9 +104,6 @@ function autocomplete(inp, arr) {
 
 
 function titleRequest(){
-
-    const line = localStorage.getItem('titles');
-    if(line === null){
         const xhr = new XMLHttpRequest();
         xhr.open('GET', 'stream-get-title', true);
         xhr.setRequestHeader('Content-Type', 'application/json');
@@ -127,9 +124,7 @@ function titleRequest(){
             }
         }
         xhr.send();
-    }else{
-        countries = JSON.parse(line);
-    }
+
 }
 
 function getTitles(){

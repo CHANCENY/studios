@@ -2,11 +2,12 @@
 
 namespace Modules\Movies;
 
-use Datainterface\Delete;
-use Datainterface\Insertion;
+use Json\Json;
 use Datainterface\Query;
-use Datainterface\Selection;
+use Datainterface\Delete;
 use Datainterface\Updating;
+use Datainterface\Insertion;
+use Datainterface\Selection;
 use FileHandler\FileHandler;
 use GlobalsFunctions\Globals;
 use Modules\StorageDefinitions\Storage;
@@ -54,7 +55,7 @@ class Movie extends Storage
         $data['related_movies'] = substr($ids,0, strlen($ids) - 1);
         $typeId = Insertion::insertRow($this->schema['tables'][5], ['genre_name'=>$data[$fields[4]]]);
         $data[$fields[4]] = $typeId;
-
+        $data['movie_uuid'] = Json::uuid();
         $movieId = Insertion::insertRow($tableMovie, $data);
 
         unset($data);
@@ -99,7 +100,7 @@ class Movie extends Storage
         $movieT = $this->schema['tables'][1];
         $imageT = $this->schema['tables'][6];
         $typeT = $this->schema['tables'][5];
-        $query = "SELECT * FROM $movieT AS m LEFT JOIN $imageT AS im ON im.target_id = m.movie_id LEFT JOIN $typeT AS g ON g.genre_id = m.type";
+        $query = "SELECT * FROM $movieT AS m LEFT JOIN $imageT AS im ON im.target_id = m.movie_id LEFT JOIN $typeT AS g ON g.genre_id = m.type ORDER BY m.movie_changed DESC";
         return Query::query($query);
     }
 
