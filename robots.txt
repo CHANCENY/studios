@@ -73,6 +73,7 @@ Allow: /display-all-request
 Allow: /copyright
 Allow: /terms-condition
 Allow: /privacy
+Allow: /image-creation
 
 # This is sitemap location indicator
 Sitemap: http://localhost/eco.com/
