@@ -70,6 +70,9 @@ Allow: /stream-get-title
 Allow: /query-stream-search-result
 Allow: /config-config-api
 Allow: /display-all-request
+Allow: /copyright
+Allow: /terms-condition
+Allow: /privacy
 
 # This is sitemap location indicator
 Sitemap: http://localhost/eco.com/

@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="assets/my-styles/css/styles.css">
     <link rel="stylesheet" href="assets/my-styles/css/fonts/Open_Sans/static/OpenSans-Light.ttf">
 </head>
-<body class="bg-dark text-white" style="overflow-x: hidden;">
+<body class="bg-dark text-white" style="overflow-x: hidden; font-family: Kanit;">
 <nav class="navbar navbar-expand-lg navbar-light bg-dark text-white border-bottom border-dark rounded shadow">
     <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">

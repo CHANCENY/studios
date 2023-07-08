@@ -106,10 +106,13 @@
 
                     <ul class="list-unstyled mb-0">
                         <li>
-                            <a href="#!" class="text-white">Terms and Condition</a>
+                            <a href="terms-condition" class="text-white">Ts && Cs Policy</a>
                         </li>
                         <li>
-                            <a href="#!" class="text-white">General information</a>
+                            <a href="copyright" class="text-white">Copyright Policy</a>
+                        </li>
+                        <li>
+                            <a href="privacy" class="text-white">Privacy Policy</a>
                         </li>
                     </ul>
                 </div>
