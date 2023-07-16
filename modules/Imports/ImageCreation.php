@@ -8,6 +8,7 @@ use Datainterface\MysqlDynamicTables;
 use Datainterface\Query;
 use Datainterface\Updating;
 use FileHandler\FileHandler;
+use GlobalsFunctions\Globals;
 use Json\Json;
 
 class ImageCreation
@@ -79,6 +80,65 @@ class ImageCreation
             "crons"
         );
         Insertion::insertRow('crons',['cron_run'=>$status, 'cron_type'=>$type, 'output'=>$result]);
+    }
+    
+    
+    public function queryLinks(): array
+    {
+        $unProcessedList = [];
+        $showQuery = "SELECT * FROM tv_shows WHERE show_image LIKE '%stream.quickapistorage.com%' ORDER BY show_id ASC LIMIT 20";
+        $seasonQuery = "SELECT * FROM seasons WHERE season_image LIKE '%stream.quickapistorage.com%' ORDER BY season_id ASC LIMIT 20";
+        $episodeQuery = "SELECT * FROM episodes WHERE epso_image LIKE '%stream.quickapistorage.com%' ORDER BY episode_id ASC LIMIT 20";
+        $movies = "SELECT * FROM images WHERE url_image LIKE '%stream.quickapistorage.com%' ORDER BY image_id ASC LIMIT 50";
+
+        //20 rows each
+        $unProcessedList[] = ['data'=>Query::query($showQuery),'table'=>'tv_shows', 'column'=>'show_image'];
+        $unProcessedList[] = ['data'=> Query::query($seasonQuery),'table'=>'seasons', 'column'=>'season_image'];
+        $unProcessedList[] = ['data'=> Query::query($episodeQuery), 'table'=>'episodes', 'column'=>'epso_image'];
+        $unProcessedList[] = ['data'=> Query::query($movies), 'table'=>'images', 'column'=>'url_image'];
+        return $unProcessedList;
+    }
+
+    private function fileNotFound($link)
+    {
+        (new MysqlDynamicTables())->resolver(Database::database(),['filename'], ['filename'=>['varchar(250)', 'nnull']], 'not_found_filename');
+        Insertion::insertRow('not_found_filename', ['filename'=>$link]);
+    }
+
+    public function renameLinks($table, $column, $data): bool
+    {
+        $totalCreated = 0;
+        foreach ($data as $key=>$value){
+            $link = $value[$column];
+            $idColumn = "";
+            $list = [];
+            if(!empty($link)){
+               $list = explode('/', $link);
+            }
+
+            if(!file_exists(Globals::root()."/Files/".end($list))){
+                $this->fileNotFound("/Files/".end($list));
+            }
+            $imageLink =Globals::protocal().'://'. Globals::serverHost()."/Files/".end($list);
+            
+            if(empty($idColumn)){
+                if(isset($value['show_id'])){
+                    $idColumn = "show_id";
+                }elseif (isset($value['season_id'])){
+                    $idColumn = "season_id";
+                }elseif(isset($value['episode_id'])){
+                    $idColumn = "episode_id";
+                }else{
+                    $idColumn = "image_id";
+                }
+            }
+            $id =[$idColumn=> $value[$idColumn]];
+            $newData = [$column=>$imageLink];
+
+            Updating::update($table,$newData,$id);
+            $totalCreated++;
+        }
+        return $totalCreated === count($data);
     }
 
 

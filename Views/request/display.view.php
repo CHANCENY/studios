@@ -7,20 +7,10 @@ if(!empty(Globals::get('key')) && !empty(Globals::get('type'))){
     $defualtKey = Globals::get('key');
     $type = Globals::get('type');
 
+    $data['request_status'] = 'old';
     $json = new \Json\Json();
     $json->setStoreName("request/$type/request_file.json");
-    $data = $json->getDataInStorage();
-
-    $item = [];
-    foreach($data as $key=>$value){
-       if($value['defaultKey'] === $key){
-           $item = $value;
-       }
-    }
-    $item['type'] = $type === 'tv_shows' ? "Show" : "Movie";
-
-    if((new \Modules\Request\Request())->markDone($type, $defualtKey)){
-        (new \Modules\Request\Request())->sendConfirmationDoneEmail($item['user_mail'], $item);
+    if($json->upDate($data,$defualtKey)->isError() === false){
         Globals::redirect(Globals::get('destination'));
         exit;
     }else{

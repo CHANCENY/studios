@@ -5,7 +5,7 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="url" content="<?php echo \GlobalsFunctions\Globals::uri(); ?>">
-    <link rel="shortcut icon" href="https://stream.quickapistorage.com/Files/logo.png" type="image/x-icon">
+    <link rel="shortcut icon" href="https://streamstudios.online/Files/logo.png" type="image/x-icon">
     <title id="titlepage"><?php echo \GlobalsFunctions\Globals::viewTitleOnRequest(); ?></title>
     <?php $path = \GlobalsFunctions\Globals::urlComponents($_SERVER['REQUEST_URI'])['path'];
     $url = explode('/', $path);
@@ -29,7 +29,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <a class="navbar-brand mt-2 mt-lg-0" id="menu-0" href="index">
-                <img src="https://stream.quickapistorage.com/Files/logo.png" height="20" alt="MDB Logo" loading="lazy"/>
+                <img src="https://streamstudios.online/Files/logo.png" height="20" alt="MDB Logo" loading="lazy"/>
             </a>
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 display-7">
                 <li class="nav-item">
