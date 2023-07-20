@@ -10,7 +10,8 @@ class Episode
 
     public function episodes(): array
     {
-        return Selection::selectAll('episodes');
+        $query = "SELECT * FROM episodes WHERE season_id IS NOT NULL AND url IS NOT NULL ORDER BY episode_id DESC";
+        return Query::query($query);
     }
 
     public function getEpisodeShowTitle($season_id):string|null

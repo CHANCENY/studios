@@ -9,6 +9,8 @@ use Datainterface\Updating;
 use Datainterface\Insertion;
 use Datainterface\Selection;
 use GlobalsFunctions\Globals;
+use Modules\Episodes\Episode;
+use Modules\NewAlerts\SubcriberNews;
 use function functions\config;
 use Modules\StorageDefinitions\Storage;
 
@@ -50,12 +52,21 @@ class ShowsHandlers extends Storage
        $episodeId = 0;
        $relatedId = 0;
 
+       $uuid = "";
+       $title = "";
+       $desc = "";
+       $img = "";
+
        $data = [];
        if(!empty(Globals::post('title')) && !empty(Globals::post('description')) && !empty(Globals::post('release-date'))){
            $data['title'] = Globals::post('title');
            $data['description'] = Globals::post('description');
            $data['release_date'] = Globals::post('release-date');
            $data['show_uuid'] = Json::uuid();
+           $uuid = $data['show_uuid'];
+           $title = $data['title'];
+           $desc = $data['description'];
+
            $showId = Insertion::insertRow($tables[0],$data);
        }else{
            if(!empty(Globals::post('available'))){
@@ -139,6 +150,14 @@ class ShowsHandlers extends Storage
                $this->message .= "<li>Related shows not provided</li>";
            }
        }
+
+       $newMessage = "<p>Hello Our subscriber Stream studios has upload show which you can watch on our site</p>";
+       $newMessage .="<p>Show titled: {$title}<br>
+                          Show summary: {$desc}</p>";
+       $newMessage .= "<img src='{$img}' style='width: 20rem;'><br><br>";
+       $home =Globals::protocal().'://'. Globals::serverHost().'view-tv-show?show='.$uuid;
+       $newMessage .= "<a href='$home' style='width: fit-content; padding: 5px; background-color: orange;color: black; border: 1px solid orange; border-radius: 5px;'>Click To Watch</a>";
+       (new SubcriberNews('New shows'))->saveEvent($newMessage);
 
        return [
            'show'=>$showId,
@@ -262,12 +281,14 @@ class ShowsHandlers extends Storage
        if(!empty($show) && !empty($seasons) && !empty($episodes)){
 
            $showName = $show['title'];
+           $uuid = "";
 
            $alreadyExist = Selection::selectById('tv_shows',['title'=>$showName]);
 
            if(!empty($alreadyExist)){
                $showId  = $alreadyExist[0]['show_id'];
                $show['show_uuid'] = Json::uuid();
+               $uuid = $show['show_uuid'];
                Updating::update('tv_shows', $show, ['show_id'=>$showId]);
                $newSeason = [];
                $outPut[] = "Updated Show ({$show['title']})";
@@ -282,10 +303,12 @@ class ShowsHandlers extends Storage
                        $value['season_uuid'] = Json::uuid();
                        Updating::update('seasons', $value, ['season_id'=>$seasonIds[0]['sid']]);
                        $outPut[] = "Updated Season ({$seasonIds[0]['n']})";
+
                    }else{
                        $value['season_uuid'] = Json::uuid();
                        $newSeason[] =['id'=>Insertion::insertRow('seasons', $value),'n'=>$value['season_number']];
                        $outPut[] = "Added Season ({$value['season_number']})";
+
                    }
                }
 
@@ -302,6 +325,7 @@ class ShowsHandlers extends Storage
                            $v['episode_uuid'] = Json::uuid();
                            Insertion::insertRow('episodes', $v);
                            $outPut[] = "Added Episode ({$v['epso_number']})";
+
                        }
                    }
                }
@@ -334,11 +358,32 @@ class ShowsHandlers extends Storage
                    }
                }
            }
+
+           $newMessage = "<p>Hello Our subscriber Stream studios has uploaded new Show which you can watch on our site</p>";
+           $newMessage .="<p>Show titled: {$show['title']}<br>
+                          Show summary: {$show['description']}</p>";
+           $newMessage .= "<img src='{$show['show_image']}' style='width: 20rem;'><br><br>";
+           $home =Globals::protocal().'://'. Globals::serverHost().'/view-tv-show?show='.$uuid;
+           $newMessage .= "<a href='$home' style='width: fit-content; padding: 5px; background-color: orange;color: black; border: 1px solid orange; border-radius: 5px;'>Click To Watch</a>";
+           (new SubcriberNews('New shows'))->saveEvent($newMessage);
        }
        return $outPut;
    }
 
    public static function updateEpisode($episode,$episode_id){
+       $ep = Selection::selectById('episodes', ['episode_id'=>$episode_id]);
+       $title = $ep[0]['title'] ?? null;
+       $des = $ep[0]['epso_description'] ?? null;
+       $img = $ep[0]['epso_image'] ?? null;
+       $home =Globals::protocal().'://'. Globals::serverHost().'/watch?w='.$ep[0]['episode_uuid'] ?? null;
+       $title .= " | ".(new Episode())->getEpisodeShowTitle($ep[0]['season_id'] ?? 0) ?? null;
+       $newMessage = "<p>Hello Our subscriber Stream studios has updated Episode which you can watch on our site</p>";
+       $newMessage .="<p>Episode titled: {$title}<br>
+                          Episode summary: {$des}</p>";
+       $newMessage .= "<img src='{$img}' style='width: 20rem;'><br><br>";
+       $newMessage .= "<a href='$home' style='width: fit-content; padding: 5px; background-color: orange;color: black; border: 1px solid orange; border-radius: 5px;'>Click To Watch</a>";
+       (new SubcriberNews('Episode Update'))->saveEvent($newMessage);
+
         return Updating::update('episodes',$episode, ['episode_id'=>$episode_id]);
    }
 

@@ -10,6 +10,7 @@ use Datainterface\Insertion;
 use Datainterface\Selection;
 use FileHandler\FileHandler;
 use GlobalsFunctions\Globals;
+use Modules\NewAlerts\SubcriberNews;
 use Modules\StorageDefinitions\Storage;
 
 class Movie extends Storage
@@ -31,7 +32,7 @@ class Movie extends Storage
         //movie basic save
         $tableMovie = $this->schema['tables'][1];
         $fields = $this->schema['columns'][1];
-
+        $uuid = "";
         //combine
         $data = [];
         if(empty($importer_data)){
@@ -56,8 +57,12 @@ class Movie extends Storage
         $typeId = Insertion::insertRow($this->schema['tables'][5], ['genre_name'=>$data[$fields[4]]]);
         $data[$fields[4]] = $typeId;
         $data['movie_uuid'] = Json::uuid();
+        $uuid = $data['movie_uuid'];
         $movieId = Insertion::insertRow($tableMovie, $data);
 
+        $newMessage = "<p>Hello Our subscriber Stream studios has upload new movie which you can watch on our site</p>";
+        $newMessage .="<p>Movie titled: {$data['title']}<br>
+                          Movie summary: {$data['description']}</p>";
         unset($data);
         $data['target_id'] = $movieId;
         $file = Globals::files('image') ?? $importer_data['image'];
@@ -79,6 +84,13 @@ class Movie extends Storage
             }
         }
         $fid = Insertion::insertRow($this->schema['tables'][6], $data);
+
+        $img = Globals::protocal().'://'.Globals::serverHost().'/'.$data['url_image'];
+        $newMessage .= "<img src='{$img}' style='width: 20rem;'>";
+        $home =Globals::protocal().'://'. Globals::serverHost().'/watch?m='.$uuid;
+        $newMessage .= "<a href='$home' style='width: fit-content; padding: 5px; background-color: orange;color: black; border: 1px solid orange; border-radius: 5px;'>Click To Watch</a>";
+        (new SubcriberNews('New Movies'))->saveEvent($newMessage);
+
         return [
             'movieId' => $movieId,
             'genreId'=>$typeId,
@@ -115,6 +127,19 @@ class Movie extends Storage
 
     public function updateMovie($data, $movie_id): bool
     {
+        $movie = Selection::selectById('movies', ['movie_id'=>$movie_id]);
+        $title = $movie[0]['title'] ?? null;
+        $desc =  $movie[0]['description'] ?? null;
+        $image = $this->movieImage($movie[0]['movie_id'] ?? 0);
+
+        $newMessage = "<p>Hello Our subscriber Stream studios has updated movie which you can watch on our site</p>";
+        $newMessage .="<p>Movie titled: {$title}<br>
+                          Movie summary: {$desc}</p>";
+        $newMessage .= "<img src='{$image}' style='width: 20rem;'>";
+        $home =Globals::protocal().'://'. Globals::serverHost().'/watch?m='.$movie[0]['movie_uuid'] ?? null;
+        $newMessage .= "<a href='$home' style='width: fit-content; padding: 5px; background-color: orange;color: black; border: 1px solid orange; border-radius: 5px;'>Click To Watch</a>";
+        (new SubcriberNews('New Movies'))->saveEvent($newMessage);
+
        return Updating::update('movies',$data, ['movie_id'=>$movie_id]);
     }
 
@@ -130,6 +155,12 @@ class Movie extends Storage
         }
         Delete::delete('images',['target_id'=>$get]);
         return Delete::delete('movies',['movie_id'=>$get]);
+    }
+
+
+    public function movieImage($movie_id): string
+    {
+        return Query::query("SELECT url_image FROM images WHERE target_id = $movie_id")[0]['url_image'] ?? "";
     }
 
 }

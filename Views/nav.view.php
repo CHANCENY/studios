@@ -1,4 +1,13 @@
-<html lang="en">
+<?php @session_start();
+
+global $token;
+
+/**
+ * Token to be use to set data for seo and token to send via XMLHTTP to get seo data
+ */
+$token = \Modules\Renders\SEOTags::getToken();
+?>
+<html lang="en" id="html" data="<?php echo $token; ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"

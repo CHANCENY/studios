@@ -3,6 +3,7 @@
 use GlobalsFunctions\Globals;
 use Modules\Movies\Movie;
 
+
 if(!empty(Globals::get('movieId')) && Globals::get('movieUrl')){
     echo \ApiHandler\ApiHandlerClass::stringfiyData(['status'=>
         (new Movie())->updateMovie(['url'=>Globals::get('movieUrl')],Globals::get('movieId'))

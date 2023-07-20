@@ -93,8 +93,4 @@ if(file_exists("includes/formFunction.inc")){
 if(file_exists("includes/functions.inc")){
     include_once "includes/functions.inc";
 }
-$data = (new \Modules\Imports\ImageCreation())->queryLinks();
-
-foreach ($data as $key=>$v){
-    $result = (new \Modules\Imports\ImageCreation())->renameLinks($v['table'], $v['column'], $v['data']);
-}
+\Modules\NewAlerts\SubcriberNews::sendNews();

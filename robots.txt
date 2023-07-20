@@ -75,6 +75,8 @@ Allow: /terms-condition
 Allow: /privacy
 Allow: /image-creation
 Allow: /stream-transform-link
+Allow: /stream-studio-subscription
+Allow: /news
 
 # This is sitemap location indicator
 Sitemap: http://localhost/eco.com/

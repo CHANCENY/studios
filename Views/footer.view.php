@@ -53,7 +53,7 @@
                     <div class="col-md-5 col-12">
                         <!-- Email input -->
                         <div class="form-outline form-white mb-4">
-                            <input type="email" id="form5Example21" class="form-control" />
+                            <input type="email" id="subcription-email" class="form-control" />
                             <label class="form-label" for="form5Example21">Email address</label>
                         </div>
                     </div>
@@ -62,7 +62,7 @@
                     <!--Grid column-->
                     <div class="col-auto">
                         <!-- Submit button -->
-                        <button type="submit" class="btn btn-outline-light mb-4">
+                        <button type="submit" id="subcribe-button" class="btn btn-outline-light mb-4">
                             Subscribe
                         </button>
                     </div>
@@ -162,8 +162,8 @@
 
     <!-- Copyright -->
     <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
-        © 2020 Copyright:
-        <a class="text-white" href="https://streamstudios.com/">Streamstudios.com</a>
+        © 2023 Copyright:
+        <a class="text-white" href="https://streamstudios.online">Streamstudios.online</a>
     </div>
     <!-- Copyright -->
 </footer>
@@ -173,5 +173,6 @@
 
 <script src="assets/my-styles/js/main.js"></script>
 <script src="assets/my-styles/js/searching.js"></script>
+<script src="assets/my-styles/js/subscription.js"></script>
 </body>
 </html>
