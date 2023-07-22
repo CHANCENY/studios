@@ -12,6 +12,9 @@ global $token;
 $token = Globals::protocal()."://".Globals::serverHost().Globals::uri();
 $seoData = (new SEOTags($token))->process()->seo();
 
+if(empty($seoData)){
+   $seoData = SEOTags::findUnSavedSEO();
+}
 ?>
 <html lang="en">
 <head>

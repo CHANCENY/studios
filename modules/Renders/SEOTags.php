@@ -8,8 +8,10 @@ use Datainterface\Delete;
 use Datainterface\Insertion;
 use Datainterface\MysqlDynamicTables;
 use Datainterface\Selection;
+use FileHandler\FileHandler;
 use GlobalsFunctions\Globals;
 use Json\Json;
+use Modules\Movies\Movie;
 use Sessions\SessionManager;
 
 /**
@@ -152,6 +154,7 @@ class SEOTags
        );
 
        $already = Selection::selectById('seo_tokens',['identity'=>$identity]);
+
        if(!empty($already)){
            return $already[0]['token'];
        }else{
@@ -249,6 +252,139 @@ class SEOTags
        $newData['url'] = $token;
        $seoData = SEOTags::create($newData);
        (new SEOTags($token))->data($seoData)->set();
+   }
+
+   public static function findUnSavedSEO(): string
+   {
+       $currentURL = Globals::protocal()."://".Globals::serverHost().Globals::uri();
+       $uri = Globals::uri();
+
+       if(str_contains($uri, '?')){
+
+           $list = explode("?", $uri);
+
+           $one = $list[1] ?? "";
+           $first = explode('=', $one)[0];
+           $temp = [];
+           if($first === "movie"){
+             $temp['table'] = "movies";
+             $key = explode("=", $one);
+             $key = explode("&", end($key))[0];
+             $temp['id'] = $key;
+           }
+           if($first === "show"){
+               $temp['table'] = "tv_shows";
+               $key = explode("=", $one);
+               $key = explode("&", end($key))[0];
+               $temp['id'] = $key;
+           }
+           if($first === "w"){
+               $temp['table'] = "episodes";
+               $key = explode("=", $one);
+               $key = explode("&", end($key))[0];
+               $temp['id'] = $key;
+           }
+           if($first === "m"){
+               $temp['table'] = "movies";
+               $key = explode("=", $one);
+               $key = explode("&", end($key))[0];
+               $temp['id'] = $key;
+           }
+           if($first === "se"){
+               $temp['table'] = "seasons";
+               $key = explode("=", $one);
+               $key = explode("&", end($key))[0];
+               $temp['id'] = $key;
+           }
+           $fullData = SEOTags::getDataToSEO($temp);
+           $fullData['url'] = $currentURL;
+
+           $token = SEOTags::getToken($currentURL);
+           $seoData = (new SEOTags($token))->get();
+           if(empty($seoData)){
+               $seo = SEOTags::create($fullData);
+               (new SEOTags($token))->data($seo)->set();
+               return (new SEOTags($token))->process()->seo();
+           }
+           return (new SEOTags($token))->process()->seo();
+
+       }
+       else{
+           $list = explode('/', $uri);
+           $view_url = end($list);
+           $view = Globals::findViewByUrl($view_url);
+
+           $seo['title'] = $view['view_name'];
+           $seo['description'] = $view['view_description'];
+           $seo['image'] = &$image;
+           $seo['video'] = "";
+           $seo['url'] = $currentURL;
+           $image = FileHandler::findFile("logo.png");
+           if(!empty($image)){
+               $parts = explode('/', $image);
+               $image = Globals::protocal().'://'.Globals::serverHost().'/Files/'.end($parts);
+           }
+
+           $token = SEOTags::getToken($currentURL);
+           $seoData = (new SEOTags($token))->get();
+           if(empty($seoData)){
+               $seo = SEOTags::create($seo);
+               (new SEOTags($token))->data($seo)->set();
+               return (new SEOTags($token))->process()->seo();
+           }
+           return (new SEOTags($token))->process()->seo();
+       }
+   }
+
+   public static function getDataToSEO($temp): array
+   {
+       $return = [];
+       if($temp['table'] === "movies")
+       {
+           $data = Selection::selectById('movies', ['movie_uuid'=>$temp['id']]);
+           $return['title'] = $data[0]['title'] ?? null;
+           $return['description'] = $data[0]['description'] ?? null;
+           $return['video'] = $data[0]['url'] ?? null;
+           $return['image'] = (new Movie())->movieImage($data[0]['movie_id'] ?? 0);
+       }
+       elseif ($temp['table'] === "tv_shows")
+       {
+           $data = Selection::selectById('tv_shows', ['show_uuid'=>$temp['id']]);
+           $return['title'] = $data[0]['title'] ?? null;
+           $return['description'] = $data[0]['description'] ?? null;
+           $return['video'] = $data[0]['url'] ?? null;
+           $return['image'] = $data[0]['show_image'] ?? null;
+       }
+       elseif ($temp['table'] === "episodes")
+       {
+           $data = Selection::selectById('episodes', ['episode_uuid'=>$temp['id']]);
+
+
+           $season = Selection::selectById('seasons', ['season_id'=>$data[0]['season_id'] ?? 0]);
+           $show = Selection::selectById('tv_shows', ['show_id'=>$season[0]['show_id'] ?? 0]);
+           $title = $show[0]['title'] ?? null;
+           $ept = $data[0]['title'] ?? null;
+
+
+           $return['title'] = $title. " - ".$ept." Ep: ".$data[0]['epso_number'] ?? null;
+           $return['description'] = $data[0]['epso_description'] ?? null;
+           $return['video'] = $data[0]['url'] ?? null;
+           $return['image'] = $data[0]['epso_image'] ?? null;
+       }
+       elseif ($temp['table'] === 'seasons')
+       {
+           $data = Selection::selectById('seasons', ['season_uuid'=>$temp['id']]);
+
+           $show = Selection::selectById('tv_shows', ['show_id'=>$data[0]['show_id'] ?? 0]);
+           $title = $show[0]['title'] ?? null;
+           $st = $data[0]['title'];
+
+           $return['title'] = $title.' - '.$st." SE: ".$data[0]['season_number'];
+           $return['description'] = $data[0]['description'] ?? null;
+           $return['video'] = $data[0]['url'] ?? null;
+           $return['image'] = $data[0]['season_image'] ?? null;
+       }
+       return $return;
    }
 
 }
