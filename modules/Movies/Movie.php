@@ -11,6 +11,7 @@ use Datainterface\Selection;
 use FileHandler\FileHandler;
 use GlobalsFunctions\Globals;
 use Modules\NewAlerts\SubcriberNews;
+use Modules\Renders\SEOTags;
 use Modules\StorageDefinitions\Storage;
 
 class Movie extends Storage
@@ -29,12 +30,14 @@ class Movie extends Storage
 
     public function addMovie(array $importer_data = []): array
     {
+
         //movie basic save
         $tableMovie = $this->schema['tables'][1];
         $fields = $this->schema['columns'][1];
         $uuid = "";
         //combine
         $data = [];
+        $seoData = [];
         if(empty($importer_data)){
             foreach ($fields as $key=>$value){
                 if(!empty(Globals::post($value))){
@@ -60,6 +63,12 @@ class Movie extends Storage
         $uuid = $data['movie_uuid'];
         $movieId = Insertion::insertRow($tableMovie, $data);
 
+        $seoData['title'] = $data['title'];
+        $seoData['description'] = $data['description'];
+        $seoData['keywords'] = $data['title'].','.implode(',', explode(' ', $data['description']));
+        $seoData['canonical'] = Globals::protocal()."://".Globals::serverHost()."/movie-stream?movie=".$uuid;
+        $seoData['video'] = $data['url'];
+
         $newMessage = "<p>Hello Our subscriber Stream studios has upload new movie which you can watch on our site</p>";
         $newMessage .="<p>Movie titled: {$data['title']}<br>
                           Movie summary: {$data['description']}</p>";
@@ -83,13 +92,20 @@ class Movie extends Storage
               }
             }
         }
+
         $fid = Insertion::insertRow($this->schema['tables'][6], $data);
+        $seoData['image'] = $data['url_image'];
 
         $img = Globals::protocal().'://'.Globals::serverHost().'/'.$data['url_image'];
         $newMessage .= "<img src='{$img}' style='width: 20rem;'>";
         $home =Globals::protocal().'://'. Globals::serverHost().'/watch?m='.$uuid;
         $newMessage .= "<a href='$home' style='width: fit-content; padding: 5px; background-color: orange;color: black; border: 1px solid orange; border-radius: 5px;'>Click To Watch</a>";
         (new SubcriberNews('New Movies'))->saveEvent($newMessage);
+
+        $token = SEOTags::getToken($seoData['canonical']);
+        $seoData['url'] = $token;
+        $seoData = SEOTags::create($seoData);
+        (new SEOTags($token))->data($seoData)->set();
 
         return [
             'movieId' => $movieId,
@@ -128,8 +144,8 @@ class Movie extends Storage
     public function updateMovie($data, $movie_id): bool
     {
         $movie = Selection::selectById('movies', ['movie_id'=>$movie_id]);
-        $title = $movie[0]['title'] ?? null;
-        $desc =  $movie[0]['description'] ?? null;
+        $title =  $data['title'] ?? $movie[0]['title'] ?? null;
+        $desc =  $data['description'] ?? $movie[0]['description'] ?? null;
         $image = $this->movieImage($movie[0]['movie_id'] ?? 0);
 
         $newMessage = "<p>Hello Our subscriber Stream studios has updated movie which you can watch on our site</p>";
@@ -140,6 +156,12 @@ class Movie extends Storage
         $newMessage .= "<a href='$home' style='width: fit-content; padding: 5px; background-color: orange;color: black; border: 1px solid orange; border-radius: 5px;'>Click To Watch</a>";
         (new SubcriberNews('New Movies'))->saveEvent($newMessage);
 
+        $seo['video'] = $data['url'];
+        $seo['title'] = $title;
+        $seo['description'] = $desc;
+        $seo['image'] = $image;
+        $token = Globals::protocal().'://'.Globals::serverHost().'/movie-stream?movie='.$movie[0]['movie_uuid'] ?? null;
+        SEOTags::updateSEO($token,$seo);
        return Updating::update('movies',$data, ['movie_id'=>$movie_id]);
     }
 

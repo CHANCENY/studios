@@ -36,7 +36,7 @@ if(!empty(Globals::get('w'))){
 ?>
 <div id="title" data="<?php echo $title ?? null; ?>"></div>
 <section class="container w-100 m-auto text-center">
-    <iframe src="<?php echo $link ?? null; ?>/" width="1000" height="800" style="margin: auto" allowfullscreen allowtransparency allow="autoplay"  scrolling="no" frameborder="0"></iframe>
+    <iframe src="<?php echo $link ?? null; ?>" width="1000" height="800" style="margin: auto" allowfullscreen allowtransparency allow="autoplay"  scrolling="no" frameborder="0"></iframe>
     <div class='mt-lg-5'>
         <?php if(!empty($link2)): ?>
         <a href='<?php echo $link2 ?? null; ?>' target='_blank' class='mt-lg-5 text-decoration-none'>Play here if top player failed</a>

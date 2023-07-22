@@ -10,7 +10,7 @@ $movieDetails = (new Movie())->getMovie($m);
 $m = $movieDetails[0] ?? [];
 
 ?>
-<section class="container w-100 mt-5" id="title-show" data="my show">
+<section class="container w-100 mt-5" id="title-show" data="<?php echo $m['title'] ?? null; ?>">
     <div class="container text-white">
         <div class="row mt-3 mb-3 my-row">
             <div class="col">

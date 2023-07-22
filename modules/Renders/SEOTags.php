@@ -2,6 +2,7 @@
 
 namespace Modules\Renders;
 
+use Core\Router;
 use Datainterface\Database;
 use Datainterface\Delete;
 use Datainterface\Insertion;
@@ -18,8 +19,19 @@ class SEOTags
 {
     private mixed $dataValues;
 
+
+
     public function __construct(private readonly string $token)
    {
+       (new MysqlDynamicTables())->resolver(
+         Database::database(),
+         ["token", "data"],
+           [
+               "token"=>["varchar(250)", "not null"],
+               "data"=>["longblob"]
+           ],
+           "seo_tags_data_collection"
+       );
    }
 
    public function set(): void
@@ -29,11 +41,19 @@ class SEOTags
        }
 
        $this->dataValues = serialize($this->dataValues);
-       $already = Selection::selectById('seo_tags_data_collection', ['token'=>$this->token]);
+       $already = Selection::selectById('seo_tags_data_collection',
+           ['token'=>$this->token]
+       );
+
        if(!empty($already)){
            $this->clear();
        }
-       Insertion::insertRow('seo_tags_data_collection', ['data'=>$this->dataValues]);
+       Insertion::insertRow('seo_tags_data_collection',
+           [
+               'data'=>$this->dataValues,
+               'token'=>$this->token
+           ]
+       );
    }
 
     /**
@@ -47,6 +67,9 @@ class SEOTags
        }
 
        $r = Selection::selectById('seo_tags_data_collection', ['token'=>$this->token]);
+       if(empty($r)){
+           return [];
+       }
        return unserialize($r[0]['data']);
    }
 
@@ -76,12 +99,17 @@ class SEOTags
    public function process(): SEOTags
    {
        $data = $this->get();
+
        $metaTags = "";
        if(gettype($data) === 'array')
        {
            foreach ($data as $tagName=>$tagContent)
            {
-               $metaTags .= "<meta name='$tagName' content='$tagContent'>".PHP_EOL;
+               if(str_contains($tagName, "og")){
+                   $metaTags .= "<meta property='$tagName' content='$tagContent' />".PHP_EOL;
+               }else{
+                   $metaTags .= "<meta name='$tagName' content='$tagContent'>".PHP_EOL;
+               }
            }
        }
        elseif (gettype($data) === 'string')
@@ -99,7 +127,7 @@ class SEOTags
               $metaTags .= "<meta name='{$list[0]}' content='{$list[1]}'>".PHP_EOL;
           }
        }
-       SessionManager::setSession($this->token, $metaTags);
+       $this->dataValues = $metaTags;
        return $this;
    }
 
@@ -107,11 +135,12 @@ class SEOTags
     /**
      * @return string token create or old token
      */
-   public static function getToken(): string
+   public static function getToken($uniqueToken = null): string
    {
        $currentURL = Globals::uri();
        $currentTitle = Globals::viewTitleOnRequest();
-       $token = Json::uuid();
+       $token = $uniqueToken ?? Json::uuid();
+
        $identity = str_replace(' ','-', $currentTitle).'-'
            .str_replace(' ','-', $currentURL);
 
@@ -129,6 +158,97 @@ class SEOTags
            Insertion::insertRow('seo_tokens',['identity'=>$identity, 'token'=>$token]);
        }
        return $token;
+   }
+
+   public static function token(): string
+   {
+       return Globals::protocal()."://".Globals::serverHost().Globals::uri();
+   }
+
+   public function seo(): string
+   {
+       return $this->dataValues;
+   }
+
+    /**
+     * @param array $data ASSOC array with keys title, image, description, video, url,
+     * @return array
+     */
+   public static function create(array $data): array
+   {
+       $mandotoryKeys = ["title", "image", "description", "video", "url"];
+       $incomingKey = array_keys($data);
+
+       foreach ($mandotoryKeys as $key=>$value){
+           if(!in_array($value, $incomingKey)){
+               throw new \Exception("Key $value is missing in seo creation data");
+           }
+       }
+
+       $finalBuild = [];
+
+       if(!empty($data['title'])){
+           $finalBuild["title"] = $data['title'];
+           $finalBuild['DC.title'] = $data['title'];
+           $finalBuild['og:title'] = $data['title'];
+           $finalBuild['twitter:title'] = $data['title'];
+       }
+
+       if(!empty($data['description'])){
+           $finalBuild['description'] = $data['description'];
+           $finalBuild['keywords'] = implode(', ', explode(' ', $data['title'])).', '.
+               implode(', ', explode(' ', $data['description']));
+           $finalBuild['og:description'] = $data['description'];
+           $finalBuild['twitter:description'] = $data['description'];
+       }
+
+       if(!empty('image')){
+           $finalBuild['image'] = $data['image'];
+           $finalBuild['og:image'] = $data['image'];
+           $finalBuild['og:image:url'] = $data['image'];
+           $finalBuild['og:image:secure_url'] = $data['url'];
+           $list = explode('.', $data['image']);
+           $finalBuild['og:image:type'] = "image/".end($list);
+           $finalBuild['og:image:width'] = "400";
+           $finalBuild['og:image:height'] = "300";
+           $finalBuild['og:image:alt'] = $data['title'];
+           $finalBuild['twitter:image'] = $data['image'];
+       }
+
+       if(!empty($data['url'])){
+           $finalBuild['canonical'] = $data['url'];
+           $finalBuild['og:url'] = $data['url'];
+           $finalBuild['twitter:url'] = $data['url'];
+           $finalBuild['url'] = $data['url'];
+       }
+
+       if(!empty($data['video'])){
+           $finalBuild['video'] = $data['video'];
+           $finalBuild['og:video'] = $data['video'];
+       }
+
+
+       $finalBuild['copyright'] = "Stream studios @".(new \DateTime('now'))->format("Y");
+       $finalBuild['robots'] = "index, follow";
+       $finalBuild['og:type'] = "website";
+       $finalBuild['og:site_name'] = "Stream Studios";
+       $finalBuild['twitter:card'] = "summary";
+
+
+        return $finalBuild;
+   }
+
+   public static function updateSEO($token, $data): void
+   {
+       $oldData = (new SEOTags($token))->get();
+       if(empty($oldData)){
+           return;
+       }
+
+       $newData = array_merge($oldData, $data);
+       $newData['url'] = $token;
+       $seoData = SEOTags::create($newData);
+       (new SEOTags($token))->data($seoData)->set();
    }
 
 }

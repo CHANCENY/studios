@@ -3,7 +3,6 @@ use Modules\Movies\Movie;
 
 @session_start();
 
-
 $formInputField = "";
 $imageLink = "";
 $result = \Modules\Imports\ImportHandler::requestMovie(Globals::get('id'));

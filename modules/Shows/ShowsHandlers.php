@@ -11,6 +11,7 @@ use Datainterface\Selection;
 use GlobalsFunctions\Globals;
 use Modules\Episodes\Episode;
 use Modules\NewAlerts\SubcriberNews;
+use Modules\Renders\SEOTags;
 use function functions\config;
 use Modules\StorageDefinitions\Storage;
 
@@ -338,10 +339,36 @@ class ShowsHandlers extends Storage
                $outPut[] = "Added show ({$show['title']})";
                $seasonId = [];
 
+               //SEO this show
+               $seo['title'] = $show['title'];
+               $seo['description'] = $show['description'];
+               $seo['image'] = $show['show_image'];
+               $seo['url'] = Globals::protocal()."://".Globals::serverHost()."/view-tv-show?show=".$show['show_uuid'];
+               $seo['video'] = "";
+
+               $token = SEOTags::getToken($seo['url']);
+               $seo['url'] = $token;
+               $seo = SEOTags::create($seo);
+               (new SEOTags($token))->data($seo)->set();
+
                foreach ($seasons as $key=>$value){
                    $value['show_id'] = $showId;
                    $value['season_uuid'] = Json::uuid();
                    $seasonId[] = ['id'=>Insertion::insertRow('seasons', $value), 'season_number'=>$value['season_number']];
+
+                   //seo seasons
+                   unset($seo);
+                   $seo['title'] = $show['title']." - ".$value['season_name'];
+                   $seo['description'] = $value['description'];
+                   $seo['image'] = $value['season_image'];
+                   $seo['url'] = Globals::protocal()."://".Globals::serverHost()."/season?se=".$value['season_uuid'];
+                   $seo['video'] = "";
+
+                   $token = SEOTags::getToken($seo['url']);
+                   $seo['url'] = $token;
+                   $seo = SEOTags::create($seo);
+                   (new SEOTags($token))->data($seo)->set();
+
                    $outPut[] = "Added Season ({$value['season_number']})";
                }
 
@@ -353,6 +380,20 @@ class ShowsHandlers extends Storage
                            $esp['season_id'] = $v['id'];
                            $esp['episode_uuid'] = Json::uuid();
                            Insertion::insertRow('episodes',$esp);
+
+                           //seo episode
+                           unset($seo);
+                           $seo['title'] = $show['title']." - ".$esp['title'];
+                           $seo['description'] = $esp['epso_description'];
+                           $seo['image'] = $esp['epso_image'];
+                           $seo['url'] = Globals::protocal()."://".Globals::serverHost()."/watch?w=". $esp['episode_uuid'];
+                           $seo['video'] = "";
+
+                           $token = SEOTags::getToken($seo['url']);
+                           $seo['url'] = $token;
+                           $seo = SEOTags::create($seo);
+                           (new SEOTags($token))->data($seo)->set();
+
                            $outPut[] = "Added Episode ({$esp['epso_number']})";
                        }
                    }
@@ -383,7 +424,7 @@ class ShowsHandlers extends Storage
        $newMessage .= "<img src='{$img}' style='width: 20rem;'><br><br>";
        $newMessage .= "<a href='$home' style='width: fit-content; padding: 5px; background-color: orange;color: black; border: 1px solid orange; border-radius: 5px;'>Click To Watch</a>";
        (new SubcriberNews('Episode Update'))->saveEvent($newMessage);
-
+        SEOTags::updateSEO($home,['video'=>$episode['url']]);
         return Updating::update('episodes',$episode, ['episode_id'=>$episode_id]);
    }
 

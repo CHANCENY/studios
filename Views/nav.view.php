@@ -1,25 +1,32 @@
-<?php @session_start();
+<?php use GlobalsFunctions\Globals;
+use Modules\Renders\SEOTags;
+
+@session_start();
 
 global $token;
 
 /**
  * Token to be use to set data for seo and token to send via XMLHTTP to get seo data
  */
-$token = \Modules\Renders\SEOTags::getToken();
+
+$token = Globals::protocal()."://".Globals::serverHost().Globals::uri();
+$seoData = (new SEOTags($token))->process()->seo();
+
 ?>
-<html lang="en" id="html" data="<?php echo $token; ?>">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="url" content="<?php echo \GlobalsFunctions\Globals::uri(); ?>">
+    <meta name="url" content="<?php echo SEOTags::token(); ?>">
     <link rel="shortcut icon" href="https://streamstudios.online/Files/logo.png" type="image/x-icon">
-    <title id="titlepage"><?php echo \GlobalsFunctions\Globals::viewTitleOnRequest(); ?></title>
-    <?php $path = \GlobalsFunctions\Globals::urlComponents($_SERVER['REQUEST_URI'])['path'];
+    <title id="titlepage"><?php echo Globals::viewTitleOnRequest(); ?></title>
+    <?php $path = Globals::urlComponents($_SERVER['REQUEST_URI'])['path'];
     $url = explode('/', $path);
     $url = end($url);
     echo \Core\RouteConfiguration::appendMetatags($url);
+    echo $seoData;
     ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
