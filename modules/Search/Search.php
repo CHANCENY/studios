@@ -13,9 +13,18 @@ class Search
     private string $searching;
 
     /**
+     * @param string $searching
+     */
+    public function setSearching(string $searching): Search
+    {
+        $this->searching = $searching;
+        return $this;
+    }
+
+    /**
      * @param string $type movie | tv show
-     * @param string $title
-     * @param string $others
+     * @param string $search
+     * @param bool $others
      * @return array title, id , image, release_date
      */
     public function search(string $type, string $search, bool $others = false): array
@@ -30,6 +39,7 @@ class Search
 
         return Query::query($query);
     }
+
 
     public function buildSearchQuery(string $type, $flag = false): string
     {

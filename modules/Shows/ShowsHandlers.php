@@ -12,6 +12,7 @@ use GlobalsFunctions\Globals;
 use Modules\Episodes\Episode;
 use Modules\NewAlerts\SubcriberNews;
 use Modules\Renders\SEOTags;
+use Modules\Search\Search;
 use function functions\config;
 use Modules\StorageDefinitions\Storage;
 
@@ -497,5 +498,12 @@ class ShowsHandlers extends Storage
             }
         }
         return $flag;
+    }
+
+    public function searchShow(string $search): array|false
+    {
+        $params = (new Search())->setSearching($search)->buildSearchQuery("tv");
+        $query = "SELECT * FROM tv_shows ".$params;
+        return Query::query($query);
     }
 }

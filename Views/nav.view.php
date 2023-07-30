@@ -19,9 +19,10 @@ if(empty($seoData)){
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+<!--    <meta name="viewport"-->
+<!--          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">-->
+<!--    <meta http-equiv="X-UA-Compatible" content="ie=edge">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="url" content="<?php echo SEOTags::token(); ?>">
     <link rel="shortcut icon" href="https://streamstudios.online/Files/logo.png" type="image/x-icon">
     <title id="titlepage"><?php echo Globals::viewTitleOnRequest(); ?></title>
@@ -38,10 +39,12 @@ if(empty($seoData)){
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/my-styles/css/styles.css">
+    <link rel="stylesheet" href="assets/my-styles/css/general.css">
+    <link rel="stylesheet" href="assets/web/assets/mobirise-icons2/mobirise2.css">
     <link rel="stylesheet" href="assets/my-styles/css/fonts/Open_Sans/static/OpenSans-Light.ttf">
 </head>
-<body class="bg-dark text-white" style="overflow-x: hidden; font-family: Kanit;">
-<nav class="navbar navbar-expand-lg navbar-light bg-dark text-white border-bottom border-dark rounded shadow">
+<body class="outer-body text-white" style="overflow-x: hidden; font-family: Kanit;">
+<nav class="navbar navbar-expand-lg navbar-light inner-nav text-white border-bottom border-dark rounded shadow">
     <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <i class="fas fa-bars"></i>

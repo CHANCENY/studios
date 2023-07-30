@@ -35,14 +35,15 @@ if(!empty(Globals::get('w'))){
 }
 ?>
 <div id="title" data="<?php echo $title ?? null; ?>"></div>
-<section class="container w-100 m-auto text-center">
-    <iframe src="<?php echo $link ?? null; ?>" width="1000" height="800" style="margin: auto" allowfullscreen allowtransparency allow="autoplay"  scrolling="no" frameborder="0"></iframe>
-    <div class='mt-lg-5'>
-        <?php if(!empty($link2)): ?>
-        <a href='<?php echo $link2 ?? null; ?>' target='_blank' class='mt-lg-5 text-decoration-none'>Play here if top player failed</a>
-        <?php endif; ?>
-    </div>
+<h2 class="text-white-50 text-center text-capitalize"><?php echo $title ?? null; ?></h2>
+<section class="video-container">
+    <iframe src="<?php echo $link ?? null; ?>" width="800" height="600" allowfullscreen allowtransparency allow="autoplay"></iframe>
 </section>
+<div class='mt-lg-5 text-center text-white-50'>
+    <?php if(!empty($link2)): ?>
+        <a href='<?php echo $link2 ?? null; ?>' target='_blank' class='mt-lg-5 text-decoration-none'>Play here if top player failed</a>
+    <?php endif; ?>
+</div>
 <section class="container mt-lg-5">
     <div class="m-auto text-center">
         <h1>If Link of Show/Episode or Movie not Found</h1><p>You can request this episode or movie by visit Request page.

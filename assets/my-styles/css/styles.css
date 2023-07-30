@@ -114,3 +114,16 @@ input[type=submit] {
     background-color: DodgerBlue !important;
     color: #ffffff;
 }
+
+.video-container {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    height: 100% !important;
+}
+
+.video-container iframe {
+    /* Set the maximum width and height for the video */
+    max-width: 100% !important;
+    max-height: 100% !important;
+}

@@ -15,6 +15,8 @@ $seasons = [];
 $episodes = [];
 $eids = [];
 
+$message = "";
+
 
 $renders = null;
 
@@ -56,6 +58,14 @@ if(!empty(isset($_GET['episode_id']) && isset($_GET['url']) && isset($_GET['publ
 if(empty(Globals::get('show')) && empty(Globals::get('season'))){
     $shows = (new ShowsHandlers())->shows();
 
+    if(Globals::get("search")){
+        $lines = Globals::get('search');
+        $shows = (new ShowsHandlers())->searchShow($lines);
+        if(empty($shows)){
+           echo \Alerts\Alerts::alert("info", "<p class='alert alert-info'>No search result found for $lines</p>");
+        }
+    }
+
     $renders = new RenderHandler($shows);
     $shows= $renders->getOutPutRender();
 }
@@ -89,7 +99,6 @@ if(!empty(Globals::get('season'))){
         </tr>
         </thead>
         <tbody class="text-white-50" id="total" data="<?php echo count($shows ?? []); ?>">
-        <?php if(!empty($shows)): ?>
         <?php $i = 0; foreach ($shows as $key=>$value): ?>
                 <tr>
                     <td><?php echo $value['title'] ?? null; ?></td>
@@ -100,7 +109,6 @@ if(!empty(Globals::get('season'))){
                     </td>
                 </tr>
         <?php $i++; endforeach; ?>
-        <?php endif; ?>
         </tbody>
     </table>
     <?php Modules\Renders\RenderHandler::pager($renders); ?>

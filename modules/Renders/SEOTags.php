@@ -12,6 +12,7 @@ use FileHandler\FileHandler;
 use GlobalsFunctions\Globals;
 use Json\Json;
 use Modules\Movies\Movie;
+use Modules\Shows\ShowsHandlers;
 use Sessions\SessionManager;
 
 /**
@@ -296,7 +297,31 @@ class SEOTags
                $key = explode("&", end($key))[0];
                $temp['id'] = $key;
            }
+           if($first === "page"){
+               $key = explode("=", $one);
+               $key = explode("&", end($key))[0];
+
+               $table = explode('/', $list[0]);
+               if(end($table) === "movies"){
+                   $table = "movieList";
+               }
+               elseif (end($table) === "tv-shows"){
+                   $table = "showList";
+               }
+               elseif (end($table) === "individual-episode"){
+                   $table = "episodeList";
+               }
+               $temp['table'] = "episodeList";
+               $temp['id'] = $key;
+               $fullData = SEOTags::getDataToSEO($temp);
+               if(!isset($fullData['title'])){
+                   return $fullData[0];
+               }
+           }
            $fullData = SEOTags::getDataToSEO($temp);
+           if(empty($fullData)){
+               return "";
+           }
            $fullData['url'] = $currentURL;
 
            $token = SEOTags::getToken($currentURL);
@@ -314,8 +339,8 @@ class SEOTags
            $view_url = end($list);
            $view = Globals::findViewByUrl($view_url);
 
-           $seo['title'] = $view['view_name'];
-           $seo['description'] = $view['view_description'];
+           $seo['title'] = $view['view_name'] ?? null;
+           $seo['description'] = $view['view_description'] ?? null;
            $seo['image'] = &$image;
            $seo['video'] = "";
            $seo['url'] = $currentURL;
@@ -339,6 +364,9 @@ class SEOTags
    public static function getDataToSEO($temp): array
    {
        $return = [];
+       if(!isset($temp['table'])){
+           return [];
+       }
        if($temp['table'] === "movies")
        {
            $data = Selection::selectById('movies', ['movie_uuid'=>$temp['id']]);
@@ -383,6 +411,63 @@ class SEOTags
            $return['description'] = $data[0]['description'] ?? null;
            $return['video'] = $data[0]['url'] ?? null;
            $return['image'] = $data[0]['season_image'] ?? null;
+       }
+       elseif ($temp['table'] === "showList"){
+           $shows = (new ShowsHandlers())->shows();
+           $render = new \Modules\Renders\RenderHandler($shows);
+           $tvShows = $render->getOutPutRender();
+
+           $normal = "";
+           $ogs = "";
+           foreach ($tvShows as $key=>$value){
+               $home = Globals::protocal().'://'.Globals::serverHost().'/view-tv-show?show='.$value['show_uuid'] ?? null;
+               $normal .= "<meta name='title' content='{$value['title']}' />".PHP_EOL;
+               $normal .= "<meta name='description' content='{$value['description']}' />".PHP_EOL;
+               $normal .= "<meta name='image' content='{$value['show_image']}' />".PHP_EOL;
+               $normal .= "<meta name='url' content='{$home}' />";
+               $ogs .= "<meta property='og:image' content='{$value['show_image']}' />".PHP_EOL;
+               $ogs .=  '<meta property="og:image:width" content="300" />'.PHP_EOL;
+               $ogs .= '<meta property="og:image:height" content="300" />'.PHP_EOL;
+               $ogs .= "<meta property='og:description' content='{$value['description']}' />".PHP_EOL;
+               $ogs .= '<meta property="og:site_name" content="Stream Studios" />';
+               $ogs .= "<meta property='og:title' content='{$value['title']}' />";
+               $ogs .= "<meta property='og:url' content='{$home}' />";
+               $ogs .= "<meta property='og:type' content='website' />";
+
+           }
+           $return[] = $normal.$ogs;
+       }
+       elseif ($temp['table'] === "movieList"){
+           $movies = (new Movie())->movies();
+           $render = new \Modules\Renders\RenderHandler($movies);
+           $movie = $render->getOutPutRender();
+           $normal = "";
+           $ogs = "";
+           foreach ($movie as $key=>$value){
+               $home = Globals::protocal().'://'.Globals::serverHost().'/movie-stream?movie='.$value['movie_uuid'] ?? null;
+               $normal .= "<meta name='title' content='{$value['title']}' />".PHP_EOL;
+               $normal .= "<meta name='description' content='{$value['description']}' />".PHP_EOL;
+               $normal .= "<meta name='image' content='{$value['url_image']}' />".PHP_EOL;
+               $normal .= "<meta name='url' content='{$home}' />";
+               $ogs .= "<meta property='og:image' content='{$value['url_image']}' />".PHP_EOL;
+               $ogs .=  '<meta property="og:image:width" content="300" />'.PHP_EOL;
+               $ogs .= '<meta property="og:image:height" content="300" />'.PHP_EOL;
+               $ogs .= "<meta property='og:description' content='{$value['description']}' />".PHP_EOL;
+               $ogs .= '<meta property="og:site_name" content="Stream Studios" />';
+               $ogs .= "<meta property='og:title' content='{$value['title']}' />";
+               $ogs .= "<meta property='og:url' content='{$home}' />";
+               $ogs .= "<meta property='og:type' content='website' />";
+               $ogs .= "<meta property='og:video' content='{$value['url']}' />";
+
+           }
+           $return[] = $normal.$ogs;
+       }
+       elseif ($temp['table'] === "episodeList"){
+          $return['title'] = "Show Episodes Easy fast way to watch";
+          $return['image'] = "https://streamstudios.online/Files/logo.png";
+          $return['video'] = "";
+          $return['url'] = "https://streamstudios.online/individual-episodes?page=".$temp['id'];
+          $return['description'] = "Find latest episodes you need for your shows";
        }
        return $return;
    }

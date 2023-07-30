@@ -77,6 +77,12 @@ Allow: /image-creation
 Allow: /stream-transform-link
 Allow: /stream-studio-subscription
 Allow: /news
+Allow: /stream-categories
+Allow: /stream-add-categories
+Allow: /advent-cards
+Allow: /creating-select-action
+Allow: /all-advertisement-cards
+Allow: /stream-ccpanel
 
 # This is sitemap location indicator
 Sitemap: http://localhost/eco.com/

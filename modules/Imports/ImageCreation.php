@@ -10,6 +10,7 @@ use Datainterface\Updating;
 use FileHandler\FileHandler;
 use GlobalsFunctions\Globals;
 use Json\Json;
+use Modules\Renders\SEOTags;
 
 class ImageCreation
 {
@@ -111,6 +112,7 @@ class ImageCreation
         foreach ($data as $key=>$value){
             $link = $value[$column];
             $idColumn = "";
+            $uuid = "";
             $list = [];
             if(!empty($link)){
                $list = explode('/', $link);
@@ -124,10 +126,13 @@ class ImageCreation
             if(empty($idColumn)){
                 if(isset($value['show_id'])){
                     $idColumn = "show_id";
+                    $uuid = $value['show_uuid'];
                 }elseif (isset($value['season_id'])){
                     $idColumn = "season_id";
+                    $uuid = $value['season_uuid'];
                 }elseif(isset($value['episode_id'])){
                     $idColumn = "episode_id";
+                    $uuid = $value['episode_uuid'];
                 }else{
                     $idColumn = "image_id";
                 }
@@ -136,9 +141,31 @@ class ImageCreation
             $newData = [$column=>$imageLink];
 
             Updating::update($table,$newData,$id);
+            if(!empty($uuid) && !empty($imageLink) && !empty($table)){
+                $this->updateSEOs($uuid, $imageLink, $table);
+            }
             $totalCreated++;
         }
         return $totalCreated === count($data);
+    }
+
+    public function updateSEOs($uuid, $imageLink, $type): void
+    {
+        $token = "";
+        if($type === "movies"){
+            $token = Globals::protocal()."://".Globals::serverHost();
+            $token .= "/movie-stream?movie=".$uuid;
+        }
+
+        if($type === "tv_shows"){
+            $token =  Globals::protocal()."://".Globals::serverHost()."/view-tv-show?show=".$uuid;
+        }
+
+        if($type === "seasons"){
+            $token =  Globals::protocal()."://".Globals::serverHost()."/season?se=".$uuid;
+        }
+
+        SEOTags::updateSEO($token,['image'=>$imageLink]);
     }
 
 
