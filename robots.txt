@@ -83,6 +83,7 @@ Allow: /advent-cards
 Allow: /creating-select-action
 Allow: /all-advertisement-cards
 Allow: /stream-ccpanel
+Allow: /categories-statistics
 
 # This is sitemap location indicator
 Sitemap: http://localhost/eco.com/

@@ -79,6 +79,6 @@ if(empty($seoData)){
     </div>
 </nav>
 <?php
- \Core\Router::attachView('moderate-view');
+
  \Core\Router::attachView('block');
 ?>

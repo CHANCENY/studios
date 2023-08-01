@@ -20,4 +20,9 @@ class Episode
         $result = Query::query($query, ['id'=>$season_id]);
         return $result[0]['title'] ?? null;
     }
+
+    public function getEpisodesUnfilter(): array
+    {
+        return Selection::selectAll("episodes");
+    }
 }

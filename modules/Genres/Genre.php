@@ -30,4 +30,5 @@ class Genre
         }
         return$returnArray;
     }
+
 }

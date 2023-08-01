@@ -131,7 +131,10 @@
                         </li>
                         <li>
                             <a href="request" class="text-white">Request</a>
-                        </li>
+                        </li><?php if(!empty(\GlobalsFunctions\Globals::user())): ?>
+                        <li>
+                            <a href="stream-ccpanel" class="text-white">DashBoard</a>
+                        </li><?php endif; ?>
                         <li>
                             <a href="#!" class="text-white">API</a>
                         </li>
