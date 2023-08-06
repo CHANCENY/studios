@@ -1,8 +1,7 @@
 @media (min-width: 400px) {
     .main-body{
         width: 100% !important;
-        border: 1px solid #07070f;
-        border-radius: 5px;
+        align-content: center;
     }
 
 }
@@ -11,8 +10,15 @@
     .main-body{
         width: 80% !important;
         margin: auto !important;
-        border: 1px solid #07070f;
-        border-radius: 5px;
+        align-content: center;
+    }
+}
+
+@media (min-width: 990px) {
+    .main-body{
+        width: 90% !important;
+        margin: auto !important;
+        align-content: center;
     }
 }
 

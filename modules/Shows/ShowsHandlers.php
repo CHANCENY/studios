@@ -506,4 +506,6 @@ class ShowsHandlers extends Storage
         $query = "SELECT * FROM tv_shows ".$params;
         return Query::query($query);
     }
+
+
 }

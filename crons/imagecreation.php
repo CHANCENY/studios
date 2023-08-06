@@ -1,5 +1,5 @@
 <?php
 
-$curl = curl_init("http://localhost/eco.com/image-creation");
+$curl = curl_init("https://steamstudios.online/cronnig-extras");
 curl_exec($curl);
 curl_close($curl);

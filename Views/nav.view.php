@@ -43,7 +43,7 @@ if(empty($seoData)){
     <link rel="stylesheet" href="assets/web/assets/mobirise-icons2/mobirise2.css">
     <link rel="stylesheet" href="assets/my-styles/css/fonts/Open_Sans/static/OpenSans-Light.ttf">
 </head>
-<body class="outer-body text-white" style="overflow-x: hidden; font-family: Kanit;">
+<body class="outer-body text-white" style="overflow-x: hidden; font-family: Kanit;" id="background">
 <nav class="navbar navbar-expand-lg navbar-light inner-nav text-white border-bottom border-dark rounded shadow">
     <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">

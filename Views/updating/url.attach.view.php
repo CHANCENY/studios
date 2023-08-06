@@ -105,6 +105,7 @@ if(!empty(Globals::get('season'))){
                     <td><?php echo $value['release_date'] ?? null; ?></td>
                     <td>
                         <a href="<?php echo Globals::url()."?show=".$value['show_id'] ?? null; ?>">Edit</a>
+                        <a href="additionals?show=<?php echo $value['show_id'] ?? null; ?>" class="ms-4"><?php echo (new \Modules\Renders\AdditionalHandler($value['show_id'],"shows"))->isAdded() ? "Added Already" : "Additionals"; ?></a>
                         <a href="<?php echo Globals::url()."?delete=".$value['show_id'] ?? null; ?>" class="ms-5" id="delete-link-<?php echo $i; ?>">Delete</a>
                     </td>
                 </tr>

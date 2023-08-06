@@ -41,6 +41,7 @@ $movies = $render->getOutPutRender();
              <td>
                  <a href="#" id="save-<?php echo $i; ?>">Save Changes</a>
                  <a href="edit-all?movie=<?php echo $movie['movie_id'] ?? null; ?>" class="ms-5">Edit All</a>
+                 <a href="additionals?movie=<?php echo $movie['movie_id'] ?? null; ?>" class="ms-4"><?php echo (new \Modules\Renders\AdditionalHandler($movie['movie_id'], "movies"))->isAdded() ? "Added Already" : "Additionals"; ?></a>
                  <a href="delete-movie?movie=<?php echo $movie['movie_id'] ?? null; ?>&destination=<?php echo Globals::url(); ?>" id="delete-movie-<?php echo $i; ?>" class="ms-5">Delete Movie</a>
              </td>
          </tr>
