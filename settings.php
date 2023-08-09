@@ -92,7 +92,7 @@ $MAXFILESIZE = 2000000000;
  * Url of home page by default index in used
  */
 global $HOMEPAGE;
-$HOMEPAGE = 'index';
+$HOMEPAGE = 'home';
 
 if(file_exists("includes/formFunction.inc")){
     include_once "includes/formFunction.inc";

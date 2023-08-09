@@ -3,7 +3,11 @@
 namespace Modules\Renders;
 
 use Datainterface\Selection;
+use Json\Json;
 use Modules\Imports\ImagesMigrator;
+use Modules\Modals\Details;
+use Sessions\SessionManager;
+use function functions\config;
 
 /**
  *
@@ -103,6 +107,63 @@ class ImageHandler
     public function getExtension(): string|null
     {
         return $this->image['extension'] ?? null;
+    }
+
+    public function setCopy(ImageHandler $object): void
+    {
+        if(!isset($_SESSION['image_wrapper'][$this->imageUUID])){
+            $_SESSION['image_wrapper'][$this->imageUUID] = ['path'=>$object->getPath(),
+                'extension'=>$object->getPath()];
+        }
+    }
+
+    public function getCopy(): array
+    {
+        return $_SESSION['image_wrapper'][$this->imageUUID] ?? [];
+    }
+
+    public function moreImages(Details $object): array
+    {
+        $authToken = \functions\config('TMDB');
+
+        $bundle = $object->getBundle() === "movies" ? "movie" : "";
+        $tmID = $object->tmID();
+
+        $json = new Json();
+        $json->setStoreName($bundle."_".$tmID.".json");
+        $data = $json->getDataInStorage();
+        if(!empty($data)){
+            return $data;
+        }
+
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_URL => "https://api.themoviedb.org/3/$bundle/$tmID/images",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => [
+                "Authorization: $authToken",
+                "accept: application/json"
+            ],
+        ]);
+
+        $response = json_decode(curl_exec($curl));
+        $err = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($err) {
+          $json = new Json();
+          $json->setStoreName($bundle."_".$tmID.".json");
+          $json->save($response['posters'] ?? []);
+          return $response['posters'] ?? [];
+        } else {
+           return [];
+        }
     }
 
 }

@@ -7,6 +7,7 @@ use Datainterface\Insertion;
 use Datainterface\mysql\UpdatingLayer;
 use Datainterface\MysqlDynamicTables;
 use Datainterface\Query;
+use Modules\Modals\Debug;
 
 class Additionals
 {
@@ -257,22 +258,67 @@ class Additionals
 
     }
 
+    public function findGenres($type, $id): string
+    {
+        $authToken = \functions\config('TMDB');
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+            CURLOPT_URL => "https://api.themoviedb.org/3/$type/$id?language=en-US",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => [
+                "Authorization: $authToken",
+                "accept: application/json"
+            ],
+        ]);
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+
+        curl_close($curl);
+        $data =  json_decode($response,  true);
+        $ganres = [];
+        $g = $data['genres'] ?? [];
+        foreach ($g as $key=>$value){
+            $ganres[] = $value['name'] ?? null;
+        }
+        return implode(' | ', $ganres);
+    }
+
     public function addRemainingInfo($limit = 1): bool
     {
-        $query = "SELECT * FROM additional_information WHERE trailer_videos IS NULL ORDER BY additional_id LIMIT $limit";
+        $query = "SELECT * FROM additional_information WHERE trailer_videos IS NULL OR genres = '' ORDER BY additional_id LIMIT $limit";
         $data = Query::query($query);
         foreach ($data as $key=>$value){
             $toUpdate = [];
-            if(isset($value['bundle']) && $value['bundle'] === 'movies'){
+            if(isset($value['bundle']) && $value['bundle'] === 'movies')
+            {
                 if(empty($value['origin_country'])){
                     $toUpdate['origin_country'] = $this->findCountry('movie',$value['tm_id']);
                 }
-                $toUpdate['trailer_videos'] = $this->movieTrailers($value['tm_id']);
-            }elseif(isset($value['bundle']) && $value['bundle'] === "shows"){
+                if(empty($value['genres'])){
+                    $toUpdate['genres'] = $this->findGenres("movie", $value['tm_id']);
+                }
+                if(empty($value['trailer_videos'])){
+                    $toUpdate['trailer_videos'] = $this->movieTrailers($value['tm_id']);
+                }
+            }
+            elseif(isset($value['bundle']) && $value['bundle'] === "shows")
+            {
                 if(empty($value['origin_country'])){
                     $toUpdate['origin_country'] = $this->findCountry('tv',$value['tm_id']);
                 }
-                $toUpdate['trailer_videos'] = $this->showTrailers($value['tm_id']);
+                if(empty($value['genres'])){
+                    $toUpdate['genres'] = $this->findGenres("tv", $value['tm_id']);
+                }
+                if(empty($value['trailer_videos'])){
+                    $toUpdate['trailer_videos'] = $this->showTrailers($value['tm_id']);
+                }
             }
             if(!empty($toUpdate)){
                 (new UpdatingLayer())->setTableName("additional_information")

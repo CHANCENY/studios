@@ -87,6 +87,20 @@ Allow: /categories-statistics
 Allow: /img
 Allow: /additionals
 Allow: /cronnig-extras
+Allow: /main-navigation
+Allow: /main-footing
+Allow: /home
+Allow: /main-content-frontpage
+Allow: /jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
+Allow: /static
+Allow: /catalogolue-films-grid-lisitng
+Allow: /pppppppppppppppp
+Allow: /ffffffffffffffffffffffff
+Allow: /catalogolue-series-grid-listing
+Allow: /movies-listing
+Allow: /catalogolue-series-grid-list
+Allow: /series-listing
+Allow: /film-overview-details
 
 # This is sitemap location indicator
 Sitemap: http://localhost/eco.com/

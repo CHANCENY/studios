@@ -120,4 +120,10 @@ class AdditionalHandler
       return $this->data;
   }
 
+  public function getGenres(): string|null
+  {
+      return  $this->data['genres'] ?? null;
+  }
+
+
 }
