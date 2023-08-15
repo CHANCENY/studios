@@ -1,6 +1,22 @@
-<?php
+<?php use GlobalsFunctions\Globals;
+use Modules\Modals\Home;
+
+@session_start();
 
 
+$genre = Globals::get("genre");
+$rating = Globals::get('rating');
+$years = Globals::get("years");
+$title = Globals::get('title');
+
+$moviesLists = [];
+if(empty($title)){
+    $moviesLists = (new \Modules\Modals\Filters(genre: $genre, rating: $rating, release_years: $years))->advanceSearch();
+}
+
+if(!empty($title)){
+    $moviesLists = (new \Modules\Modals\Filters(title: $title))->basicSearch();
+}
 ?>
 <!-- page title -->
 <section class="section section--first section--bg" data-bg="img/section/section.jpg">
@@ -9,13 +25,13 @@
             <div class="col-12">
                 <div class="section__wrap">
                     <!-- section title -->
-                    <h2 class="section__title">Catalog list</h2>
+                    <h2 class="section__title">Search results</h2>
                     <!-- end section title -->
 
                     <!-- breadcrumb -->
                     <ul class="breadcrumb">
                         <li class="breadcrumb__item"><a href="home">Home</a></li>
-                        <li class="breadcrumb__item breadcrumb__item--active">Catalog list</li>
+                        <li class="breadcrumb__item breadcrumb__item--active">Search results</li>
                     </ul>
                     <!-- end breadcrumb -->
                 </div>
@@ -24,18 +40,12 @@
     </div>
 </section>
 <!-- end page title -->
-
-<?php \Core\Router::attachView("ffffffffffffffffffffffff");
-use Modules\Modals\Home;
-
-$data = \Modules\Modals\Catalogues::catalogueShowsListing();
-$showLists = $data['data'];
-?>
+<?php \Core\Router::attachView("ffffffffffffffffffffffff"); ?>
 
 <!-- catalog -->
 <div class="catalog">
     <div class="container">
-        <div class="row"><?php if(!empty($showLists)): foreach ($showLists as $key=>$movie): ?>
+        <div class="row"><?php if(!empty($moviesLists)): foreach ($moviesLists as $key=>$movie): ?>
                 <!-- card -->
                 <div class="col-6 col-sm-12 col-lg-6">
                 <div class="card card--list">
@@ -76,23 +86,9 @@ $showLists = $data['data'];
                 </div>
                 </div><?php endforeach; endif; ?>
             <!-- end card -->
-
-            <!-- paginator -->
-            <div class="col-12">
-                <ul class="paginator paginator--list">
-                    <?php echo $data['pager']; ?>
-                </ul>
-            </div>
-            <!-- end paginator -->
         </div>
     </div>
 </div>
 <!-- end catalog -->
 
-<?php
 
-/**
- * This is premiers
- */
-\Core\Router::attachView("pppppppppppppppp");
-?>

@@ -13,9 +13,9 @@ class Home
        /**
         * Will session result check first to return
         */
-       if(isset($_SESSION['new_release_movies'])){
-           return $_SESSION['new_release_movies'];
-       }
+//       if(isset($_SESSION['new_release_movies'])){
+//           return $_SESSION['new_release_movies'];
+//       }
 
        $params = "m.title AS title, m.movie_image AS image, m.description AS overview, 
        a.vote_average AS rating, m.movie_uuid AS uuid, a.genres AS genre, a.bundle AS bundle";
@@ -33,9 +33,9 @@ class Home
         /**
          * Will session result check first to return
          */
-        if(isset($_SESSION['new_release_shows'])){
-            return $_SESSION['new_release_shows'];
-        }
+//        if(isset($_SESSION['new_release_shows'])){
+//            return $_SESSION['new_release_shows'];
+//        }
 
         $params = "m.title AS title, m.show_image AS image, m.description AS overview, 
        a.vote_average AS rating, m.show_uuid AS uuid, a.genres AS genre, a.bundle AS bundle";
@@ -53,9 +53,9 @@ class Home
         /**
          * Will session result check first to return
          */
-        if(isset($_SESSION['new_release_movies_high'])){
-            return $_SESSION['new_release_movies_high'];
-        }
+//        if(isset($_SESSION['new_release_movies_high'])){
+//            return $_SESSION['new_release_movies_high'];
+//        }
 
         $params = "m.title AS title, m.movie_image AS image, m.description AS overview, 
        a.vote_average AS rating, m.movie_uuid AS uuid, a.genres AS genre, a.bundle AS bundle";
@@ -73,9 +73,9 @@ class Home
         /**
          * Will session result check first to return
          */
-        if(isset($_SESSION['new_release_shows_high'])){
-            return $_SESSION['new_release_shows_high'];
-        }
+//        if(isset($_SESSION['new_release_shows_high'])){
+//            return $_SESSION['new_release_shows_high'];
+//        }
 
         $params = "m.title AS title, m.show_image AS image, m.description AS overview, 
        a.vote_average AS rating, m.show_uuid AS uuid, a.genres AS genre, a.bundle AS bundle";
@@ -93,9 +93,9 @@ class Home
         /**
          * Will session result check first to return
          */
-        if(isset($_SESSION['new_release_new_this_season'])){
-            return $_SESSION['new_release_new_this_season'];
-        }
+//        if(isset($_SESSION['new_release_new_this_season'])){
+//            return $_SESSION['new_release_new_this_season'];
+//        }
 
         $params = "m.title AS title, m.show_image AS image, m.description AS overview, 
        a.vote_average AS rating, m.show_uuid AS uuid, a.genres AS genre, a.bundle AS bundle";
@@ -124,9 +124,9 @@ class Home
         /**
          * Will session result check first to return
          */
-        if(isset($_SESSION['new_expected_pre'])){
-            return $_SESSION['new_expected_pre'];
-        }
+//        if(isset($_SESSION['new_expected_pre'])){
+//            return $_SESSION['new_expected_pre'];
+//        }
 
         $authToken = \functions\config('TMDB');
 
@@ -233,7 +233,7 @@ class Home
      * @param string $genre action|comedy
      * @return array
      */
-    public static function buildGenre(string $genre): array
+    public static function buildGenre(string $genre, string $bundle = "movies"): array
     {
         $genres = [];
        if(!empty($genre)){
@@ -243,7 +243,7 @@ class Home
 
                if($i <= 1){
                    $genres[] = [
-                       "link"=>Globals::serverHost()."/genres?genre=".urlencode(trim($value)),
+                       "link"=>Globals::protocal()."://". Globals::serverHost()."/genres?genre=".urlencode(trim($value))."&type=$bundle",
                        "text"=>ucfirst(trim($value)),
                        "title"=>ucfirst(trim($value)),
                        "alt"=>ucfirst(trim($value)),
@@ -264,8 +264,34 @@ class Home
     public static function buildLinkFor($type, $uuid): string
     {
        if($type === "movies"){
-           return Globals::protocal()."://". Globals::serverHost()."/eco.com/film-overview-details?movie-id=".$uuid;
+           return Globals::protocal()."://". Globals::serverHost()."/film-overview-details?movie-id=".$uuid;
        }
-       return Globals::protocal()."://". Globals::serverHost(). "/eco.com/series-overview-display?series-id=".$uuid;
+       return Globals::protocal()."://". Globals::serverHost(). "/series-overview-details?series-id=".$uuid;
     }
+
+
+    public static function buildCountryLink(string $countries, $bundle = "movies"): array
+    {
+        $country = [];
+        if(!empty($countries)){
+            $list = explode(',', $countries);
+            $i = 0;
+            foreach ($list as $key=>$value){
+
+                if($i <= 1){
+                    $country[] = [
+                        "link"=>Globals::protocal()."://". Globals::serverHost()."/countries?country=".urlencode(trim($value))."&type=$bundle",
+                        "text"=>ucfirst(trim($value)),
+                        "title"=>ucfirst(trim($value)),
+                        "alt"=>ucfirst(trim($value)),
+                        "rel"=>ucfirst(trim($value)),
+                    ];
+                }
+                $i++;
+            }
+        }
+        return $country;
+    }
+
+
 }

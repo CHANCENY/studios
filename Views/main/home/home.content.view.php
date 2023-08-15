@@ -44,7 +44,7 @@ $newThisSeason = Home::newThisSeasonRandomised();
                             </div>
                             <div class="card__content">
                                 <h3 class="card__title"><a href="<?php echo Home::buildLinkFor($newThis['bundle'], $newThis['uuid']) ?? null; ?>" rel="index"><?php echo $newThis['title'] ?? null; ?></a></h3>
-                                <span class="card__category"><?php $genre = Home::buildGenre($newThis['genre']); ?>
+                                <span class="card__category"><?php $genre = Home::buildGenre($newThis['genre'], $newThis['bundle']); ?>
 										<?php foreach ($genre as $k=>$value): ?>
 										   <a href="<?php echo $value['link'] ?? null; ?>" rel="nofollow" title="<?php echo $value['title'] ?? null; ?>"><?php echo $value['text'] ?? null; ?></a>
 										<?php endforeach; ?>
@@ -155,7 +155,7 @@ $showsSelectedHighVotes = Home::showsHighVotes();
                                 <div class="col-12 col-sm-8">
                                     <div class="card__content">
                                         <h3 class="card__title"><a href="<?php echo Home::buildLinkFor($newRelease['bundle'], $newRelease['uuid']) ?? null; ?>"><?php echo $newRelease['title'] ?? null; ?></a></h3>
-                                        <span class="card__category"><?php $genre = Home::buildGenre($newRelease['genre']); ?>
+                                        <span class="card__category"><?php $genre = Home::buildGenre($newRelease['genre'], $newRelease['bundle']); ?>
 												<?php foreach ($genre as $k=>$value): ?>
 												   <a href="<?php echo $value['link'] ?? null; ?>" title="<?php echo $value['title'] ?? null; ?>" rel="nofollow"><?php echo $value['text'] ?? null; ?></a>
 												<?php endforeach; ?>
@@ -195,7 +195,7 @@ $showsSelectedHighVotes = Home::showsHighVotes();
                             </div>
                             <div class="card__content">
                                 <h3 class="card__title"><a href="<?php echo Home::buildLinkFor($movieHigh['bundle'], $movieHigh['uuid']) ?? null; ?>" title="<?php echo $movieHigh['title'] ?? null; ?>" rel="nofollow"><?php echo $movieHigh['title'] ?? null; ?></a></h3>
-                                <span class="card__category"><?php $genre = Home::buildGenre($movieHigh['genre']); ?>
+                                <span class="card__category"><?php $genre = Home::buildGenre($movieHigh['genre'], $movieHigh['bundle']); ?>
 										<?php foreach ($genre as $k=>$value): ?>
                                            <a href="<?php echo $value['link'] ?? null; ?>" title="<?php echo $value['title'] ?>" rel="nofollow"><?php echo $value['text'] ?? null; ?></a>
                                         <?php endforeach; ?>
@@ -221,7 +221,7 @@ $showsSelectedHighVotes = Home::showsHighVotes();
                             </div>
                             <div class="card__content">
                                 <h3 class="card__title"><a href="<?php echo Home::buildLinkFor($showHigh['bundle'], $showHigh['uuid']); ?>"><?php echo $showHigh['title'] ?? null; ?></a></h3>
-                                <span class="card__category"><?php $genre = Home::buildGenre($showHigh['genre']); ?>
+                                <span class="card__category"><?php $genre = Home::buildGenre($showHigh['genre'], $showHigh['bundle']); ?>
 										<?php foreach ($genre as $k=>$value): ?>
                                            <a href="<?php echo $value['link'] ?? null; ?>" title="<?php echo $value['title'] ?? null; ?>" rel="nofollow"><?php echo $value['text'] ?? null; ?></a>
                                         <?php endforeach; ?>

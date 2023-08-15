@@ -1,4 +1,6 @@
-<?php @session_start(); ?>
+<?php use GlobalsFunctions\Globals;
+
+@session_start(); ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -74,8 +76,6 @@
                                     <li><a href="movies-listing">Movies Catalog Listing</a></li>
                                     <li><a href="catalogolue-series-grid-list">Shows Catalog Grid</a></li>
                                     <li><a href="series-listing">Shows Catalog Listing</a></li>
-                                    <li><a href="details1.html">Details Movie</a></li>
-                                    <li><a href="details2.html">Details TV Series</a></li>
                                 </ul>
                             </li>
                             <!-- end dropdown -->
@@ -94,8 +94,6 @@
 
                                 <ul class="dropdown-menu header__dropdown-menu" aria-labelledby="dropdownMenuMore">
                                     <li><a href="about.html">About</a></li>
-                                    <li><a href="signin.html">Sign In</a></li>
-                                    <li><a href="signup.html">Sign Up</a></li>
                                     <li><a href="404.html">404 Page</a></li>
                                 </ul>
                             </li>
@@ -107,12 +105,15 @@
                         <div class="header__auth">
                             <button class="header__search-btn" type="button">
                                 <i class="icon ion-ios-search"></i>
-                            </button>
-
-                            <a href="signin.html" class="header__sign-in">
+                            </button><?php if(empty(Globals::user())): ?>
+                            <a href="login-user-at-stream-studios<?php echo !empty(Globals::uri()) ? '?destination='.Globals::uri() : null; ?>" class="header__sign-in">
                                 <i class="icon ion-ios-log-in"></i>
                                 <span>sign in</span>
-                            </a>
+                            </a><?php else: ?>
+                            <a href="logout-user-at-stream-studios" class="header__sign-in">
+                                <i class="icon ion-ios-log-in"></i>
+                                <span>sign out <?php echo (new  \User\User())->firstName(); ?></span>
+                            </a><?php endif; ?>
                         </div>
                         <!-- end header auth -->
 
@@ -130,14 +131,14 @@
     </div>
 
     <!-- header search -->
-    <form action="#" class="header__search">
+    <form action="filtering-stream" method="GET" class="header__search">
         <div class="container">
             <div class="row">
                 <div class="col-12">
                     <div class="header__search-content">
-                        <input type="text" placeholder="Search for a movie, TV Series that you are looking for">
+                        <input type="text" name="title" placeholder="Search for a movie, TV Series that you are looking for">
 
-                        <button type="button">search</button>
+                        <button type="submit">search</button>
                     </div>
                 </div>
             </div>

@@ -1,5 +1,6 @@
 <?php
 
+use Modules\Imports\ImagesMigrator;
 use RoutesManager\RoutesManager;
 use Modules\Imports\ImportHandler;
 
@@ -35,7 +36,7 @@ function exception_handler(Throwable $exception) {
      print_r($exception);
 }
 
-set_exception_handler('exception_handler');
+//set_exception_handler('exception_handler');
 
 /**
  * This will secure you routing
@@ -100,4 +101,5 @@ if(file_exists("includes/formFunction.inc")){
 if(file_exists("includes/functions.inc")){
     include_once "includes/functions.inc";
 }
-
+//(new \Modules\Imports\Additionals())->addRemainingInfo(10);
+(new ImagesMigrator())->loadImage(50);

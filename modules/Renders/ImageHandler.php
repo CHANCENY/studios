@@ -3,11 +3,9 @@
 namespace Modules\Renders;
 
 use Datainterface\Selection;
-use Json\Json;
-use Modules\Imports\ImagesMigrator;
+use Modules\Modals\Debug;
 use Modules\Modals\Details;
-use Sessions\SessionManager;
-use function functions\config;
+
 
 /**
  *
@@ -124,17 +122,11 @@ class ImageHandler
 
     public function moreImages(Details $object): array
     {
+
         $authToken = \functions\config('TMDB');
 
-        $bundle = $object->getBundle() === "movies" ? "movie" : "";
+        $bundle = $object->getBundle() === "movies" ? "movie" : "tv";
         $tmID = $object->tmID();
-
-        $json = new Json();
-        $json->setStoreName($bundle."_".$tmID.".json");
-        $data = $json->getDataInStorage();
-        if(!empty($data)){
-            return $data;
-        }
 
         $curl = curl_init();
         curl_setopt_array($curl, [
@@ -151,16 +143,13 @@ class ImageHandler
             ],
         ]);
 
-        $response = json_decode(curl_exec($curl));
+        $response = json_decode(curl_exec($curl), true);
         $err = curl_error($curl);
 
         curl_close($curl);
 
-        if ($err) {
-          $json = new Json();
-          $json->setStoreName($bundle."_".$tmID.".json");
-          $json->save($response['posters'] ?? []);
-          return $response['posters'] ?? [];
+        if (empty($err)) {
+          return $response['backdrops'] ?? [];
         } else {
            return [];
         }

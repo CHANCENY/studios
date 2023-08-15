@@ -8,6 +8,7 @@ use Datainterface\mysql\UpdatingLayer;
 use Datainterface\MysqlDynamicTables;
 use Datainterface\Query;
 use Modules\Modals\Debug;
+use Modules\Modals\Details;
 
 class Additionals
 {
@@ -329,6 +330,38 @@ class Additionals
 
         }
         return false;
+    }
+
+    public function reviews(Details $object): array
+    {
+        $authToken = \functions\config('TMDB');
+        $bundle = $object->getBundle() === "movies" ? "movie" : "tv";
+        $tmID = $object->tmID();
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+            CURLOPT_URL => "https://api.themoviedb.org/3/$bundle/$tmID/reviews?language=en-US&page=1",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => [
+                "Authorization: $authToken",
+                "accept: application/json"
+            ],
+        ]);
+
+        $response = json_decode(curl_exec($curl), true);
+        $err = curl_error($curl);
+        curl_close($curl);
+
+        if(empty($err)){
+            return $response['results'] ?? [];
+        }
+        return [];
     }
 
 }

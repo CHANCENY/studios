@@ -82,5 +82,4 @@
 <script src="assets/main/js/main.js"></script>
 <script src="assets/main/js/viewmore.js"></script>
 </body>
-
 </html>

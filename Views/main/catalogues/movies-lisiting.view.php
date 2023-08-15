@@ -28,7 +28,8 @@
 <?php \Core\Router::attachView("ffffffffffffffffffffffff");
 use Modules\Modals\Home;
 
-$moviesLists = \Modules\Modals\Catalogues::catalogueLists();
+$data = \Modules\Modals\Catalogues::catalogueLists();
+$moviesLists = $data['data'];
 ?>
 
 <!-- catalog -->
@@ -51,7 +52,7 @@ $moviesLists = \Modules\Modals\Catalogues::catalogueLists();
                         <div class="col-12 col-sm-8">
                             <div class="card__content">
                                 <h3 class="card__title"><a href="<?php echo Home::buildLinkFor($movie['bundle'], $movie['uuid']); ?>" alt="<?php echo $movie['title'] ?? null; ?>"><?php echo $movie['title'] ?? null; ?></a></h3>
-                                <span class="card__category"><?php $genre = Home::buildGenre($movie['genre']); ?>
+                                <span class="card__category"><?php $genre = Home::buildGenre($movie['genre'], $movie['bundle']); ?>
                                     <?php foreach ($genre as $k=>$value): ?>
                                         <a href="<?php echo $value['link'] ?? null; ?>" title="<?php echo $value['title'] ?? null; ?>" rel="nofollow"><?php echo $value['text'] ?? null; ?></a>
                                     <?php endforeach; ?>
@@ -79,16 +80,7 @@ $moviesLists = \Modules\Modals\Catalogues::catalogueLists();
             <!-- paginator -->
             <div class="col-12">
                 <ul class="paginator paginator--list">
-                    <li class="paginator__item paginator__item--prev">
-                        <a href="#"><i class="icon ion-ios-arrow-back"></i></a>
-                    </li>
-                    <li class="paginator__item"><a href="#">1</a></li>
-                    <li class="paginator__item paginator__item--active"><a href="#">2</a></li>
-                    <li class="paginator__item"><a href="#">3</a></li>
-                    <li class="paginator__item"><a href="#">4</a></li>
-                    <li class="paginator__item paginator__item--next">
-                        <a href="#"><i class="icon ion-ios-arrow-forward"></i></a>
-                    </li>
+                   <?php echo $data['pager']; ?>
                 </ul>
             </div>
             <!-- end paginator -->

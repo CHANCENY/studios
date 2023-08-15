@@ -101,6 +101,16 @@ Allow: /movies-listing
 Allow: /catalogolue-series-grid-list
 Allow: /series-listing
 Allow: /film-overview-details
+Allow: /series-overview-details
+Allow: /ccccccccccccccccccccccccccccccccccccc
+Allow: /ccccpppppppprrrrrrrrrrrrrrrrrrrrr
+Allow: /genres
+Allow: /countries
+Allow: /login-user-at-stream-studios
+Allow: /logout-user-at-stream-studios
+Allow: /filtering-stream
+Allow: /tranfering-images-permanent
+Allow: /stream-studio-playing
 
 # This is sitemap location indicator
 Sitemap: http://localhost/eco.com/

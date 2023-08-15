@@ -1,22 +1,21 @@
 <?php
 
-
 use GlobalsFunctions\Globals;
-use Modules\Modals\Home;
-use Modules\Modals\Playing;
 
-if(empty(Globals::get('movie-id'))){
+if(empty(Globals::get('series-id'))){
     Globals::redirect(Globals::home());
     exit;
 }
 
-$movie = (new \Modules\Modals\Details(\GlobalsFunctions\Globals::get("movie-id")))->load("movies");
 
-$moreImages = $movie->getMorePhotos();
-$reviews = $movie->reviews();
-$youMayLike = $movie->getYouMayLike();
+$show = (new \Modules\Modals\Details(Globals::get("series-id")))->load("shows");
 
-$videos = $movie->getVideoTrailers();
+$moreImages = $show->getMorePhotos();
+$reviews = $show->reviews();
+$youMayLike = $show->getYouMayLike();
+$collectionAll = $show->getShowsInfo($show->id());
+
+$videos = $show->getVideoTrailers();
 $ids = [];
 foreach ($videos as $key=>$value){
     $l = explode('=', $value);
@@ -34,30 +33,27 @@ foreach ($videos as $key=>$value){
         <div class="row">
             <!-- title -->
             <div class="col-12">
-                <h1 class="details__title"><?php echo $movie->getTitle() ?? null; ?></h1>
+                <h1 class="details__title"><?php echo $show->getTitle(); ?></h1>
             </div>
             <!-- end title -->
 
             <!-- content -->
-            <div class="col-12 col-xl-6">
-                <div class="card card--details">
+            <div class="col-10">
+                <div class="card card--details card--series">
                     <div class="row">
                         <!-- card cover -->
-                        <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-5">
+                        <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3">
                             <div class="card__cover">
-                                <img src="<?php echo $movie->getImage() ?? null; ?>" alt="">
-                                <a href="<?php echo (new Playing($movie))->token(); ?>" title="<?php echo $movie->getTitle(); ?>" rel="index" class="card__play">
-                                    <i class="icon ion-ios-play"></i>
-                                </a>
+                                <img src="<?php echo $show->getImage(); ?>" alt="<?php echo $show->getTitle(); ?>">
                             </div>
                         </div>
                         <!-- end card cover -->
 
                         <!-- card content -->
-                        <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-7">
+                        <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9">
                             <div class="card__content">
                                 <div class="card__wrap">
-                                    <span class="card__rate"><i class="icon ion-ios-star"></i><?php echo $movie->getRating() ?? null; ?></span>
+                                    <span class="card__rate"><i class="icon ion-ios-star"></i><?php echo $show->getRating(); ?></span>
 
                                     <ul class="card__list">
                                         <li>HD</li>
@@ -65,21 +61,18 @@ foreach ($videos as $key=>$value){
                                     </ul>
                                 </div>
 
-                                <ul class="card__meta"><?php $genre = $movie->getGenresRenderble(); ?>
-                                    <li><span>Genre:</span><?php foreach ($genre as $key=>$value): ?>
-                                            <a href="<?php echo $value['link'] ?? null; ?>" title="<?php echo $value['title'] ?? null; ?>" rel="nofollow"><?php echo $value['text'] ?? null; ?></a>
-                                       <?php endforeach; ?>
-                                    </li>
-                                    <li><span>Release year:</span> <?php echo $movie->getReleaseDate()->format("Y") ?? null; ?></li>
-                                    <li><span>Running time:</span><?php echo !empty($movie->getDuration()) ? $movie->getDuration() : null; echo " min"; ?></li>
-                                    <li><span>Countries:</span>
-                                        <?php $country = $movie->countryRenderable(); foreach ($country as $key=>$value): ?>
-                                            <a href="<?php echo $value['link'] ?? null; ?>" title="<?php echo $value['title'] ?? null; ?>"><?php echo $value['text'] ?? null; ?></a>
-                                        <?php endforeach; ?>
-                                    </li>
+                                <ul class="card__meta">
+                                    <li><span>Genre:</span><?php $genre = $show->getGenresRenderble(); foreach ($genre as $key=>$vlaue): ?>
+                                        <a href="<?php echo $vlaue['link'] ?? null; ?>" title="<?php echo $vlaue['title'] ?? null; ?>" rel="nofollow"><?php echo $vlaue['text'] ?? null; ?></a>
+                                    <?php endforeach; ?></li>
+                                    <li><span>Release year:</span><?php echo $show->getReleaseDate()->format("M d, Y"); ?></li>
+                                    <li><span>Running time:</span> <?php echo $show->getDuration(); ?> min</li>
+                                    <li><span>Country:</span><?php $countries = $show->countryRenderable(); foreach ($countries as $key=>$value): ?>
+                                        <a href="<?php echo $value['link'] ?? null; ?>" title="<?php echo $value['title'] ?? null; ?>" rel="nofollow"><?php echo $value['text'] ?? null; ?></a>
+                                    <?php endforeach; ?></li>
                                 </ul>
 
-                                <div class="card__description card__description--details"><?php echo $movie->getOverview() ?? null; ?>
+                                <div class="card__description card__description--details"><?php echo $show->getOverview(); ?>
                                 </div>
                             </div>
                         </div>
@@ -94,6 +87,44 @@ foreach ($videos as $key=>$value){
                 <iframe width="540" height="300" src="https://www.youtube.com/embed/<?php echo $ids[random_int(0, count($ids)-1)]; ?>?rel=0&modestbranding=1&autoplay=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
             <!-- end player -->
+
+            <!-- accordion -->
+            <div class="col-12 col-xl-6"><?php if (!empty($collectionAll)): ?>
+                <div class="accordion" id="accordion"><?php foreach ($collectionAll as $key=>$value): ?>
+                    <div class="accordion__card">
+                        <div class="card-header" id="<?php str_replace(' ','-',$value['season_name']); ?>">
+                            <button type="button" data-toggle="collapse" data-target="#collapse<?php echo $value['season_id']; ?>" aria-expanded="true" aria-controls="collapseOne">
+                                <span>Season: <?php echo $value['season_number'];  ?></span>
+                                <span><?php echo $value['episode_count']; ?> Episodes from <?php echo (new DateTime($value['air_date']))->format("M, Y"); ?></span>
+                            </button>
+                        </div>
+
+                        <div id="collapse<?php echo $value['season_id']; ?>" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                            <div class="card-body">
+                                <table class="accordion__list">
+                                    <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Title</th>
+                                        <th>Air Date</th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody><?php $episodes = $value['episodes_found']; foreach ($episodes as $e=>$episode): ?>
+                                    <tr>
+                                        <th><?php echo $episode['epso_number'] ?? null; ?></th>
+                                        <td><a href="<?php echo (new \Modules\Modals\Playing($show))->episodeLink($episode['episode_uuid']); ?>"><?php echo $episode['title'] ?? null; ?></a></td>
+                                        <td><?php echo (new DateTime($episode['air_date']))->format("l, F jS, Y"); ?></td>
+                                    </tr>
+                                    <?php endforeach; ?></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div><?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endif; ?></div>
+            <!-- end accordion -->
 
             <div class="col-12">
                 <div class="details__wrap">
@@ -184,7 +215,7 @@ foreach ($videos as $key=>$value){
                 <!-- content tabs -->
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="tab-1" role="tabpanel" aria-labelledby="1-tab">
-                        <div class="row"><?php \Core\Router::attachView("ccccccccccccccccccccccccccccccccccccc",['b'=>"movies", 'e'=>$movie->id()]); ?>
+                        <div class="row"><?php \Core\Router::attachView("ccccccccccccccccccccccccccccccccccccc",['b'=>"shows", 'e'=>$show->id()]); ?>
                         </div>
                     </div>
 
@@ -194,7 +225,7 @@ foreach ($videos as $key=>$value){
                             <div class="col-12">
                                 <div class="reviews">
                                     <ul class="reviews__list"><?php if(!empty($reviews)): foreach ($reviews as $key=>$value): ?>
-                                        <li class="reviews__item">
+                                            <li class="reviews__item">
                                             <div class="reviews__autor">
                                                 <img class="reviews__avatar" src="<?php echo $value['author_details']['avatar_path'] ?? 'assets/main/img/user.png'; ?>" alt="">
                                                 <span class="reviews__name"><?php echo $value['author'] ?? null; ?></span>
@@ -203,7 +234,7 @@ foreach ($videos as $key=>$value){
                                                 <span class="reviews__rating"><i class="icon ion-ios-star"></i><?php echo number_format($value['author_details']['rating'] ?? 0.0, 1) ?? 0.0; ?></span>
                                             </div>
                                             <p class="reviews__text"><?php echo $value['content'] ?? null; ?></p>
-                                        </li><?php endforeach; endif; ?>
+                                            </li><?php endforeach; endif; ?>
                                     </ul>
 
                                     <form action="#" class="form">
@@ -226,16 +257,16 @@ foreach ($videos as $key=>$value){
                         <div class="gallery" itemscope>
                             <div class="row"><?php if(!empty($moreImages)): foreach ($moreImages as $key=>$value): ?>
 
-                                <!-- gallery item -->
-                                <figure class="col-12 col-sm-6 col-xl-4" itemprop="associatedMedia" itemscope>
-                                    <a href="https://image.tmdb.org/t/p/w500/<?php echo $value['file_path'] ?? null; ?>" itemprop="contentUrl" data-size="1920x1280">
-                                        <img src="https://image.tmdb.org/t/p/w185/<?php echo $value['file_path'] ?? null; ?>" itemprop="thumbnail" alt="<?php echo $value['iso_639_1'] ?? null; ?>" />
-                                    </a>
-                                    <figcaption itemprop="caption description">Some image caption 1</figcaption>
-                                </figure>
-                                <!-- end gallery item -->
+                                    <!-- gallery item -->
+                                    <figure class="col-12 col-sm-6 col-xl-4" itemprop="associatedMedia" itemscope>
+                                        <a href="https://image.tmdb.org/t/p/w500/<?php echo $value['file_path'] ?? null; ?>" itemprop="contentUrl" data-size="1920x1280">
+                                            <img src="https://image.tmdb.org/t/p/w185/<?php echo $value['file_path'] ?? null; ?>" itemprop="thumbnail" alt="<?php echo $value['iso_639_1'] ?? null; ?>" />
+                                        </a>
+                                        <figcaption itemprop="caption description">Some image caption 1</figcaption>
+                                    </figure>
+                                    <!-- end gallery item -->
 
-                            <?php endforeach; endif; ?></div>
+                                <?php endforeach; endif; ?></div>
                         </div>
                         <!-- end project gallery -->
                     </div>
@@ -250,31 +281,31 @@ foreach ($videos as $key=>$value){
                     <div class="col-12">
                         <h2 class="section__title section__title--sidebar">You may also like...</h2>
                     </div><?php if($youMayLike): foreach ($youMayLike as $key=>$value): ?>
-                    <!-- end section title -->
+                        <!-- end section title -->
 
-                    <!-- card -->
-                    <div class="col-6 col-sm-4 col-lg-6">
-                        <div class="card">
-                            <div class="card__cover">
-                                <img src="<?php echo $value['image'] ?? null; ?>" alt="<?php echo $value['title'] ?? null; ?>">
-                                <a href="<?php echo Home::buildLinkFor($value['bundle'], $value['uuid']) ?? null; ?>" class="card__play">
-                                    <i class="icon ion-ios-play"></i>
-                                </a>
-                            </div>
-                            <div class="card__content">
-                                <h3 class="card__title"><a href="<?php echo Home::buildLinkFor($value['bundle'], $value['uuid']) ?? null; ?>"><?php echo $value['title'] ?? null; ?></a></h3>
-                                <span class="card__category"><?php $genre = Home::buildGenre($value['genre'], $value['bundle']); ?>
-                                    <?php foreach ($genre as $k=>$v): ?>
-										<a href="<?php echo $v['link'] ?? null; ?>" title="<?php echo $v['title'] ?? null; ?>"><?php echo $v['text'] ?? null; ?></a>
-                                    <?php endforeach; ?>
+                        <!-- card -->
+                        <div class="col-6 col-sm-4 col-lg-6">
+                            <div class="card">
+                                <div class="card__cover">
+                                    <img src="<?php echo $value['image'] ?? null; ?>" alt="<?php echo $value['title'] ?? null; ?>">
+                                    <a href="<?php echo \Modules\Modals\Home::buildLinkFor($value['bundle'], $value['uuid']) ?? null; ?>" class="card__play">
+                                        <i class="icon ion-ios-play"></i>
+                                    </a>
+                                </div>
+                                <div class="card__content">
+                                    <h3 class="card__title"><a href="<?php echo \Modules\Modals\Home::buildLinkFor($value['bundle'], $value['uuid']) ?? null; ?>"><?php echo $value['title'] ?? null; ?></a></h3>
+                                    <span class="card__category"><?php $genre = \Modules\Modals\Home::buildGenre($value['genre']); ?>
+                                        <?php foreach ($genre as $k=>$v): ?>
+                                            <a href="<?php echo $v['link'] ?? null; ?>" title="<?php echo $v['title'] ?? null; ?>"><?php echo $v['text'] ?? null; ?></a>
+                                        <?php endforeach; ?>
                                 </span>
-                                <span class="card__rate"><i class="icon ion-ios-star"></i><?php echo number_format($value['rating'] ?? 0.0, 1) ?? 0.0;  ?></span>
+                                    <span class="card__rate"><i class="icon ion-ios-star"></i><?php echo number_format($value['rating'] ?? 0.0, 1) ?? 0.0;  ?></span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <!-- end card -->
+                        <!-- end card -->
 
-                <?php endforeach; endif; ?></div>
+                    <?php endforeach; endif; ?></div>
             </div>
             <!-- end sidebar -->
         </div>
@@ -286,5 +317,3 @@ foreach ($videos as $key=>$value){
 <?php
 \Core\Router::attachView("pppppppppppppppp");
 ?>
-
-

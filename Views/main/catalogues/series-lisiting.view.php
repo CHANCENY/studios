@@ -34,8 +34,8 @@ use Modules\Modals\Home;
 
 \Core\Router::attachView("ffffffffffffffffffffffff");
 
-$showsLists = \Modules\Modals\Catalogues::catalogueShowsGrid();
-
+$data = \Modules\Modals\Catalogues::catalogueShowsGrid();
+$showsLists = $data['data'];
 ?>
 
     <!-- catalog -->
@@ -54,7 +54,7 @@ $showsLists = \Modules\Modals\Catalogues::catalogueShowsGrid();
                         </div>
                         <div class="card__content">
                             <h3 class="card__title"><a href="<?php echo Home::buildLinkFor($show['bundle'], $show['uuid']); ?>"><?php echo $show['title'] ?? null; ?></a></h3>
-                            <span class="card__category"><?php $genre = Home::buildGenre($show['genre']); ?>
+                            <span class="card__category"><?php $genre = Home::buildGenre($show['genre'], $show['bundle']); ?>
                                 <?php foreach ($genre as $k=>$value): ?>
                                     <a href="<?php echo $value['link'] ?? null; ?>" title="<?php echo $value['title'] ?? null; ?>" rel="nofollow"><?php echo $value['text'] ?? null; ?></a>
                                 <?php endforeach; ?>
@@ -68,16 +68,7 @@ $showsLists = \Modules\Modals\Catalogues::catalogueShowsGrid();
                 <!-- paginator -->
                 <div class="col-12">
                     <ul class="paginator">
-                        <li class="paginator__item paginator__item--prev">
-                            <a href="#"><i class="icon ion-ios-arrow-back"></i></a>
-                        </li>
-                        <li class="paginator__item"><a href="#"></a></li>
-                        <li class="paginator__item"><a href="#"></a></li>
-                        <li class="paginator__item"><a href="#"></a></li>
-                        <li class="paginator__item"><a href="#"></a></li>
-                        <li class="paginator__item paginator__item--next">
-                            <a href="#"><i class="icon ion-ios-arrow-forward"></i></a>
-                        </li>
+                        <?php echo $data['pager']; ?>
                     </ul>
                 </div>
                 <!-- end paginator -->

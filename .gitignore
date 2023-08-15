@@ -2,6 +2,7 @@ Files/
 .htaccess
 setting.php
 config/
+Core/
 vendor/
 composer.json
 composer.lock

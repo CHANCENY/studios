@@ -392,7 +392,7 @@ $(document).ready(function () {
 			noUiSlider.create(firstSlider, {
 				range: {
 					'min': 2000,
-					'max': 2018
+					'max': new Date().getFullYear()
 				},
 				step: 1,
 				connect: true,
