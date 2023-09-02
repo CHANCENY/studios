@@ -1,5 +1,6 @@
 <?php use GlobalsFunctions\Globals;
 use Modules\Modals\Home;
+use Modules\Renders\ImageHandler;
 
 @session_start();
 
@@ -52,7 +53,7 @@ if(!empty($title)){
                     <div class="row">
                         <div class="col-12 col-sm-4">
                             <div class="card__cover">
-                                <img src="<?php echo $movie['image'] ?? null; ?>" alt="<?php echo $movie['title'] ?? null; ?>">
+                                <img src="<?php echo ImageHandler::image($movie['image']); ?>" alt="<?php echo $movie['title'] ?? null; ?>">
                                 <a href="<?php echo Home::buildLinkFor($movie['bundle'], $movie['uuid']); ?>" title="<?php echo $movie['title'] ?? null; ?>" class="card__play">
                                     <i class="icon ion-ios-play"></i>
                                 </a>

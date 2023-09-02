@@ -37,7 +37,32 @@ class Router
      */
     public static function router($restricstionLevel = false){
 
-        if(!empty(ConfigureSetting::getDatabaseConfig())) {
+        $allowedFiles = [
+            'js',
+            'css',
+            'less',
+            'jpg',
+            'jpeg',
+            'png',
+            'webp',
+            'mp4',
+            'mp3',
+            'mkv',
+            'scss',
+            'otf',
+            'txt',
+            'json'
+        ];
+        $currentURL = $_SERVER['REQUEST_URI'];
+        $pass = false;
+        foreach ($allowedFiles as $key=>$value){
+            if(str_ends_with($currentURL, $value)){
+                $pass = true;
+                break;
+            }
+        }
+
+        if(!empty(ConfigureSetting::getDatabaseConfig()) && $pass === false) {
 
             $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
             $host = parse_url($_SERVER['REQUEST_URI'], PHP_URL_HOST);
@@ -135,11 +160,12 @@ class Router
         $contetType = Router::headerContentType(end($list));
 
         if(file_exists($foundView['view_path_absolute'])){
-            http_response_code(200);
             global $THIS_SITE_ACCESS_LOCK;
             if($THIS_SITE_ACCESS_LOCK === true){
+                http_response_code(200);
                 require_once $foundView['view_path_absolute'];
             }else{
+                http_response_code(403);
                die('Access denied!');
             }
         }else{

@@ -1,22 +1,19 @@
 <?php use GlobalsFunctions\Globals;
 use Modules\Modals\Playing;
+use Modules\Renders\ImageHandler;
 
 @session_start();
 
-if(empty(Globals::user())){
-    Globals::redirect('home');
-    exit;
-}
-
+$data = [];
 if(empty(Globals::get('play'))){
     Globals::redirect('home');
     exit;
 }
 
-$token = Globals::get('play');
-$userID = Globals::user()[0]['uid'] ?? "";
+$data['id'] = Globals::get('play');
+$data['type'] = Globals::get('type');
 
-$data = $_SESSION['playing'][$userID][$token];
+
 if(empty($data)){
     Globals::redirect('home');
     exit;
@@ -69,7 +66,7 @@ if($data['type'] === "episode"){
                         <!-- card cover -->
                         <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-5">
                             <div class="card__cover">
-                                <img src="<?php echo $thisEntity->getImage(); ?>" alt="">
+                                <img src="<?php echo ImageHandler::image($thisEntity->getImage()); ?>" alt="">
                             </div>
                         </div>
                         <!-- end card cover -->
@@ -121,15 +118,23 @@ if($data['type'] === "episode"){
                     </div>
                     <!-- end availables -->
 
-                    <!-- share -->
+                     <!-- share -->
                     <div class="details__share">
                         <span class="details__share-title">Share with friends:</span>
 
                         <ul class="details__share-list">
-                            <li class="facebook"><a href="#"><i class="icon ion-logo-facebook"></i></a></li>
-                            <li class="instagram"><a href="#"><i class="icon ion-logo-instagram"></i></a></li>
-                            <li class="twitter"><a href="#"><i class="icon ion-logo-twitter"></i></a></li>
-                            <li class="vk"><a href="#"><i class="icon ion-logo-vk"></i></a></li>
+                            <li class="facebook">
+                                <div class="st-custom-button" data-network="facebook"><a href="#"><i class="icon ion-logo-facebook"></i></a></div>
+                            </li>
+                            <li class="twitter">
+                                <div class="st-custom-button" data-network="twitter"><a href="#"><i class="icon ion-logo-twitter"></i></a></div>
+                            </li>
+                            <li class="vk">
+                                <div class="st-custom-button" data-network="vk"><a href="#"><i class="icon ion-logo-vk"></i></a></div>
+                            </li>
+                             <li class="instagram">
+                                 <div class="st-custom-button" data-network="sharethis"><a href="#"><i class="icon ion-ios-more"></i></a></div>
+                            </li>
                         </ul>
                     </div>
                     <!-- end share -->

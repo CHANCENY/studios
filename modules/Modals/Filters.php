@@ -37,7 +37,7 @@ FROM
 LEFT JOIN 
     additional_information a ON m.show_id = a.internal_id 
 WHERE 
-    a.bundle = 'movies' 
+    a.bundle = 'shows' 
     AND m.title LIKE '%$this->title%'
 ORDER BY 
     m.show_changed DESC";

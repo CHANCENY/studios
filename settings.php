@@ -1,9 +1,4 @@
 <?php
-
-use Modules\Imports\ImagesMigrator;
-use RoutesManager\RoutesManager;
-use Modules\Imports\ImportHandler;
-
 @session_start();
 
 /**
@@ -32,11 +27,19 @@ ob_start();
 //print_r(phpinfo());
 
 function exception_handler(Throwable $exception) {
-    \ErrorLogger\ErrorLogger::log($exception);
-     print_r($exception);
-}
 
-//set_exception_handler('exception_handler');
+    $config = \functions\config('LOGGER');
+    if($config === "NO"){
+        \ErrorLogger\ErrorLogger::log($exception);
+    }
+
+    $class = get_class($exception);
+    if($class === TypeError::class){
+        \Core\Router::errorPages(500);
+        exit;
+    }
+}
+set_exception_handler('exception_handler');
 
 /**
  * This will secure you routing
@@ -101,5 +104,3 @@ if(file_exists("includes/formFunction.inc")){
 if(file_exists("includes/functions.inc")){
     include_once "includes/functions.inc";
 }
-//(new \Modules\Imports\Additionals())->addRemainingInfo(10);
-(new ImagesMigrator())->loadImage(50);

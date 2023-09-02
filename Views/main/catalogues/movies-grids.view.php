@@ -1,10 +1,12 @@
 <?php
 
 use Modules\Modals\Home;
+use Modules\Renders\ImageHandler;
+
 ?>
 
 <!-- page title -->
-<section class="section section--first section--bg" data-bg="img/section/section.jpg">
+<section class="section section--first section--bg" data-bg="assets/main/img/section/section.jpg">
     <div class="container">
         <div class="row">
             <div class="col-12">
@@ -48,7 +50,7 @@ $moviesLists = $data['data'];
              <!-- card --><div class="col-6 col-sm-4 col-lg-3 col-xl-2">
                 <div class="card">
                     <div class="card__cover">
-                        <img src="<?php echo $movie['image'] ?? null; ?>" alt="<?php echo $movie['title'] ?? null; ?>">
+                        <img src="<?php echo ImageHandler::image($movie['image']) ?? null; ?>" alt="<?php echo $movie['title'] ?? null; ?>">
                         <a href="<?php echo Home::buildLinkFor($movie['bundle'], $movie['uuid']); ?>" title="<?php echo $movie['title'] ?? null; ?>" rel="index" class="card__play">
                             <i class="icon ion-ios-play"></i>
                         </a>

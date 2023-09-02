@@ -1,5 +1,6 @@
 <?php
 use Modules\Modals\Home;
+use Modules\Renders\ImageHandler;
 
 /**
  * This is for new this season
@@ -37,14 +38,14 @@ $newThisSeason = Home::newThisSeasonRandomised();
                         <!-- card -->
                         <div class="card card--big">
                             <div class="card__cover">
-                                <img src="<?php echo $newThis['image'] ?? null; ?>" alt="<?php echo $newThis['title'] ?? null; ?>">
+                                <img src="<?php echo ImageHandler::image($newThis['image']) ?? null; ?>" alt="<?php echo $newThis['title'] ?? null; ?>">
                                 <a href="<?php echo Home::buildLinkFor($newThis['bundle'], $newThis['uuid']) ?? null; ?>" rel="index" title="<?php echo $newThis['title'] ?? null; ?>" class="card__play">
                                     <i class="icon ion-ios-play"></i>
                                 </a>
                             </div>
                             <div class="card__content">
                                 <h3 class="card__title"><a href="<?php echo Home::buildLinkFor($newThis['bundle'], $newThis['uuid']) ?? null; ?>" rel="index"><?php echo $newThis['title'] ?? null; ?></a></h3>
-                                <span class="card__category"><?php $genre = Home::buildGenre($newThis['genre'], $newThis['bundle']); ?>
+                                <span class="card__category"><?php $genre = Home::buildGenre($newThis['genre'] ?? "Unknown", $newThis['bundle']); ?>
 										<?php foreach ($genre as $k=>$value): ?>
 										   <a href="<?php echo $value['link'] ?? null; ?>" rel="nofollow" title="<?php echo $value['title'] ?? null; ?>"><?php echo $value['text'] ?? null; ?></a>
 										<?php endforeach; ?>
@@ -145,7 +146,7 @@ $showsSelectedHighVotes = Home::showsHighVotes();
                             <div class="row">
                                 <div class="col-12 col-sm-4">
                                     <div class="card__cover">
-                                        <img src="<?php echo $newRelease['image'] ?? null; ?>" alt="<?php echo $newRelease['title'] ?? null; ?>">
+                                        <img src="<?php echo ImageHandler::image($newRelease['image']) ?? null; ?>" alt="<?php echo $newRelease['title'] ?? null; ?>">
                                         <a href="<?php echo Home::buildLinkFor($newRelease['bundle'], $newRelease['uuid']) ?? null; ?>" class="card__play">
                                             <i class="icon ion-ios-play"></i>
                                         </a>
@@ -188,7 +189,7 @@ $showsSelectedHighVotes = Home::showsHighVotes();
                     <div class="col-6 col-sm-4 col-lg-3 col-xl-2">
                         <div class="card">
                             <div class="card__cover">
-                                <img src="<?php echo $movieHigh['image'] ?? null; ?>" alt="<?php echo $movieHigh['title'] ?? null; ?>" rel="index">
+                                <img src="<?php echo ImageHandler::image($movieHigh['image']) ?? null; ?>" alt="<?php echo $movieHigh['title'] ?? null; ?>" rel="index">
                                 <a href="<?php echo Home::buildLinkFor($movieHigh['bundle'], $movieHigh['uuid']) ?? null; ?>" title="<?php echo $movieHigh['title'] ?? null; ?>" rel="index" class="card__play">
                                     <i class="icon ion-ios-play"></i>
                                 </a>
@@ -214,7 +215,7 @@ $showsSelectedHighVotes = Home::showsHighVotes();
                     <div class="col-6 col-sm-4 col-lg-3 col-xl-2">
                         <div class="card">
                             <div class="card__cover">
-                                <img src="<?php echo $showHigh['image'] ?? null; ?>" alt="<?php echo $showHigh['title'] ?? null; ?>">
+                                <img src="<?php echo ImageHandler::image($showHigh['image']) ?? null; ?>" alt="<?php echo $showHigh['title'] ?? null; ?>">
                                 <a href="<?php echo Home::buildLinkFor($showHigh['bundle'], $showHigh['uuid']); ?>" rel="index" title="<?php echo $showHigh['title'] ?? null; ?>" class="card__play">
                                     <i class="icon ion-ios-play"></i>
                                 </a>
@@ -243,71 +244,6 @@ $showsSelectedHighVotes = Home::showsHighVotes();
 <?php
 \Core\Router::attachView("pppppppppppppppp");
 ?>
-
-<!-- partners -->
-<section class="section">
-    <div class="container">
-        <div class="row">
-            <!-- section title -->
-            <div class="col-12">
-                <h2 class="section__title section__title--no-margin">Our Partners</h2>
-            </div>
-            <!-- end section title -->
-
-            <!-- section text -->
-            <div class="col-12">
-                <p class="section__text section__text--last-with-margin">It is a long <b>established</b> fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using.</p>
-            </div>
-            <!-- end section text -->
-
-            <!-- partner -->
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                <a href="#" class="partner">
-                    <img src="img/partners/themeforest-light-background.png" alt="" class="partner__img">
-                </a>
-            </div>
-            <!-- end partner -->
-
-            <!-- partner -->
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                <a href="#" class="partner">
-                    <img src="img/partners/audiojungle-light-background.png" alt="" class="partner__img">
-                </a>
-            </div>
-            <!-- end partner -->
-
-            <!-- partner -->
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                <a href="#" class="partner">
-                    <img src="img/partners/codecanyon-light-background.png" alt="" class="partner__img">
-                </a>
-            </div>
-            <!-- end partner -->
-
-            <!-- partner -->
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                <a href="#" class="partner">
-                    <img src="img/partners/photodune-light-background.png" alt="" class="partner__img">
-                </a>
-            </div>
-            <!-- end partner -->
-
-            <!-- partner -->
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                <a href="#" class="partner">
-                    <img src="img/partners/activeden-light-background.png" alt="" class="partner__img">
-                </a>
-            </div>
-            <!-- end partner -->
-
-            <!-- partner -->
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                <a href="#" class="partner">
-                    <img src="img/partners/3docean-light-background.png" alt="" class="partner__img">
-                </a>
-            </div>
-            <!-- end partner -->
-        </div>
-    </div>
-</section>
-<!-- end partners -->
+<?php
+require_once "Views/main/components/patners.php";
+?>

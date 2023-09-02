@@ -1,7 +1,7 @@
 const requestSearchTag = document.getElementById('search-request');
 
 if(requestSearchTag !== null){
-    requestSearchTag.addEventListener('blur', (e)=>{
+    requestSearchTag.addEventListener('input', (e)=>{
         const params = new URLSearchParams({q: e.target.value});
         requestSender(params);
     })
@@ -18,7 +18,7 @@ function requestSender(params){
             if(result.length > 0){
                 document.getElementById('request-search-boxes').innerHTML = "";
                 result.forEach((item)=>{
-                    cards(item);
+                    grids(item);
                 })
             }
 
@@ -58,6 +58,35 @@ function cards(item){
     const row = document.getElementById('request-search-boxes');
     if(row !== null)
     {
+        row.appendChild(div);
+    }
+}
+
+
+function grids(item){
+    const image = item.poster_path || item.backdrop_path;
+    let title = item.title || item.original_name;
+    const params = new URLSearchParams(item);
+
+    const grid = `
+                <div class="card">
+                    <div class="card__cover">
+                        <img src="https://image.tmdb.org/t/p/w500${image}" alt="${title}">
+                        <a href="/user-request-stream-studios-fligo?${params}" title="${title}" rel="nofollow" class="card__play">
+                            <i class="icon ion-ios-play"></i>
+                        </a>
+                    </div>
+                    <div class="card__content">
+                        <h3 class="card__title"><a href="/user-request-stream-studios-fligo?${params}">${title}</a></h3>
+                    </div>
+                </div>
+            `;
+    const row = document.getElementById('request-search-boxes');
+    if(row !== null)
+    {
+        const div = document.createElement("div");
+        div.className = "col-6 col-sm-4 col-lg-3 col-xl-2";
+        div.innerHTML = grid;
         row.appendChild(div);
     }
 }

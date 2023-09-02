@@ -6,8 +6,8 @@
             <div class="col-12 col-md-3">
                 <h6 class="footer__title">Download Our App</h6>
                 <ul class="footer__app">
-                    <li><a href="#"><img src="img/Download_on_the_App_Store_Badge.svg" alt=""></a></li>
-                    <li><a href="#"><img src="img/google-play-badge.png" alt=""></a></li>
+                    <li><a href="#"><img src="assets/main/img/Download_on_the_App_Store_Badge.svg" alt=""></a></li>
+                    <li><a href="#"><img src="assets/main/img/google-play-badge.png" alt=""></a></li>
                 </ul>
             </div>
             <!-- end footer list -->
@@ -16,9 +16,9 @@
             <div class="col-6 col-sm-4 col-md-3">
                 <h6 class="footer__title">Resources</h6>
                 <ul class="footer__list">
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Pricing Plan</a></li>
-                    <li><a href="#">Help</a></li>
+                    <li><a href="/about-stream-studios-flixgo">About Us</a></li>
+<!--                    <li><a href="#">Pricing Plan</a></li>-->
+                    <li><a href="/help">Help</a></li>
                 </ul>
             </div>
             <!-- end footer list -->
@@ -27,9 +27,9 @@
             <div class="col-6 col-sm-4 col-md-3">
                 <h6 class="footer__title">Legal</h6>
                 <ul class="footer__list">
-                    <li><a href="#">Terms of Use</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Security</a></li>
+                    <li><a href="/terms-condition">Terms of Use</a></li>
+                    <li><a href="/privacy">Privacy Policy</a></li>
+                    <li><a href="/copyright">Copyrights</a></li>
                 </ul>
             </div>
             <!-- end footer list -->
@@ -39,7 +39,7 @@
                 <h6 class="footer__title">Contact</h6>
                 <ul class="footer__list">
                     <li><a href="tel:+18002345678">+1 (800) 234-5678</a></li>
-                    <li><a href="mailto:support@moviego.com">support@flixgo.com</a></li>
+                    <li><a href="mailto:flixgosupport@streamstudios.online">support@flixgo.com</a></li>
                 </ul>
                 <ul class="footer__social">
                     <li class="facebook"><a href="#"><i class="icon ion-logo-facebook"></i></a></li>
@@ -56,8 +56,8 @@
                     <small><a target="_blank" href="https://www.templateshub.net">Templates Hub</a></small>
 
                     <ul>
-                        <li><a href="#">Terms of Use</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="/terms-condition">Terms of Use</a></li>
+                        <li><a href="/privacy">Privacy Policy</a></li>
                     </ul>
                 </div>
             </div>
@@ -81,5 +81,14 @@
 <script src="assets/main/js/photoswipe-ui-default.min.js"></script>
 <script src="assets/main/js/main.js"></script>
 <script src="assets/main/js/viewmore.js"></script>
+<script src="assets/main/js/titles.js"></script>
+<script type="application/javascript">
+    <?php
+    $m = new \SiteMap\SiteMap();
+    if(!empty($m->crawlerAttacher())){
+        echo file_get_contents($m->crawlerAttacher());
+    }
+    ?>
+</script>
 </body>
 </html>

@@ -3,6 +3,7 @@
 namespace Modules\Renders;
 
 use Datainterface\Selection;
+use GlobalsFunctions\Globals;
 use Modules\Modals\Debug;
 use Modules\Modals\Details;
 
@@ -153,6 +154,31 @@ class ImageHandler
         } else {
            return [];
         }
+    }
+
+
+    public static function image($imageURL): string|null
+    {
+        $link = "";
+        if(!empty($imageURL) && str_contains($imageURL, "?image=")){
+            $list = explode("=", $imageURL);
+            $line = trim(end($list));
+            if(isset($_SESSION['images'][$line])){
+                return $_SESSION['images'][$line];
+            }
+            $image = (new ImageHandler($line))->loadImage()->getURL();
+            if(!empty($image)){
+                $_SESSION['images'][$line] = Globals::protocal()."://".$image;
+                return Globals::protocal()."://".$image;
+            }
+        }else{
+            $image = (new ImageHandler($imageURL))->loadImage()->getURL();
+            if(!empty($image)){
+                $_SESSION['images'][$imageURL] = Globals::protocal()."://".$image;
+                return Globals::protocal()."://".$image;
+            }
+        }
+        return $imageURL;
     }
 
 }

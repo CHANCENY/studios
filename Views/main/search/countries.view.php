@@ -4,15 +4,24 @@
 use GlobalsFunctions\Globals;
 use Modules\Modals\Home;
 use Modules\Modals\Searches;
+use Modules\Renders\ImageHandler;
 
 
+$genre = "US";
+$type = "shows";
+$tag = false;
 
-if(empty(Globals::get('country')) || empty(Globals::get('type'))){
-    Globals::redirect('home');
+if(!empty(Globals::get('country')) && !empty(Globals::get('type'))){
+    $genre = Globals::get('country');
+    $type = Globals::get('type');
 }
-$genre = Globals::get('country');
-$type = Globals::get('type');
+
 $moviesLists = (new Searches($genre, $type))->searchByCountry();
+if(empty(Globals::get('country')) && empty(Globals::get('type'))){
+    $newList = array_chunk($moviesLists,30);
+    $moviesLists = $newList[random_int(0, count($newList) - 1)];
+    $tag = true;
+}
 ?>
 <!-- page title -->
 <section class="section section--first section--bg" data-bg="img/section/section.jpg">
@@ -38,6 +47,10 @@ $moviesLists = (new Searches($genre, $type))->searchByCountry();
 <!-- end page title -->
 <?php \Core\Router::attachView("ffffffffffffffffffffffff"); ?>
 
+<?php if($tag): ?>
+<?php \Core\Router::attachView('coun-yyyyyyyyyyyyyyyyyyyyy',['tag'=>'countries', 'url'=>Globals::url(), 'params'=>'country']); ?>
+<?php endif; ?>
+
 <?php if($type === 'movies'): ?>
     <!-- catalog -->
     <div class="catalog">
@@ -48,7 +61,7 @@ $moviesLists = (new Searches($genre, $type))->searchByCountry();
                     <!-- card --><div class="col-6 col-sm-4 col-lg-3 col-xl-2">
                     <div class="card">
                         <div class="card__cover">
-                            <img src="<?php echo $movie['image'] ?? null; ?>" alt="<?php echo $movie['title'] ?? null; ?>">
+                            <img src="<?php echo  ImageHandler::image($movie['image']); ?>" alt="<?php echo $movie['title'] ?? null; ?>">
                             <a href="<?php echo Home::buildLinkFor($movie['bundle'], $movie['uuid']); ?>" title="<?php echo $movie['title'] ?? null; ?>" rel="index" class="card__play">
                                 <i class="icon ion-ios-play"></i>
                             </a>
@@ -79,7 +92,7 @@ $moviesLists = (new Searches($genre, $type))->searchByCountry();
                     <!-- card --><div class="col-6 col-sm-4 col-lg-3 col-xl-2">
                     <div class="card">
                         <div class="card__cover">
-                            <img src="<?php echo $show['image'] ?? null; ?>" alt="<?php echo $show['title'] ?? null; ?>">
+                            <img src="<?php echo  ImageHandler::image($show['image']); ?>" alt="<?php echo $show['title'] ?? null; ?>">
                             <a href="<?php echo Home::buildLinkFor($show['bundle'], $show['uuid']); ?>" title="<?php echo $show['title'] ?? null; ?>" rel="index" class="card__play">
                                 <i class="icon ion-ios-play"></i>
                             </a>

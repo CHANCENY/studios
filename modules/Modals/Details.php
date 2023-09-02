@@ -6,8 +6,11 @@ use Datainterface\Database;
 use Datainterface\Insertion;
 use Datainterface\MysqlDynamicTables;
 use Datainterface\Query;
+use Datainterface\Selection;
+use Datainterface\Tables;
 use Json\Json;
 use Modules\Imports\Additionals;
+use Modules\Imports\ImportHandler;
 use Modules\Renders\ImageHandler;
 use Modules\Shows\ShowsHandlers;
 use function functions\config;
@@ -94,6 +97,7 @@ class Details
 
     public function getReleaseDate(): \DateTime|null
     {
+        print_r($this->entity[0]['release_date']);
         if(!empty($this->entity[0]['release_date'])){
             return (new \DateTime($this->entity[0]['release_date']));
         }
@@ -209,14 +213,14 @@ class Details
     }
 
 
-    public function getShowsInfo($show_id): array
+    public function getShowsInfo($show_id, $emptyIgnore = false): array
     {
-        $showInfo = (new ShowsHandlers())->getSeasons($show_id);
+        $showInfo = (new ShowsHandlers())->getSeasons($show_id, $emptyIgnore);
 
         $collection = [];
         foreach ($showInfo as $key=>$value){
             $temp = $value;
-            $episodes = (new ShowsHandlers())->getEpisodes($value['season_id']);
+            $episodes = (new ShowsHandlers())->getEpisodes($value['season_id'], $emptyIgnore);
             $temp['episodes_found'] = $episodes;
             $collection[] = $temp;
         }
@@ -229,6 +233,112 @@ class Details
         return $this->entity[0]['trailers'] ?? "";
     }
 
+    public function remoteInfo(string $string, $id)
+    {
+
+        if(Tables::tablesExists(['expected_premiers'])){
+            $this->entity = Selection::selectById("expected_premiers", ['tmID'=>$id]);
+            if(!empty($this->entity)){
+                return $this;
+            }
+        }
+        if($string === "movies"){
+            $authToken = \functions\config('TMDB');
+            $curl = curl_init();
+            curl_setopt_array($curl, [
+                CURLOPT_URL => "https://api.themoviedb.org/3/movie/$id?language=en-US",
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "GET",
+                CURLOPT_HTTPHEADER => [
+                    "Authorization: $authToken",
+                    "accept: application/json"
+                ],
+            ]);
+            $response =json_decode( curl_exec($curl), true);
+            $err = curl_error($curl);
+            curl_close($curl);
+
+           $this->entity['overview'] = $response['overview'] ?? null;
+           $this->entity['title'] = $response['title'] ?? $response['original_title'] ?? null;
+           $this->entity['release_date'] = $response['release_date'] ?? date('dY-m-d');
+           $this->entity['duration'] = $response['runtime'] ?? 0;
+           $this->entity['rating'] = $response['vote_average'] ?? 0.0;
+           $this->entity['vote'] = $response['vote_count'] ?? 0;
+           $this->entity['popularity'] = $response['popularity'] ?? null;
+           $this->entity['image'] ="https://image.tmdb.org/t/p/w500". $response['poster_path'] ?? $response['backdrop_path'];
+           $this->entity['lang'] = $response['original_language'] ?? null;
+
+           $countries = $response['production_countries'] ?? [];
+           $list = [];
+           foreach ($countries as $key=>$value){
+              $list[] = $value['iso_3166_1'] ?? "";
+           }
+           $this->entity['countries'] = implode(',', $list);
+
+           $genres = $response['genres'] ?? [];
+           $list = [];
+           foreach ($genres as $key=>$value){
+               $list[] = $value['name'] ?? "";
+           }
+           $this->entity['genre'] = implode('|', $list);
+           $this->entity['tmID'] = $response['id'] ?? null;
+
+
+            $curl = curl_init();
+            curl_setopt_array($curl, [
+                CURLOPT_URL => "https://api.themoviedb.org/3/movie/$id/videos?language=en-US",
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "GET",
+                CURLOPT_HTTPHEADER => [
+                    "Authorization: $authToken",
+                    "accept: application/json"
+                ],
+            ]);
+
+            $responses = json_decode(curl_exec($curl), true);
+            $err = curl_error($curl);
+            curl_close($curl);
+
+            $trailers = [];
+            if(!empty($responses['results'])){
+                foreach ($responses['results'] as $key=>$value){
+                    if(gettype($value) === 'array'){
+                        if(isset($value['type']) &&
+                            isset($value['official']) &&
+                            isset($value['site']) &&
+                            isset($value['key']) &&
+                            $value['type'] === "Trailer" &&
+                            $value['official'] === true &&
+                            $value['site'] === "YouTube" &&
+                            !empty($value['key'])){
+                          $trailers[] = "https://www.youtube.com/watch?v={$value['key']}";
+                        }
+                    }
+                }
+            }
+            $this->entity['trailers'] = implode(',',$trailers);
+            $columns = array_keys($this->entity);
+            $attributes = [];
+
+            foreach ($columns as $key=>$value){
+              $attributes[$value]=['varchar(300)', 'null'];
+            }
+
+            (new MysqlDynamicTables())->resolver(Database::database(), $columns, $attributes, "expected_premiers", true);
+            Insertion::insertRow("expected_premiers", $this->entity);
+            $this->entity = [];
+            $this->remoteInfo($string, $id);
+            return $this;
+        }
+    }
 
 
 }

@@ -31,8 +31,8 @@ class Playing
             $type = "shows";
         }
         $token = Json::uuid();
-        $_SESSION['playing'][Globals::user()[0]['uid']][$token] =['id'=>$uid, 'type'=>$type];
-        return "/stream-studio-playing?play=$token";
+        $_SESSION['playing'][$token] =['id'=>$uid, 'type'=>$type];
+        return "/stream-studio-playing?play=$uid&type=$type";
     }
 
 
@@ -52,8 +52,8 @@ class Playing
     public function episodeLink($uuid): string
     {
         $token = Json::uuid();
-        $_SESSION['playing'][Globals::user()[0]['uid']][$token] =['id'=>$uuid, 'type'=>"episode"];
-        return "/stream-studio-playing?play=$token";
+        $_SESSION['playing'][$token] =['id'=>$uuid, 'type'=>"episode"];
+        return "/stream-studio-playing?play=$uuid&type=episode";
     }
 
     public function load(array $data): Playing
@@ -100,7 +100,7 @@ class Playing
 
     public function overview(): string
     {
-        return $this->player['description'];
+        return $this->player['description']?? "";
     }
 
 

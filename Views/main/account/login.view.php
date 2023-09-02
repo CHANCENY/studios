@@ -6,6 +6,8 @@ use GlobalsFunctions\Globals;
 ob_clean();
 ob_flush();
 
+@session_start();
+
 $message = "";
 if(Globals::method() === "POST" && !empty(Globals::post('sign-stream-studios')))
 {
@@ -72,7 +74,7 @@ if(Globals::method() === "POST" && !empty(Globals::post('sign-stream-studios')))
     <meta name="description" content="">
     <meta name="keywords" content="">
     <meta name="author" content="Dmitry Volkov">
-    <title>FlixGo – Online Movies, TV Shows & Cinema HTML Template</title>
+    <title>FlixGo – Online Movies, TV Shows</title>
 
 </head>
 <body class="body">

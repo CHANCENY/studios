@@ -63,7 +63,7 @@ class RegisterUser
                   "altbody" => \GlobalsFunctions\Globals::titleView(),
                   "user" => array($data['mail']),
               ];
-              if(Mails::send($mail)){
+              if(Mails::send($mail, 'notify')){
                   return TRUE;
               }
           }

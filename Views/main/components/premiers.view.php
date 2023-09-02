@@ -5,7 +5,10 @@ use Modules\Modals\Home;
  */
 $expectedList = Home::newPremierMovies();
 $chucked = array_chunk($expectedList,6);
-$expectedList = $chucked[0];
+
+if(!empty($chucked)){
+    $expectedList = $chucked[0];
+}
 ?>
 <!-- expected premiere -->
 <section class="section section--bg" data-bg="assets/main/img/section/section.jpg">

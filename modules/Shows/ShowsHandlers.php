@@ -183,12 +183,20 @@ class ShowsHandlers extends Storage
 
    public function getSeason($show_id):array
    {
-       return Selection::selectById($this->schema['tables'][3], ['show_id'=>$show_id]) ?? [];
+        if($emptys){
+           $query = "SELECT * FROM {$this->schema['tables'][3]} WHERE show_id = :id AND season_number != :nu";
+       return Query::query($query, ['id'=>$show_id, 'nu'=>0]);  
+       }
+       return Selection::selectById($this->schema['tables'][3],['show_id'=>$show_id]) ?? [];
    }
 
-   public function getEpisodes(int $season_id): array
+   public function getEpisodes(int $season_id, $emptys = false): array
    {
-       return Selection::selectById($this->schema['tables'][4],['season_id'=>$season_id]) ?? [];
+       if($emptys){
+            $query = "SELECT * FROM {$this->schema['tables'][4]} WHERE season_id = :id AND publish = :publish AND url IS NOT NULL";
+            return Query::query($query,['id'=>$season_id, 'publish'=>'yes']);
+       }
+        return Selection::selectById($this->schema['tables'][4],['season_id'=>$season_id]) ?? [];
    }
 
    public function getEpisode(int $episode_id): array
@@ -196,8 +204,12 @@ class ShowsHandlers extends Storage
        return Selection::selectById($this->schema['tables'][4],['episode_id'=>$episode_id]) ?? [];
    }
 
-   public function getSeasons(int $show_id): array
+   public function getSeasons(int $show_id, $emptys = false): array
    {
+       if($emptys){
+           $query = "SELECT * FROM {$this->schema['tables'][3]} WHERE show_id = :id AND season_number != :nu";
+       return Query::query($query, ['id'=>$show_id, 'nu'=>0]);  
+       }
        return Selection::selectById($this->schema['tables'][3],['show_id'=>$show_id]) ?? [];
    }
 
@@ -208,7 +220,10 @@ class ShowsHandlers extends Storage
        foreach ($seasons as $key=>$value){
            $sid = $value['season_id'];
            $episodes = $this->getEpisodes($sid);
-           $fullShow[$value['season_name']] = $episodes;
+
+           if(!empty($episodes)) {
+               $fullShow[$value['season_name']] = $episodes;
+           }
        }
        return $fullShow;
    }

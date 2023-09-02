@@ -55,6 +55,8 @@ class ImagesMigrator
       foreach ($result3 as $key=>$value){
           $images["episodes"][] = $value;
       }
+      
+    
       return $images;
   }
 
@@ -112,6 +114,7 @@ class ImagesMigrator
       }
       return false;
   }
+
 
   private function dirCreation($dir): bool
   {
@@ -224,8 +227,9 @@ class ImagesMigrator
 
     private function url(string $newId)
     {
-        return Globals::protocal()."://".Globals::serverHost()."/".Globals::home()."/img?image=$newId";
+        return Globals::protocal()."://".Globals::serverHost()."/img?image=$newId";
     }
+
 
     private function convertFromShows(string $dir, mixed $value): int|bool
     {
@@ -254,6 +258,7 @@ class ImagesMigrator
         return false;
     }
 
+
     private function convertFromSeasons(string $dir, mixed $value): int|bool
     {
         if(!empty($dir) && !empty($value)){
@@ -279,6 +284,7 @@ class ImagesMigrator
         }
         return false;
     }
+
 
     private function convertFromEpisodes(string $dir, mixed $value): int|bool
     {

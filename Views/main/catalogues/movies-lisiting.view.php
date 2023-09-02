@@ -3,7 +3,7 @@
 
 ?>
 <!-- page title -->
-<section class="section section--first section--bg" data-bg="img/section/section.jpg">
+<section class="section section--first section--bg" data-bg="assets/main/img/section/section.jpg">
     <div class="container">
         <div class="row">
             <div class="col-12">
@@ -27,6 +27,7 @@
 
 <?php \Core\Router::attachView("ffffffffffffffffffffffff");
 use Modules\Modals\Home;
+use Modules\Renders\ImageHandler;
 
 $data = \Modules\Modals\Catalogues::catalogueLists();
 $moviesLists = $data['data'];
@@ -42,7 +43,7 @@ $moviesLists = $data['data'];
                     <div class="row">
                         <div class="col-12 col-sm-4">
                             <div class="card__cover">
-                                <img src="<?php echo $movie['image'] ?? null; ?>" alt="<?php echo $movie['title'] ?? null; ?>">
+                                <img src="<?php echo ImageHandler::image($movie['image']) ?? null; ?>" alt="<?php echo $movie['title'] ?? null; ?>">
                                 <a href="<?php echo Home::buildLinkFor($movie['bundle'], $movie['uuid']); ?>" title="<?php echo $movie['title'] ?? null; ?>" class="card__play">
                                     <i class="icon ion-ios-play"></i>
                                 </a>

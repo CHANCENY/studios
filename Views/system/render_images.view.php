@@ -12,7 +12,8 @@ $image = Globals::get("image");
  * Check if paramater has value
  */
 if(!empty($image)){
-
+    
+  
     /**
      * Try by copy
      */
@@ -21,16 +22,20 @@ if(!empty($image)){
         transFerImage($copyImage);
     }
 
+
     /**
      * load image and read it content
      */
     $imageFound = (new \Modules\Renders\ImageHandler($image))->loadImage();
-
+    
+     
     if(!$imageFound->isError()){
         /**
          * read to send image
          */
-        $imageFound->setCopy($imageFound);
+      
+
+       // $imageFound->setCopy($imageFound);
         transFerImage(['extension'=>$imageFound->getExtension(), 'path'=>$imageFound->getPath()]);
         unset($imageFound);
     }
@@ -52,6 +57,7 @@ function transFerImage(array $image): void
     header('Last-Modified: ' . gmdate('D, d M Y H:i:s', filemtime($image['path'])) . ' GMT');
     header('ETag: ' . md5(filemtime($image['path'])));
     header("Content-Type: image/{$image['extension']}");
+      
     readfile($image['path']);
     exit;
 }

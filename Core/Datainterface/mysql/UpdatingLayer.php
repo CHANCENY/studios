@@ -7,6 +7,7 @@ use Datainterface\Updating;
 class UpdatingLayer extends InsertionLayer
 {
     private bool $result;
+    private array $key;
 
     public function keys(array $keyValue) : UpdatingLayer{
         $this->key = $keyValue;

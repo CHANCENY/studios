@@ -1,13 +1,30 @@
-<?php use GlobalsFunctions\Globals;
+<?php
+@session_start();
+use GlobalsFunctions\Globals;
+use Modules\Renders\SEOTags;
 
-@session_start(); ?>
+@session_start();
+
+global $token;
+
+/**
+ * Token to be use to set data for seo and token to send via XMLHTTP to get seo data
+ */
+
+$token = Globals::protocal() . "://" . Globals::serverHost() . Globals::uri();
+$seoData = (new SEOTags($token))->process()->seo();
+
+if (empty($seoData)) {
+    $seoData = SEOTags::findUnSavedSEO();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+    <meta name="url" content="<?php echo SEOTags::token(); ?>">
     <!-- Font -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600%7CUbuntu:300,400,500,700" rel="stylesheet">
 
@@ -33,10 +50,20 @@
     <link rel="apple-touch-icon" sizes="114x114" href="assets/main/icon/apple-touch-icon-114x114.png">
     <link rel="apple-touch-icon" sizes="144x144" href="assets/main/icon/apple-touch-icon-144x144.png">
 
-    <meta name="description" content="">
-    <meta name="keywords" content="">
-    <meta name="author" content="Dmitry Volkov">
-    <title>FlixGo – Online Movies, TV Shows & Cinema HTML Template</title>
+    <title id="titlepage"><?php echo Globals::viewTitleOnRequest(); ?></title>
+
+    <!--Meta tag dynamics-->
+    <?php $path = Globals::urlComponents($_SERVER['REQUEST_URI'])['path'];
+    $url = explode('/', $path);
+    $url = end($url);
+    echo \Core\RouteConfiguration::appendMetatags($url);
+    echo $seoData;
+    ?>
+    <!-- end meta -->
+
+    <!--shareThis-->
+    <script type='text/javascript' src='https://platform-api.sharethis.com/js/sharethis.js#property=64e6383e0ba20000199f7568&product=inline-share-buttons' async='async'></script>
+    <!-- end shareThis -->
 
 </head>
 <body class="body">
@@ -80,12 +107,12 @@
                             </li>
                             <!-- end dropdown -->
 
-                            <li class="header__nav-item">
-                                <a href="pricing.html" class="header__nav-link">Pricing Plan</a>
-                            </li>
+<!--                            <li class="header__nav-item">-->
+<!--                                <a href="pricing.html" class="header__nav-link">Pricing Plan</a>-->
+<!--                            </li>-->
 
                             <li class="header__nav-item">
-                                <a href="faq.html" class="header__nav-link">Help</a>
+                                <a href="/help" class="header__nav-link">Help</a>
                             </li>
 
                             <!-- dropdown -->
@@ -93,8 +120,10 @@
                                 <a class="dropdown-toggle header__nav-link header__nav-link--more" href="#" role="button" id="dropdownMenuMore" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="icon ion-ios-more"></i></a>
 
                                 <ul class="dropdown-menu header__dropdown-menu" aria-labelledby="dropdownMenuMore">
-                                    <li><a href="about.html">About</a></li>
-                                    <li><a href="404.html">404 Page</a></li>
+                                    <li><a href="/how-to-navigate-here-at-stream-studios">Navigation Help</a></li>
+                                    <?php if(empty(Globals::user())): ?>
+                                    <li><a href="stream-studios-join">Sign Up</a></li>
+                                    <?php endif; ?>
                                 </ul>
                             </li>
                             <!-- end dropdown -->

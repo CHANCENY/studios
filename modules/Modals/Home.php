@@ -13,9 +13,7 @@ class Home
        /**
         * Will session result check first to return
         */
-//       if(isset($_SESSION['new_release_movies'])){
-//           return $_SESSION['new_release_movies'];
-//       }
+
 
        $params = "m.title AS title, m.movie_image AS image, m.description AS overview, 
        a.vote_average AS rating, m.movie_uuid AS uuid, a.genres AS genre, a.bundle AS bundle";
@@ -33,9 +31,6 @@ class Home
         /**
          * Will session result check first to return
          */
-//        if(isset($_SESSION['new_release_shows'])){
-//            return $_SESSION['new_release_shows'];
-//        }
 
         $params = "m.title AS title, m.show_image AS image, m.description AS overview, 
        a.vote_average AS rating, m.show_uuid AS uuid, a.genres AS genre, a.bundle AS bundle";
@@ -44,7 +39,7 @@ class Home
           WHERE a.bundle = 'shows' ORDER BY m.release_date DESC LIMIT 3";
         $data = Query::query($query);
 
-        $_SESSION['new_release_shows'] = $data;
+       // $_SESSION['new_release_shows'] = $data;
         return $data;
     }
 
@@ -53,9 +48,6 @@ class Home
         /**
          * Will session result check first to return
          */
-//        if(isset($_SESSION['new_release_movies_high'])){
-//            return $_SESSION['new_release_movies_high'];
-//        }
 
         $params = "m.title AS title, m.movie_image AS image, m.description AS overview, 
        a.vote_average AS rating, m.movie_uuid AS uuid, a.genres AS genre, a.bundle AS bundle";
@@ -64,7 +56,7 @@ class Home
          WHERE a.bundle = 'movies' ORDER BY a.vote_average DESC LIMIT 12";
         $data = Query::query($query);
 
-        $_SESSION['new_release_movies_high'] = $data;
+       // $_SESSION['new_release_movies_high'] = $data;
         return $data;
     }
 
@@ -73,9 +65,6 @@ class Home
         /**
          * Will session result check first to return
          */
-//        if(isset($_SESSION['new_release_shows_high'])){
-//            return $_SESSION['new_release_shows_high'];
-//        }
 
         $params = "m.title AS title, m.show_image AS image, m.description AS overview, 
        a.vote_average AS rating, m.show_uuid AS uuid, a.genres AS genre, a.bundle AS bundle";
@@ -84,7 +73,7 @@ class Home
          WHERE a.bundle = 'shows' ORDER BY a.vote_average DESC LIMIT 12";
         $data = Query::query($query);
 
-        $_SESSION['new_release_shows_high'] = $data;
+       // $_SESSION['new_release_shows_high'] = $data;
         return $data;
     }
 
@@ -93,9 +82,6 @@ class Home
         /**
          * Will session result check first to return
          */
-//        if(isset($_SESSION['new_release_new_this_season'])){
-//            return $_SESSION['new_release_new_this_season'];
-//        }
 
         $params = "m.title AS title, m.show_image AS image, m.description AS overview, 
        a.vote_average AS rating, m.show_uuid AS uuid, a.genres AS genre, a.bundle AS bundle";
@@ -113,7 +99,7 @@ class Home
         $data1 = Query::query($query);
 
         $combine = array_merge($data, $data1);
-        $_SESSION['new_release_new_this_season'] = $combine;
+        //$_SESSION['new_release_new_this_season'] = $combine;
 
         shuffle($combine);
         return $combine;
@@ -124,14 +110,11 @@ class Home
         /**
          * Will session result check first to return
          */
-//        if(isset($_SESSION['new_expected_pre'])){
-//            return $_SESSION['new_expected_pre'];
-//        }
 
         $authToken = \functions\config('TMDB');
 
         $movies = [];
-
+        $returnData = [];
         for($i = 1; $i < 5; $i++){
             $curl = curl_init();
             curl_setopt_array($curl, [
@@ -191,8 +174,6 @@ class Home
                 $returnData[] = $value;
             }
         }
-
-        $_SESSION['new_expected_pre'] = $returnData;
         return $returnData;
     }
 
@@ -233,7 +214,7 @@ class Home
      * @param string $genre action|comedy
      * @return array
      */
-    public static function buildGenre(string $genre, string $bundle = "movies"): array
+    public static function buildGenre(string|null $genre, string $bundle = "movies"): array
     {
         $genres = [];
        if(!empty($genre)){
@@ -270,7 +251,7 @@ class Home
     }
 
 
-    public static function buildCountryLink(string $countries, $bundle = "movies"): array
+    public static function buildCountryLink(string|null $countries, $bundle = "movies"): array
     {
         $country = [];
         if(!empty($countries)){

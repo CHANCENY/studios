@@ -4,7 +4,7 @@ use Modules\Comments\Comments;
 
 @session_start();
 
-if(empty(Globals::user())){
+if(Globals::method() === "POST" && empty(Globals::user())){
     Globals::redirect('login-user-at-stream-studios?destination='. Globals::uri());
 }
 

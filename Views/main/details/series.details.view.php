@@ -1,6 +1,7 @@
 <?php
 
 use GlobalsFunctions\Globals;
+use Modules\Renders\ImageHandler;
 
 if(empty(Globals::get('series-id'))){
     Globals::redirect(Globals::home());
@@ -13,7 +14,7 @@ $show = (new \Modules\Modals\Details(Globals::get("series-id")))->load("shows");
 $moreImages = $show->getMorePhotos();
 $reviews = $show->reviews();
 $youMayLike = $show->getYouMayLike();
-$collectionAll = $show->getShowsInfo($show->id());
+$collectionAll = $show->getShowsInfo($show->id(), true);
 
 $videos = $show->getVideoTrailers();
 $ids = [];
@@ -44,7 +45,7 @@ foreach ($videos as $key=>$value){
                         <!-- card cover -->
                         <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3">
                             <div class="card__cover">
-                                <img src="<?php echo $show->getImage(); ?>" alt="<?php echo $show->getTitle(); ?>">
+                                <img src="<?php echo ImageHandler::image($show->getImage()) ?? null; ?>" alt="<?php echo $show->getTitle(); ?>">
                             </div>
                         </div>
                         <!-- end card cover -->
@@ -145,10 +146,18 @@ foreach ($videos as $key=>$value){
                         <span class="details__share-title">Share with friends:</span>
 
                         <ul class="details__share-list">
-                            <li class="facebook"><a href="#"><i class="icon ion-logo-facebook"></i></a></li>
-                            <li class="instagram"><a href="#"><i class="icon ion-logo-instagram"></i></a></li>
-                            <li class="twitter"><a href="#"><i class="icon ion-logo-twitter"></i></a></li>
-                            <li class="vk"><a href="#"><i class="icon ion-logo-vk"></i></a></li>
+                            <li class="facebook">
+                                <div class="st-custom-button" data-network="facebook"><a href="#"><i class="icon ion-logo-facebook"></i></a></div>
+                            </li>
+                            <li class="twitter">
+                                <div class="st-custom-button" data-network="twitter"><a href="#"><i class="icon ion-logo-twitter"></i></a></div>
+                            </li>
+                            <li class="vk">
+                                <div class="st-custom-button" data-network="vk"><a href="#"><i class="icon ion-logo-vk"></i></a></div>
+                            </li>
+                             <li class="instagram">
+                                 <div class="st-custom-button" data-network="sharethis"><a href="#"><i class="icon ion-ios-more"></i></a></div>
+                            </li>
                         </ul>
                     </div>
                     <!-- end share -->
@@ -287,7 +296,7 @@ foreach ($videos as $key=>$value){
                         <div class="col-6 col-sm-4 col-lg-6">
                             <div class="card">
                                 <div class="card__cover">
-                                    <img src="<?php echo $value['image'] ?? null; ?>" alt="<?php echo $value['title'] ?? null; ?>">
+                                    <img src="<?php echo ImageHandler::image($value['image']) ?? null; ?>" alt="<?php echo $value['title'] ?? null; ?>">
                                     <a href="<?php echo \Modules\Modals\Home::buildLinkFor($value['bundle'], $value['uuid']) ?? null; ?>" class="card__play">
                                         <i class="icon ion-ios-play"></i>
                                     </a>
