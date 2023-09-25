@@ -26,12 +26,19 @@ if(Globals::method() === "POST" && !empty(Globals::post("submit-profile")))
             $uid = Insertion::insertRow("users", $data);
         }
         unset($data);
+        $birthday = Globals::post("birthday");
+        if(!empty($birthday))
+        {
+            $birthday = str_replace("/", "-", $birthday);
+            $d = (new \DateTime($birthday))->format("d M, Y");
+            $data['birthday'] = $d;
+        }else{
+            $data['birthday'] = "";
+        }
         $data['country'] = Globals::post("country");
         $data['state'] = Globals::post("state");
         $data['zip'] = Globals::post("zip");
         $data['gender'] = Globals::post("gender");
-        $d = (new \DateTime(Globals::post("birthday")))->format("d M, Y");
-        $data['birthday'] = $d;
         $data['uid'] = $uid;
 
         (new MysqlDynamicTables())->resolver(
@@ -63,7 +70,7 @@ if(Globals::method() === "POST" && !empty(Globals::post("submit-profile")))
 
         if(in_array(true, $flag))
         {
-            Globals::redirect("logout");
+            Globals::redirect("/users");
         }else{
             Globals::redirect("edit-profile?user=$uid");
         }

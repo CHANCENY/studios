@@ -119,10 +119,6 @@ function currentUser()
     const xhr = new XMLHttpRequest();
     const user = params.get("user");
     let url = "/current-user";
-    if(user !== null)
-    {
-        url += "?user="+user;
-    }
     xhr.open("GET", url, false);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.setRequestHeader("s-key", token);
@@ -162,14 +158,6 @@ function currentUser()
                 const pEdit = document.getElementById("img-profile");
                 const pImage = document.getElementById("profile-imagep");
                 const pEditing = document.getElementById("edit-profile");
-
-                const imagePin = document.getElementById("profile-image-input");
-                const pPhonein = document.getElementById("profile-phone-input");
-                const pAddressin = document.getElementById("profile-address-input");
-                const pGenderin = document.getElementById("profile-gender-input");
-                const pBirthdayin = document.getElementById("profile-birthday-input");
-                const pFirstnamein = document.getElementById("profile-firstname-input");
-                const pLastnamein = document.getElementById("profile-lastname-input")
 
                 if(imageP !== null)
                 {
@@ -226,6 +214,36 @@ function currentUser()
                     pEditing.href = "edit-profile?user="+data.uid;
                 }
 
+            }catch (e) {
+                console.error(e.message);
+            }
+        }
+    }
+    xhr.send();
+}
+
+function userToEdit(uid)
+{
+    const token = getCookie('token_skey');
+    let url = "/current-user?user="+uid;
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", url, false);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.setRequestHeader("s-key", token);
+    xhr.onload = function (){
+        if(this.status === 200)
+        {
+            let data = [];
+            try {
+                data = JSON.parse(this.responseText);
+                const imagePin = document.getElementById("profile-image-input");
+                const pPhonein = document.getElementById("profile-phone-input");
+                const pAddressin = document.getElementById("profile-address-input");
+                const pGenderin = document.getElementById("profile-gender-input");
+                const pBirthdayin = document.getElementById("profile-birthday-input");
+                const pFirstnamein = document.getElementById("profile-firstname-input");
+                const pLastnamein = document.getElementById("profile-lastname-input")
+
                 if(imagePin !== null)
                 {
                     imagePin.src = data.image || "assets/img/user.jpg";
@@ -264,6 +282,11 @@ function currentUser()
 }
 
 currentUser();
+
+if(urlString.includes("edit-profile?user"))
+{
+    userToEdit(params.get("user"));
+}
 
 function uploadCurrentUserImage() {
     const fileInput = document.getElementById("image-upload");
