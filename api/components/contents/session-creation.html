@@ -1,0 +1,76 @@
+<div>
+    <h2>Session creation endpoint.</h2>
+    <p>To create session token you are required to call this endpoint as follows</p>
+    <div class="container-sm lead">
+        <p>You are required to sent a post request to <b>/api/session/create</b> with json body data with keys</p>
+        <code>
+            <pre class="bg-dark text-white-50 border rounded text-start">
+                {
+                  "username" : "chxxx@gmail.com",
+                  "password" : "xxxxxxxxxxx"
+                }
+            </pre>
+        </code>
+        <p><b>Note</b> the username and password are the ones your have created using <a target='_blank' href='https://streamstudios.online/stream-studios-join'>Create Account</a></p>
+    </div>
+    <div class="container-sm lead">
+        <p>In headers you only requires to set <b>Content-Type</b> value <i>application/json</i></p>
+    </div>
+    <div class="container-sm lead">
+        <h3>Sample code in Js XHR</h3>
+        <code>
+                <pre class="bg-dark text-white-50 border rounded text-start">
+                    // WARNING: For POST requests, body is set to null by browsers.
+                    var data = JSON.stringify({
+                         "username": "hhhhhn@gmail.com",
+                         "password": "xxxxxxx"
+                    });
+
+                    var xhr = new XMLHttpRequest();
+                    xhr.withCredentials = true;
+
+                    xhr.addEventListener("readystatechange", function() {
+                       if(this.readyState === 4) {
+                          console.log(this.responseText);
+                       }
+                    });
+
+                    xhr.open("POST", "https://api.streamstudios.online/api/session/create");
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.send(data);
+                </pre>
+        </code>
+    </div>
+    <div class="container-sm lead">
+        <h3>Responses</h3>
+        <p>If all goes well on your request you are expected to receive this response</p>
+        <code>
+            <pre class="bg-dark text-white-50 border rounded text-start">
+                {
+                  "status": 200,
+                  "s-key": "b90e26a7c505180c2f5fc07bff2efc2860ca18cbc1dc26df2197ef2dbe719b10",
+                  "msg": "You have successfully logged in. please always remember to set s-key header for all endpoints that requires s-key header thank you."
+                }
+            </pre>
+        </code>
+        <p>If your request does not meet the requirement needed you are to get these responses</p>
+        <code>
+            <pre class="bg-dark text-white-50 border rounded text-start">
+                <b>Trying to login while already logged in</b><br>
+                {
+                  "status": 404,
+                  "link": "/api/tokens/token",
+                  "msg": "You already logged in visit @link value endpoint to get your token if you lost it."
+                }
+                <b>Sending request with method that is not POST</b><br>
+                {
+                  "msg": "Bad request"
+                }
+                <b>Sending request to this endpoint with token attached to s-key header</b><br>
+                {
+                  "msg": "Trying to access endpoint only visible to anonymous users"
+                }
+            </pre>
+        </code>
+    </div>
+</div>

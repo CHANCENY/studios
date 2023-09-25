@@ -49,6 +49,7 @@ Allow: /stream-uploading-navigation-content
 Allow: /how-to-navigate-here-at-stream-studios
 Allow: /coun-yyyyyyyyyyyyyyyyyyyyy
 Allow: /remove-unsed-files
+Allow: /cache-configure
 
 # This is sitemap location indicator
-Sitemap: http://localhost/eco.com/
+Sitemap: https://localhost/eco.com/

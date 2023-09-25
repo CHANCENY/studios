@@ -17,7 +17,7 @@
                 <h6 class="footer__title">Resources</h6>
                 <ul class="footer__list">
                     <li><a href="/about-stream-studios-flixgo">About Us</a></li>
-<!--                    <li><a href="#">Pricing Plan</a></li>-->
+                    <li><a href="https://api.streamstudios.online">Developer</a></li>
                     <li><a href="/help">Help</a></li>
                 </ul>
             </div>

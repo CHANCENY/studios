@@ -21,8 +21,6 @@ class Home
        $query = "SELECT $params FROM movies AS m LEFT JOIN additional_information AS a ON m.movie_id = a.internal_id 
          WHERE a.bundle = 'movies' ORDER BY m.release_date DESC LIMIT 3";
        $data = Query::query($query);
-
-       $_SESSION['new_release_movies'] = $data;
        return $data;
    }
 
@@ -38,8 +36,6 @@ class Home
         $query = "SELECT $params FROM tv_shows AS m LEFT JOIN additional_information AS a ON m.show_id = a.internal_id 
           WHERE a.bundle = 'shows' ORDER BY m.release_date DESC LIMIT 3";
         $data = Query::query($query);
-
-       // $_SESSION['new_release_shows'] = $data;
         return $data;
     }
 

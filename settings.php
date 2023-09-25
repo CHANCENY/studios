@@ -104,3 +104,4 @@ if(file_exists("includes/formFunction.inc")){
 if(file_exists("includes/functions.inc")){
     include_once "includes/functions.inc";
 }
+

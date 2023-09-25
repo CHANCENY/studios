@@ -48,9 +48,17 @@ class SEOTags
             ['token'=>$this->token]
         );
 
+        $already1 = Selection::selectById('seo_tokens',
+            ['token'=>$this->token]
+        );
+        if(!empty($already1)){
+            Delete::delete('seo_tokens',['token'=>$this->token]);
+        }
+
         if(!empty($already)){
             $this->clear();
         }
+
         Insertion::insertRow('seo_tags_data_collection',
             [
                 'data'=>$this->dataValues,

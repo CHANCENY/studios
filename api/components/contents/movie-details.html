@@ -1,0 +1,86 @@
+<div>
+    <h2>Movies details endpoint.</h2>
+    <p>To get movies details you are required to call this endpoint as follows</p>
+    <div class="container-sm lead">
+      <p>You are required to sent a GET request to <b>/api/movies/details</b> with no json body data</p>
+    </div>
+    <div class="container-sm lead">
+      <p>
+        In headers you only requires to set <b>Content-Type</b> value <i>application/json</i> and
+        <b>s-key</b> value <i>current in use</i>
+      </p>
+    </div>
+    <div class="container-sm lead">
+      <h3>Sample code in Js XHR</h3>
+      <code>
+                  <pre class="bg-dark text-white-50 border rounded text-start">
+                    var xhr = new XMLHttpRequest();
+                    xhr.withCredentials = true;
+                    
+                    xhr.addEventListener("readystatechange", function() {
+                      if(this.readyState === 4) {
+                        console.log(this.responseText);
+                      }
+                    });
+                    
+                    xhr.open("GET", "https://api.streamstudios.online/api/movies/details?movie_id=b891952c-595f-11ee-b168-370b4a89ce3a");
+                    xhr.setRequestHeader("s-key", "e5721b5764f650261a1a15341010e6473733f29721de4b241a5032c14fab6aca");
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                  
+                    xhr.send();
+                  </pre>
+      </code>
+    </div>
+    <div class="container-sm lead">
+      <h3>Responses</h3>
+      <p>If all goes well on your request you are expected to receive this response</p>
+      <code>
+              <pre class="bg-dark text-white-50 border rounded text-start">
+                {
+                    "status": 200,
+                    "results": {
+                        "uuid": "b891952c-595f-11ee-b168-370b4a89ce3a",
+                        "title": "Spy Kids: Armageddon",
+                        "release_date": "2023-09-22",
+                        "duration": "98",
+                        "image": "https://streamstudios.online/sites/files/images/movies/spy-kid-armg.jpg",
+                        "id": 503,
+                        "overview": "When the children of the world’s greatest secret agents unwittingly help a powerful game developer unleash a computer virus that gives him control of all technology, they must become spies themselves to save their parents and the world.",
+                        "popularity": "49.892",
+                        "rating": "7",
+                        "vote": "2",
+                        "lang": "en",
+                        "countries": "US",
+                        "genre": "Family | Adventure | Action | Fantasy",
+                        "bundle": "movies",
+                        "trailers": "https://www.youtube.com/watch?v=TuiRw0v3bAw",
+                        "tmID": 790493
+                    }
+                }
+              </pre>
+      </code>
+      <p>If your request does not meet the requirement needed you are to get these responses</p>
+      <code>
+              <pre class="bg-dark text-white-50 border rounded text-start">
+                  <b>Trying to regenerate token with invalid token</b><br>
+                  {
+                   "msg":"Missing header value for s-key or is invalid"
+                  }
+                  <b>Sending request with method that is not PUT</b><br>
+                  {
+                    "msg": "Bad request"
+                  }
+              </pre>
+      </code>
+    </div>
+    <div class="container-sm lead">
+        <p><b>Note</b>parameter <b>movie_id is required</b></p>
+        <p>If parameter not set</p>
+        <pre class="bg-dark text-white-50 border rounded text-start">
+            {
+                "status": 404,
+                "msg": "Movie not found"
+            }
+        </pre>
+    </div>
+  </div>
