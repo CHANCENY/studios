@@ -1,23 +1,100 @@
+<?php
+
+use GlobalsFunctions\Globals;
+use Modules\Movies\Movie;
+
+$movieID = Globals::get("movie-id");
+
+global $moreLink;
+$moreLink = null;
+
+$movie = [];
+if(empty($movieID))
+{
+    Globals::redirect("/movies/listing");
+    exit;
+}
+
+$movie = (new \groups\GroupMovies())->movieToEdit(intval($movieID))[0] ?? [];
+
+if(Globals::method() === "POST" && !empty(Globals::post("edit_movie")))
+{
+    $data = [];
+    if(!empty(Globals::files("new_image")))
+    {
+        $oldUUID = explode("=", $movie['movie_image']);
+        $oldUUID = end($oldUUID);
+        $img = (new \groups\GroupMovies())->newImage(Globals::files('new_image'),$oldUUID,Globals::post("movie_id"));
+        if($img)
+        {
+            $data['movie_image'] = $img;
+        }
+    }else{
+        $data['movie_image'] = Globals::post("old_image");
+    }
+
+    $data['title'] = Globals::post("title") ?? $movie['title'];
+    $data['url'] = Globals::post("url") ?? $movie['url'];
+    $data['duration'] = Globals::post("duration") ?? $movie['duration'];
+
+    $date = Globals::post("release_date");
+    if(!empty(Globals::post("release_date")))
+    {
+        $date = str_replace("/", "-", $date);
+        try {
+            $date = (new DateTime($date))->format("Y-m-d");
+        }catch (Throwable $e){
+            $date = $movie['release_date'];
+        }
+    }
+    $data['release_date'] = !empty($date) ? $date : $movie['release_date'];
+    $data['description'] = Globals::post("overview") ?? $movie['description'];
+    if((new Movie())->updateMovie($data, $movie['movie_id']))
+    {
+        (new \groups\Notifications())->movieUpdated($data['title']);
+        Globals::redirect("/movies/listing");
+        exit;
+    }
+}
+
+
+
+function editMoviePage($movie)
+{
+    global $moreLink;
+    $title = $movie['title'];
+    $URL = $movie['url'];
+    $date = $movie['release_date'];
+    $description = $movie['description'];
+    $duration = $movie['duration'];
+    $image = $movie['movie_image'];
+    $movieID = $movie['movie_id'];
+    $uri = Globals::uri();
+    if(!hasMoreAlready())
+    {
+        $moreLink = <<<EOD
+                        <a href="/movies/add-movie?type=tmdb&title=$title&internal=$movieID" class="btn btn-primary float-right btn-rounded"><i class="fa fa-plus"></i> Add More Information</a>
+EOD;
+    }
+    return <<<EOD
 <!DOCTYPE html>
 <html lang="en">
-
-
-<!-- doctors23:12-->
+<!-- edit-employee24:07-->
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
-    <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="https://dashboard.streamstudios.online/assets/img/favicon.ico">
     <title>Preclinic - Medical & Hospital - Bootstrap 4 Admin Template</title>
-    <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/select2.min.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/bootstrap-datetimepicker.min.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
-    <script src="assets/js/dashboard/cookies.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://dashboard.streamstudios.online/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://dashboard.streamstudios.online/assets/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="https://dashboard.streamstudios.online/assets/css/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" type="text/css" href="https://dashboard.streamstudios.online/assets/css/select2.min.css">
+    <link rel="stylesheet" type="text/css" href="https://dashboard.streamstudios.online/assets/css/style.css">
+    <script src="https://dashboard.streamstudios.online/assets/js/dashboard/cookies.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!--[if lt IE 9]>
-    <script src="assets/js/html5shiv.min.js"></script>
-    <script src="assets/js/respond.min.js"></script>
+    <script src="https://dashboard.streamstudios.online/assets/js/html5shiv.min.js"></script>
+    <script src="https://dashboard.streamstudios.online/assets/js/respond.min.js"></script>
     <![endif]-->
 </head>
 
@@ -26,7 +103,7 @@
         <div class="header">
             <div class="header-left">
                 <a href="dashboard" class="logo">
-                    <img src="assets/img/logo.png" width="35" height="35" alt=""> <span>Preclinic</span>
+                    <img src="https://dashboard.streamstudios.online/assets/img/logo.png" width="35" height="35" alt=""> <span>Preclinic</span>
                 </a>
             </div>
             <a id="toggle_btn" href="javascript:void(0);"><i class="fa fa-bars"></i></a>
@@ -44,7 +121,7 @@
                             </ul>
                         </div>
                         <div class="topnav-dropdown-footer">
-                            <a href="activities.html">View all Notifications</a>
+                            <a href="/notifications">View all Notifications</a>
                         </div>
                     </div>
                 </li>
@@ -86,7 +163,7 @@
                             <a href="/dashboard"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
                         </li>
                         <li>
-                            <a href="/users"><i class="fa fa-user-md"></i> <span>Doctors</span></a>
+                            <a href="/users"><i class="fa fa-user-md"></i> <span>Users</span></a>
                         </li>
                         <li>
                             <a href="patients.html"><i class="fa fa-wheelchair"></i> <span>Patients</span></a>
@@ -101,12 +178,12 @@
                             <a href="departments.html"><i class="fa fa-hospital-o"></i> <span>Departments</span></a>
                         </li>
                         <li class="submenu">
-                            <a href="#"><i class="fa fa-user"></i> <span> Employees </span> <span class="menu-arrow"></span></a>
+                            <a href="#"><i class="fa fa-user"></i> <span> Contents </span> <span class="menu-arrow"></span></a>
                             <ul style="display: none;">
-                                <li><a href="employees.html">Employees List</a></li>
-                                <li><a href="leaves.html">Leaves</a></li>
-                                <li><a href="holidays.html">Holidays</a></li>
-                                <li><a href="attendance.html">Attendance</a></li>
+                                <li><a href="/movies/listing">Movies</a></li>
+                                <li><a href="/shows/listing">Shows</a></li>
+                                <li><a href="/seasons/listing">Seasons</a></li>
+                                <li><a href="/episodes/listing">Episodes</a></li>
                             </ul>
                         </li>
                         <li class="submenu">
@@ -176,25 +253,74 @@
         <div class="page-wrapper">
             <div class="content">
                 <div class="row">
-                    <div class="col-sm-4 col-3">
-                        <h4 class="page-title">Doctors</h4>
-                    </div>
-                    <div class="col-sm-8 col-9 text-right m-b-20">
-                        <a href="add-doctor.html" class="btn btn-primary btn-rounded float-right"><i class="fa fa-plus"></i> Add Doctor</a>
-                    </div>
+                    <div class="col-lg-8 offset-lg-2">
+                        <h4 class="page-title">Edit Movie</h4>
+                    </div> 
                 </div>
-				<div class="row doctor-grid" id="users-all-view">
-                   <!-- users grid here-->
-                </div>
-				<div class="row">
-                    <div class="col-sm-12">
-                        <div class="see-all">
-                            <a class="see-all-btn" data="1" id="more-users" href="">Load More</a>
-                        </div>
+                <div class="row">
+                    <div class="col-lg-8 offset-lg-2">
+                        <form method="POST" action="$uri" enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>Movie Title <span class="text-danger">*</span></label>
+                                        <input class="form-control" name="title" type="text" value="$title">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>Movie URL</label>
+                                        <input class="form-control" name="url" value="$URL" type="text">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>Movie Duration <span class="text-danger">*</span></label>
+                                        <input class="form-control" name="duration" value="$duration" type="text">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>Movie Old Image <span class="text-danger">*</span></label>
+                                        <input class="form-control" type="url" name="old_image" value="$image">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>Movie ID <span class="text-danger">*</span></label>
+                                        <input type="text" name="movie_id" value="$movieID" class="form-control">
+                                    </div>
+                                </div>
+                                 <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>Movie New Image <span class="text-danger">*</span></label>
+                                        <input type="file" name="new_image" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>Movie Date <span class="text-danger">*</span></label>
+                                        <div class="cal-icon">
+                                            <input class="form-control datetimepicker" name="release_date" value="$date" type="text">
+                                        </div>
+                                    </div>
+                                </div>
+                                 <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>Movie Overview<span class="text-danger">*</span></label>
+                                        <textarea name="overview" cols="2" rows="2" class="form-control">$description</textarea>
+                                    </div>
+                                </div>
+                            </div> 
+                            <div class="m-t-20 text-center">
+                                <button type="submit" name="edit_movie" value="em" class="btn btn-primary submit-btn">Save</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
-            <div class="notification-box">
+             <div class="content"><div class="row">$moreLink</div></div>
+			<div class="notification-box">
                 <div class="msg-sidebar notifications msg-noti">
                     <div class="topnav-dropdown-header">
                         <span>Messages</span>
@@ -404,33 +530,41 @@
                 </div>
             </div>
         </div>
-		<div id="delete_doctor" class="modal fade delete-modal" role="dialog">
-			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content">
-					<div class="modal-body text-center">
-						<img src="assets/img/sent.png" alt="" width="50" height="46">
-						<h3>Are you sure want to delete this Doctor?</h3>
-						<div class="m-t-20"> <a href="#" class="btn btn-white" data-dismiss="modal">Close</a>
-							<button type="submit" class="btn btn-danger">Delete</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
     </div>
     <div class="sidebar-overlay" data-reff=""></div>
-    <script src="assets/js/jquery-3.2.1.min.js"></script>
-	<script src="assets/js/popper.min.js"></script>
-    <script src="assets/js/bootstrap.min.js"></script>
-    <script src="assets/js/jquery.slimscroll.js"></script>
-    <script src="assets/js/select2.min.js"></script>
-    <script src="assets/js/moment.min.js"></script>
-    <script src="assets/js/bootstrap-datetimepicker.min.js"></script>
-    <script src="assets/js/app.js"></script>
-    <script src="assets/js/dashboard/users.js"></script>
-    <script src="assets/js/dashboard/alerts.js"></script>
+    <script src="https://dashboard.streamstudios.online/assets/js/jquery-3.2.1.min.js"></script>
+	<script src="https://dashboard.streamstudios.online/assets/js/popper.min.js"></script>
+    <script src="https://dashboard.streamstudios.online/assets/js/bootstrap.min.js"></script>
+    <script src="https://dashboard.streamstudios.online/assets/js/jquery.slimscroll.js"></script>
+    <script src="https://dashboard.streamstudios.online/assets/js/select2.min.js"></script>
+	<script src="https://dashboard.streamstudios.online/assets/js/moment.min.js"></script>
+	<script src="https://dashboard.streamstudios.online/assets/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="https://dashboard.streamstudios.online/assets/js/app.js"></script>
+    <script src="https://dashboard.streamstudios.online/assets/js/dashboard/users.js"></script>
+    <script src="https://dashboard.streamstudios.online/assets/js/dashboard/alerts.js"></script>
+    <script src="https://dashboard.streamstudios.online/assets/js/dashboard/movies_listing.js"></script>
 </body>
 
 
-<!-- doctors23:17-->
+<!-- edit-employee24:07-->
 </html>
+EOD;
+
+}
+
+
+function hasMoreAlready(): bool
+{
+    $movie = Globals::get("movie-id");
+    if(!empty($movie))
+    {
+        $data = \Datainterface\Query::query("SELECT additional_id FROM additional_information WHERE internal_id = :id AND bundle = :b", ['id'=>$movie, 'b'=>"movies"]);
+        if(!empty($data))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+echo editMoviePage($movie);

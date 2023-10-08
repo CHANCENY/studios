@@ -369,10 +369,12 @@ function usersGrids(page = 0) {
                         {
                             const div = document.createElement("div");
                             div.className = "col-md-4 col-sm-4  col-lg-3";
-                            div.innerHTML = gridUser(item);
+                            div.innerHTML = gridUser(item,index);
                             container.appendChild(div);
                         }
                     })
+                    const ttt = data.length - 1;
+                    document.getElementById("users-all-view").setAttribute("total", ttt.toString())
                 }
             }catch (e) {
                 console.error(e.message);
@@ -382,7 +384,7 @@ function usersGrids(page = 0) {
     xhr.send();
 }
 
-function gridUser(item) {
+function gridUser(item, index) {
     const image = item.image || "assets/img/doctor-thumb-03.jpg";
     const html = `
                       <div class="profile-widget">
@@ -393,10 +395,10 @@ function gridUser(item) {
                                 <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
                                 <div class="dropdown-menu dropdown-menu-right">
                                     <a class="dropdown-item" href="edit-profile?user=${item.uid}"><i class="fa fa-pencil m-r-5"></i> Edit</a>
-                                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#delete_doctor"><i class="fa fa-trash-o m-r-5"></i> Delete</a>
+                                    <a onclick="prepareDeleteUser(${item.uid})" class="dropdown-item" href="#" data-toggle="modal" data-target="#delete_doctor"><i class="fa fa-trash-o m-r-5"></i> Delete</a>
                                 </div>
                             </div>
-                            <h4 class="doctor-name text-ellipsis"><a href="profile.html">${item.firstname} ${item.lastname}</a></h4>
+                            <h4 class="doctor-name text-ellipsis"><a href="profile?user=${item.uid}">${item.firstname} ${item.lastname}</a></h4>
                             <div class="doc-prof">${item.role}</div>
                             <div class="user-country">
                                 <i class="fa fa-map-marker"></i> ${item.country}, ${item.state}
@@ -405,6 +407,7 @@ function gridUser(item) {
                    `;
     return html;
 }
+
 
 usersGrids();
 
@@ -422,3 +425,32 @@ function moreUsers() {
     }
 }
 moreUsers();
+
+function prepareDeleteUser(uid)
+{
+    localStorage.setItem("iu", uid);
+}
+
+function deleteUser()
+{
+    const uid = localStorage.getItem("iu");
+    if(uid !==  null)
+    {
+        const icon = document.getElementById("delete-icon");
+        icon.setAttribute("src","assets/img/loading.gif");
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST","user/delete", false);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = function ()
+        {
+            if(this.status === 200)
+            {
+                icon.setAttribute("src", "assets/img/sent.png");
+                localStorage.removeItem("iu");
+                window.location.reload();
+
+            }
+        }
+        xhr.send(JSON.stringify({uid: uid}));
+    }
+}

@@ -4,9 +4,12 @@ namespace Handlers;
 
 use app\App;
 use Datainterface\Database;
+use Datainterface\Delete;
 use Datainterface\MysqlDynamicTables;
 use Datainterface\Query;
+use Datainterface\Tables;
 use Modules\Modals\Home;
+use Mpdf\Tag\Table;
 use function functions\to_time_ago;
 
 class DashBoard
@@ -310,5 +313,55 @@ class DashBoard
            'status'=>200,
            'results'=>array_reverse(array_values($processed))
        ];
+   }
+
+   public function alertFind(App $myApp = (new App()))
+   {
+       $id = $myApp->getParamsData()['id'] ?? 0;
+       if(!empty($id))
+       {
+           $sql = "SELECT event_name, event_id, created FROM event_news WHERE event_sent_status = 0 && event_id = :id";
+           $data = Query::query($sql,['id'=>$id]);
+
+           $processed = [];
+           foreach ($data as $key=>$value)
+           {
+               if(gettype($value) === 'array')
+               {
+                   $value['time'] = to_time_ago($value['created']);
+                   $value['title'] = $value['event_name'];
+                   $value['id'] = $value['event_id'];
+                   unset($value['event_id']);
+                   unset($value['event_name']);
+                   unset($value['created']);
+                   $processed[] = $value;
+               }
+           }
+           return [
+               'status'=>200,
+               'results'=>array_reverse(array_values($processed))
+           ];
+       }else{
+           return $this->alertsListing($myApp);
+       }
+   }
+
+   public function deleteAlerts(App $myApp = (new App())): array
+   {
+       $id = $myApp->getParamsData()['id'] ?? 0;
+       if(!empty($id))
+       {
+           if(Delete::delete("event_news",['event_id'=>$myApp->getParamsData()['id']]))
+           {
+               return ['status'=>200, "msg"=>"alert deleted"];
+           }
+           return ['status'=>404];
+       }else{
+           if(Query::query("TRUNCATE TABLE event_news"))
+           {
+               return ['status'=>200, "msg"=>"empty"];
+           }
+           return ['status'=>404];
+       }
    }
 }

@@ -1,17 +1,11 @@
 <?php
 
 use GlobalsFunctions\Globals;
+use Modules\CountriesModular;
 
-$hasToken = false;
-if(!empty(Globals::get("token")))
-{
-    $token = Globals::get("token") ?? null;
-    $data = $_SESSION['unverified_user'] ?? [];
-    $hasToken = !empty($data);
-}
 
-$country = \Modules\CountriesModular::getAllCountries();
-$states = sorting(\Modules\CountriesModular::getAllStates());
+$country = CountriesModular::getAllCountries();
+$states = sorting(CountriesModular::getAllStates());
 
 
 function sorting($data): array
@@ -32,6 +26,47 @@ function sorting($data): array
         }
     }
     return $states;
+}
+
+if(Globals::method() === "POST" && !empty(Globals::post("finish")))
+{
+    $firstname = Globals::post("firstname");
+    $lastname = Globals::post("lastname");
+    $address = Globals::post("address");
+    $birthday = Globals::post("birthday");
+    $image = Globals::post('profile_image');
+    $zip = Globals::post("zip");
+    $verified = Globals::post("status");
+    $confirmPassword = password_hash(Globals::post("confirm"), PASSWORD_BCRYPT);
+    $gender = Globals::post("gender");
+    $state = Globals::post("state");
+
+    $data['firstname'] = $firstname;
+    $data['lastname'] = $lastname;
+    $data['address'] = $address;
+    $data['image'] = $image;
+    $data['verified'] = $verified;
+    $data['blocked'] = 1;
+    $data['role'] = "user";
+    $data['mail'] = Globals::post("mail");
+    $data['phone'] = Globals::post("phone");
+    $data['password'] = password_hash(Globals::post("password"), PASSWORD_BCRYPT);
+
+    $uid = \Datainterface\Insertion::insertRow("users", $data);
+
+    $moreInfo['gender'] = $gender;
+    $moreInfo['country'] = CountriesModular::getCountryName($country);
+    $moreInfo['state'] = $state;
+    $moreInfo['zip'] = $zip;
+    $moreInfo['birthday'] = $birthday;
+    $moreInfo['uid'] = $uid;
+
+    $moreid = \Datainterface\Insertion::insertRow("users_additional", $moreInfo);
+    if(!empty($uid) && !empty($moreid))
+    {
+        Globals::redirect("/users");
+        exit;
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -229,29 +264,29 @@ function sorting($data): array
                                     <label>Last Name</label>
                                     <input name="lastname" class="form-control" type="text">
                                 </div>
-                            </div><?php  if($hasToken === false): ?>
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label>Username <span class="text-danger">*</span></label>
-                                        <input class="form-control" type="text">
-                                    </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label>Username <span class="text-danger">*</span></label>
+                                    <input name="username" class="form-control" type="text">
                                 </div>
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label>Email <span class="text-danger">*</span></label>
-                                        <input name="mail" class="form-control" type="email">
-                                    </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label>Email <span class="text-danger">*</span></label>
+                                    <input name="mail" class="form-control" type="email">
                                 </div>
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label>Password</label>
-                                        <input class="form-control" type="password">
-                                    </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label>Password</label>
+                                    <input name="password" class="form-control" type="password">
                                 </div>
-                            <?php endif; ?><div class="col-sm-6">
+                            </div>
+                            <div class="col-sm-6">
                                 <div class="form-group">
                                     <label>Confirm Password</label>
-                                    <input class="form-control" type="password">
+                                    <input name="confirm" class="form-control" type="password">
                                 </div>
                             </div>
                             <div class="col-sm-6">
@@ -267,12 +302,12 @@ function sorting($data): array
                                     <label class="gen-label">Gender:</label>
                                     <div class="form-check-inline">
                                         <label class="form-check-label">
-                                            <input type="radio" name="gender" class="form-check-input">Male
+                                            <input type="radio" name="gender" value="male" class="form-check-input">Male
                                         </label>
                                     </div>
                                     <div class="form-check-inline">
                                         <label class="form-check-label">
-                                            <input type="radio" name="gender" class="form-check-input">Female
+                                            <input type="radio" name="gender" value="female" class="form-check-input">Female
                                         </label>
                                     </div>
                                 </div>
@@ -289,20 +324,20 @@ function sorting($data): array
                                         <div class="form-group">
                                             <label>Country</label>
                                             <select id="country-select" name="country" class="form-control select"><?php foreach ($country as $key=>$value): ?>
-                                            <?php echo "<option value='{$value['code']}'>{$value['country']}</option>"; ?>
-                                            <?php endforeach; ?></select>
+                                                    <?php echo "<option value='{$value['code']}'>{$value['country']}</option>"; ?>
+                                                <?php endforeach; ?></select>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-md-6 col-lg-3">
                                         <div class="form-group">
                                             <label>City</label>
-                                            <input name="text" name="city" type="text" class="form-control ">
+                                            <input name="city" type="text" class="form-control ">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-md-6 col-lg-3">
                                         <div class="form-group">
                                             <label>State/Province</label>
-                                            <select id="state-select" name="country" class="form-control select"><?php foreach ($states as $key=>$value): ?>
+                                            <select id="state-select" name="state" class="form-control select"><?php foreach ($states as $key=>$value): ?>
                                                     <?php echo "<option value='{$value['city_id']}'>{$value['state']}</option>"; ?>
                                                 <?php endforeach; ?></select>
                                         </div>
@@ -314,14 +349,14 @@ function sorting($data): array
                                         </div>
                                     </div>
                                 </div>
-                            </div><?php if($hasToken === false): ?>
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label>Phone </label>
-                                        <input name="phone" class="form-control" type="text">
-                                    </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label>Phone </label>
+                                    <input name="phone" class="form-control" type="text">
                                 </div>
-                            <?php endif; ?><div class="col-sm-6">
+                            </div>
+                            <div class="col-sm-6">
                                 <div class="form-group">
                                     <label>Avatar</label>
                                     <div class="profile-upload">
@@ -335,20 +370,20 @@ function sorting($data): array
                                 </div>
                             </div>
                         </div>
-                        <!--                        <div class="form-group">-->
-                        <!--                            <label>Short Biography</label>-->
-                        <!--                            <textarea  class="form-control" rows="3" cols="30"></textarea>-->
-                        <!--                        </div>-->
+                        <div class="form-group">
+                            <label>Short Biography</label>
+                            <textarea name="bio" class="form-control" rows="3" cols="30"></textarea>
+                        </div>
                         <div class="form-group">
                             <label class="display-block">Status</label>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="status" id="doctor_active" value="option1" checked>
+                                <input class="form-check-input" type="radio" name="status" id="doctor_active" value="1" checked>
                                 <label class="form-check-label" for="doctor_active">
                                     Active
                                 </label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="status" id="doctor_inactive" value="option2">
+                                <input class="form-check-input" type="radio" name="status" id="doctor_inactive" value="0">
                                 <label class="form-check-label" for="doctor_inactive">
                                     Inactive
                                 </label>

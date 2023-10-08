@@ -1,89 +1,8 @@
-<?php
-
-use Datainterface\Database;
-use Datainterface\Insertion;
-use Datainterface\MysqlDynamicTables;
-use Datainterface\Selection;
-use Datainterface\Updating;
-use GlobalsFunctions\Globals;
-
-if(Globals::method() === "POST" && !empty(Globals::post("submit-profile")))
-{
-    try {
-        $data['firstname'] = Globals::post('firstname');
-        $data['lastname'] = Globals::post('lastname');
-        $data['phone'] = Globals::post('phone');
-        $data['address'] = Globals::post('address');
-        $data['image'] = Globals::post('profile_image');
-
-        $flag = [];
-        $uid = 0;
-        if(!empty(Globals::get("user")))
-        {
-            $uid = Globals::get("user");
-            $flag[] = Updating::update("users", $data, ['uid'=>$uid]);
-        }else{
-            $uid = Insertion::insertRow("users", $data);
-        }
-        unset($data);
-        $birthday = Globals::post("birthday");
-        if(!empty($birthday))
-        {
-            $birthday = str_replace("/", "-", $birthday);
-            $d = (new \DateTime($birthday))->format("d M, Y");
-            $data['birthday'] = $d;
-        }else{
-            $data['birthday'] = "";
-        }
-        $data['country'] = Globals::post("country");
-        $data['state'] = Globals::post("state");
-        $data['zip'] = Globals::post("zip");
-        $data['gender'] = Globals::post("gender");
-        $data['uid'] = $uid;
-
-        (new MysqlDynamicTables())->resolver(
-            Database::database(),
-            array_keys($data),
-            [
-                "country"=>['varchar(100)'],
-                "state"=>['varchar(100)'],
-                "zip"=>['int(11)'],
-                "gender"=>['varchar(100)'],
-                'birthday'=>['varchar(100)'],
-                'uid'=>['int(11)']
-            ],
-            "users_additional"
-        );
-
-        if(!empty(Globals::get("user"))) {
-            $already = Selection::selectById("users_additional", ['uid'=>$uid]);
-            if(!empty($already))
-            {
-                unset($data['uid']);
-                $flag[] = Updating::update("users_additional", $data, ['uid' => $uid]);
-            }else{
-                $flag[] = !empty(Insertion::insertRow("users_additional", $data));
-            }
-        }else{
-            $flag[] = Insertion::insertRow("users_additional", $data);
-        }
-
-        if(in_array(true, $flag))
-        {
-            Globals::redirect("/users");
-        }else{
-            Globals::redirect("edit-profile?user=$uid");
-        }
-        exit;
-    }catch (Throwable $e){
-        \ErrorLogger\ErrorLogger::log($e);
-    }
-}
-
-?>
 <!DOCTYPE html>
 <html lang="en">
-<!-- edit-profile23:03-->
+
+
+<!-- profile22:59-->
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
@@ -91,8 +10,6 @@ if(Globals::method() === "POST" && !empty(Globals::post("submit-profile")))
     <title>Preclinic - Medical & Hospital - Bootstrap 4 Admin Template</title>
     <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/select2.min.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/bootstrap-datetimepicker.min.css">
     <link rel="stylesheet" type="text/css" href="assets/css/style.css">
     <script src="assets/js/dashboard/cookies.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -107,7 +24,7 @@ if(Globals::method() === "POST" && !empty(Globals::post("submit-profile")))
         <div class="header">
             <div class="header-left">
                 <a href="dashboard" class="logo">
-                    <img src="assets/img/logo.png" width="35" height="35" alt=""> <span>Preclinic</span>
+                    <img src="https://dashboard.streamstudios.online/assets/img/logo.png" width="35" height="35" alt=""> <span>Preclinic</span>
                 </a>
             </div>
             <a id="toggle_btn" href="javascript:void(0);"><i class="fa fa-bars"></i></a>
@@ -125,7 +42,7 @@ if(Globals::method() === "POST" && !empty(Globals::post("submit-profile")))
                             </ul>
                         </div>
                         <div class="topnav-dropdown-footer">
-                            <a href="activities.html">View all Notifications</a>
+                            <a href="/notifications">View all Notifications</a>
                         </div>
                     </div>
                 </li>
@@ -167,7 +84,7 @@ if(Globals::method() === "POST" && !empty(Globals::post("submit-profile")))
                             <a href="/dashboard"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
                         </li>
                         <li>
-                            <a href="/users"><i class="fa fa-user-md"></i> <span>Doctors</span></a>
+                            <a href="/users"><i class="fa fa-user-md"></i> <span>Users</span></a>
                         </li>
                         <li>
                             <a href="patients.html"><i class="fa fa-wheelchair"></i> <span>Patients</span></a>
@@ -182,12 +99,12 @@ if(Globals::method() === "POST" && !empty(Globals::post("submit-profile")))
                             <a href="departments.html"><i class="fa fa-hospital-o"></i> <span>Departments</span></a>
                         </li>
                         <li class="submenu">
-                            <a href="#"><i class="fa fa-user"></i> <span> Employees </span> <span class="menu-arrow"></span></a>
+                            <a href="#"><i class="fa fa-user"></i> <span> Contents </span> <span class="menu-arrow"></span></a>
                             <ul style="display: none;">
-                                <li><a href="employees.html">Employees List</a></li>
-                                <li><a href="leaves.html">Leaves</a></li>
-                                <li><a href="holidays.html">Holidays</a></li>
-                                <li><a href="attendance.html">Attendance</a></li>
+                                <li><a href="/movies/listing">Movies</a></li>
+                                <li><a href="/shows/listing">Shows</a></li>
+                                <li><a href="/seasons/listing">Seasons</a></li>
+                                <li><a href="/episodes/listing">Episodes</a></li>
                             </ul>
                         </li>
                         <li class="submenu">
@@ -257,97 +174,63 @@ if(Globals::method() === "POST" && !empty(Globals::post("submit-profile")))
         <div class="page-wrapper">
             <div class="content">
                 <div class="row">
-                    <div class="col-sm-12">
-                        <h4 class="page-title">Edit Profile</h4>
+                    <div class="col-sm-7 col-6">
+                        <h4 class="page-title">My Profile</h4>
+                    </div>
+
+                    <div class="col-sm-5 col-6 text-right m-b-30">
+                        <a href="edit-profile" id="edit-profile" class="btn btn-primary btn-rounded"><i class="fa fa-plus"></i> Edit Profile</a>
                     </div>
                 </div>
-                <form method="POST" id="form-edit-profile" action="<?php echo Globals::uri(); ?>" enctype="multipart/form-data">
-                    <div class="card-box">
-                        <h3 class="card-title">Basic Informations</h3>
-                        <div class="row">
-                            <div class="col-md-12">
+                <div class="card-box profile-header">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="profile-view">
                                 <div class="profile-img-wrap">
-                                    <img class="inline-block" id="profile-image-input" src="assets/img/user.jpg" alt="user">
-                                    <div class="fileupload btn">
-                                        <span class="btn-text">edit</span>
-                                        <input name="image" id="image-upload" onchange="uploadCurrentUserImage()" class="upload" type="file">
+                                    <div class="profile-img">
+                                        <a href="#" id="img-profile"><img class="avatar" id="profile-imagep" src="assets/img/doctor-03.jpg" alt=""></a>
                                     </div>
                                 </div>
                                 <div class="profile-basic">
                                     <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group form-focus">
-                                                <label class="focus-label">First Name</label>
-                                                <input name="firstname" required type="text" id="profile-firstname-input" class="form-control floating" value="John">
+                                        <div class="col-md-5">
+                                            <div class="profile-info-left">
+                                                <h3 class="user-name m-t-0 mb-0" id="profile-fullname">Cristina Groves</h3>
+                                                <small class="text-muted" id="profile-role">Gynecologist</small>
+                                                <div class="staff-id" id="profile-id">Employee ID : DR-0001</div>
+                                                <div class="staff-msg"><a href="chat.html" class="btn btn-primary">Send Message</a></div>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group form-focus">
-                                                <label class="focus-label">Last Name</label>
-                                                <input name="lastname" required type="text" id="profile-lastname-input" class="form-control floating" value="Doe">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group form-focus">
-                                                <label class="focus-label">Birth Date</label>
-                                                <div class="cal-icon">
-                                                    <input name="birthday" required id="profile-birthday-input" class="form-control floating datetimepicker" type="text" value="05/06/1985">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group form-focus select-focus">
-                                                <label class="focus-label">Gendar</label>
-                                                <select name="gender" required id="profile-gender-input" class="select form-control floating">
-                                                    <option value="male">Male</option>
-                                                    <option value="female">Female</option>
-                                                </select>
-                                            </div>
+                                        <div class="col-md-7">
+                                            <ul class="personal-info">
+                                                <li>
+                                                    <span class="title">Phone:</span>
+                                                    <span class="text"><a id="profile-phone" href="#">770-889-6484</a></span>
+                                                </li>
+                                                <li>
+                                                    <span class="title">Email:</span>
+                                                    <span class="text"><a id="profile-mail" href="#">cristinagroves@example.com</a></span>
+                                                </li>
+                                                <li>
+                                                    <span class="title">Birthday:</span>
+                                                    <span class="text" id="profile-birthday">3rd March</span>
+                                                </li>
+                                                <li>
+                                                    <span class="title">Address:</span>
+                                                    <span class="text" id="profile-address">714 Burwell Heights Road, Bridge City, TX, 77611</span>
+                                                </li>
+                                                <li>
+                                                    <span class="title">Gender:</span>
+                                                    <span class="text" id="profile-gender">Female</span>
+                                                </li>
+                                            </ul>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div>                        
                         </div>
                     </div>
-                    <div class="card-box">
-                        <h3 class="card-title">Contact Informations</h3>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group form-focus">
-                                    <label class="focus-label">Address</label>
-                                    <input name="address" required type="text" id="profile-address-input" class="form-control floating" value="4487 Snowbird Lane">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group form-focus">
-                                    <label class="focus-label">State</label>
-                                    <input name="state" required type="text" id="profile-state-input" class="form-control floating" value="New York">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group form-focus">
-                                    <label class="focus-label">Country</label>
-                                    <input name="country" required type="text" id="profile-country-input" class="form-control floating" value="United States">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group form-focus">
-                                    <label class="focus-label">Pin Code</label>
-                                    <input name="zip" required type="text" id="profile-zip-input" class="form-control floating" value="10523">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group form-focus">
-                                    <label class="focus-label">Phone Number</label>
-                                    <input name="phone" required type="text" id="profile-phone-input" class="form-control floating" value="631-889-3206">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="text-center m-t-20">
-                        <button class="btn btn-primary submit-btn" value="p-c" name="submit-profile" type="submit">Save</button>
-                    </div>
-                </form>
+                </div>
             </div>
             <div class="notification-box">
                 <div class="msg-sidebar notifications msg-noti">
@@ -565,14 +448,11 @@ if(Globals::method() === "POST" && !empty(Globals::post("submit-profile")))
 	<script src="assets/js/popper.min.js"></script>
     <script src="assets/js/bootstrap.min.js"></script>
     <script src="assets/js/jquery.slimscroll.js"></script>
-    <script src="assets/js/select2.min.js"></script>
-    <script src="assets/js/moment.min.js"></script>
-    <script src="assets/js/bootstrap-datetimepicker.min.js"></script>
     <script src="assets/js/app.js"></script>
     <script src="assets/js/dashboard/users.js"></script>
     <script src="assets/js/dashboard/alerts.js"></script>
 </body>
 
 
-<!-- edit-profile23:05-->
+<!-- profile23:03-->
 </html>

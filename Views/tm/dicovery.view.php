@@ -18,12 +18,12 @@ if($type === 'tv'){
   exit;
 }
 
-function discover(string $search): array
+function discover(string $search, $page=1): array
 {$authToken = \functions\config('TMDB');
     $curl = curl_init();
 
     curl_setopt_array($curl, [
-        CURLOPT_URL => "https://api.themoviedb.org/3/search/movie?query=$search&include_adult=false&language=en-US&page=1",
+        CURLOPT_URL => "https://api.themoviedb.org/3/search/movie?query=$search&include_adult=false&language=en-US&page=$page",
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => "",
         CURLOPT_MAXREDIRS => 10,

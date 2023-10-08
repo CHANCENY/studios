@@ -10,6 +10,7 @@ use Datainterface\Insertion;
 use Datainterface\Selection;
 use GlobalsFunctions\Globals;
 use Modules\Episodes\Episode;
+use Modules\Modals\Debug;
 use Modules\NewAlerts\SubcriberNews;
 use Modules\Renders\SEOTags;
 use Modules\Search\Search;
@@ -183,7 +184,7 @@ class ShowsHandlers extends Storage
 
    public function getSeason($show_id):array
    {
-        if($emptys){
+        if($show_id){
            $query = "SELECT * FROM {$this->schema['tables'][3]} WHERE show_id = :id AND season_number != :nu";
        return Query::query($query, ['id'=>$show_id, 'nu'=>0]);  
        }
@@ -301,26 +302,30 @@ class ShowsHandlers extends Storage
            $uuid = "";
 
            $alreadyExist = Selection::selectById('tv_shows',['title'=>$showName]);
-
            if(!empty($alreadyExist)){
                $showId  = $alreadyExist[0]['show_id'];
                $show['show_uuid'] = Json::uuid();
                $uuid = $show['show_uuid'];
                Updating::update('tv_shows', $show, ['show_id'=>$showId]);
+
                $newSeason = [];
                $outPut[] = "Updated Show ({$show['title']})";
-
+               $counter = 0;
                foreach ($seasons as $key=>$value){
-                   $query = "SELECT tv.show_id AS tid, se.season_id AS sid, 
-                             se.season_number AS n FROM tv_shows AS tv LEFT JOIN seasons AS
-                                 se ON se.season_id  = tv.show_id WHERE tv.show_id = $showId AND se.season_number = {$value['season_number']}";
+                   $query = "SELECT se.season_id AS sid, 
+                             se.season_number AS n FROM seasons AS se WHERE show_id = $showId";
                    $seasonIds = Query::query($query);
-                   if(!empty($seasonIds)){
-                       $newSeason[] =['id'=>$seasonIds[0]['sid'], 'n'=>$seasonIds[0]['n']];
-                       $value['season_uuid'] = Json::uuid();
-                       Updating::update('seasons', $value, ['season_id'=>$seasonIds[0]['sid']]);
-                       $outPut[] = "Updated Season ({$seasonIds[0]['n']})";
 
+                   if(!empty($seasonIds)){
+                       $newSeason[] =['id'=>$seasonIds[$counter]['sid'], 'n'=>$seasonIds[$counter]['n']];
+                       $value['season_uuid'] = Json::uuid();
+
+                       Updating::update('seasons', $value, ['season_id'=>$seasonIds[$counter]['sid']]);
+                       $outPut[] = "Updated Season ({$seasonIds[$counter]['n']})";
+                       if($counter <= count($seasonIds))
+                       {
+                           $counter++;
+                       }
                    }else{
                        $value['season_uuid'] = Json::uuid();
                        $newSeason[] =['id'=>Insertion::insertRow('seasons', $value),'n'=>$value['season_number']];
@@ -331,18 +336,24 @@ class ShowsHandlers extends Storage
 
                foreach ($newSeason as $key=>$value){
                    $incomingEp = $episodes[$value['n']] ?? [];
-                   foreach ($incomingEp as $key=>$v){
+
+                   foreach ($incomingEp as $k=>$v){
                        $query = "SELECT * FROM episodes WHERE season_id = {$value['id']} AND epso_number = {$v['epso_number']}";
                        $result = Query::query($query);
                        if(!empty($result)){
-                           $v['episode_uuid'] = Json::uuid();
-                           Updating::update('episodes',$v,['episode_id'=>$result[0]['episode_id']]);
-                           $outPut[] = "Updated Episode ({$v['epso_number']})";
+                           unset($v['publish']);
+                           $v['season_id'] = $value['id'];
+                           if(Updating::update('episodes',$v,['episode_id'=>$result[0]['episode_id']]))
+                           {
+                               $outPut[] = "Updated Episode ({$v['epso_number']})";
+                           }
                        }else{
                            $v['episode_uuid'] = Json::uuid();
-                           Insertion::insertRow('episodes', $v);
-                           $outPut[] = "Added Episode ({$v['epso_number']})";
-
+                           $v['season_id'] = $value['id'];
+                           if(Insertion::insertRow('episodes', $v))
+                           {
+                               $outPut[] = "Added Episode ({$v['epso_number']})";
+                           }
                        }
                    }
                }

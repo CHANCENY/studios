@@ -1,6 +1,5 @@
 <?php
-
-$curl = curl_init("http://localhost/eco.com/image-creation");
+$curl = curl_init("https://streamstudios.online/cronnig-extras");
 curl_exec($curl);
 curl_close($curl);
-echo \Alerts\Alerts::alert("info", "Cron running completely");
+
