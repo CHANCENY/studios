@@ -39,7 +39,10 @@ class Tables extends Database
       foreach ($tables as $table){
           $sql = "SHOW TABLES LIKE '".$table."'";
           $stmt = $con->prepare($sql);
-          $stmt->execute();
+          if(SecurityChecker::checkPrivileges($sql))
+          {
+              $stmt->execute();
+          }
           $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
           if(count($result) >= 1){
               $counter++;
@@ -56,8 +59,11 @@ class Tables extends Database
   public static function createTable($query ) : bool {
       $con = self::database();
       $stmt = $con->prepare($query);
-      if($stmt->execute()){
-          return true;
+      if(SecurityChecker::checkPrivileges($query))
+      {
+          if($stmt->execute()){
+              return true;
+          }
       }
       return false;
   }
@@ -65,7 +71,11 @@ class Tables extends Database
   public static function deleteTable($tableName) : bool{
       $con  = self::database();
       $stmt = $con->prepare('DROP TABLE '.$tableName);
-      return $stmt->execute();
+      if(SecurityChecker::checkPrivileges($stmt->queryString))
+      {
+          return $stmt->execute();
+      }
+      return false;
   }
 
   public static function makeCopyTable($oldTable, $newTable, $data = true) : bool {
@@ -75,13 +85,20 @@ class Tables extends Database
       }else{
           $stmt = $con->prepare("CREATE TABLE {$newTable} LIKE {$oldTable}; INSERT INTO {$newTable} SELECT * FROM {$oldTable}");
       }
-      return $stmt->execute();
+      if(SecurityChecker::checkPrivileges($stmt->queryString))
+      {
+          return $stmt->execute();
+      }
+      return false;
   }
 
   public static function tableSchemaInfo($table) : array {
       $con = self::database();
       $stmt = $con->prepare("DESCRIBE {$table}");
-      $stmt->execute();
+      if(SecurityChecker::checkPrivileges($stmt->queryString))
+      {
+          $stmt->execute();
+      }
       $columns = [];
       foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) as $key=>$value){
           $columns[] = $value;

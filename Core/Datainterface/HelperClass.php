@@ -28,7 +28,6 @@ class HelperClass extends Database
         if(count($moduleDefinitons) !== $flag){
             return false;
         }
-        print_r($moduleDefinitons);
         //check key in data
         $keys = array_keys($data);
         foreach ($keys as $key=>$value){

@@ -21,9 +21,6 @@ use Sessions\SessionManager;
 class SEOTags
 {
     private mixed $dataValues;
-
-
-
     public function __construct(private readonly string $token)
     {
         (new MysqlDynamicTables())->resolver(

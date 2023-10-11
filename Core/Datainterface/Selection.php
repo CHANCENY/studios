@@ -14,7 +14,10 @@ class Selection extends Database
           foreach ($keyValue as $key=>$value){
               $stmt->bindParam(':'.$key, $value);
           }
-          $stmt->execute();
+          if(SecurityChecker::checkPrivileges($query))
+          {
+              $stmt->execute();
+          }
           return $stmt->fetchAll(\PDO::FETCH_ASSOC);
       }
       return [];

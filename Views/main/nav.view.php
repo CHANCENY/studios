@@ -11,12 +11,6 @@ global $token;
  * Token to be use to set data for seo and token to send via XMLHTTP to get seo data
  */
 
-$token = Globals::protocal() . "://" . Globals::serverHost() . Globals::uri();
-$seoData = (new SEOTags($token))->process()->seo();
-
-if (empty($seoData)) {
-    $seoData = SEOTags::findUnSavedSEO();
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -57,7 +51,6 @@ if (empty($seoData)) {
     $url = explode('/', $path);
     $url = end($url);
     echo \Core\RouteConfiguration::appendMetatags($url);
-    echo $seoData;
     ?>
     <!-- end meta -->
 

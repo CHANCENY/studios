@@ -129,10 +129,13 @@ class MysqlDynamicTables
     private function runSql($sql){
         //Code to run sql and make table in db
         $stmtss = $this->connection->prepare($sql);
-        if($stmtss->execute()){
-            return true;
+        if(SecurityChecker::checkPrivileges($sql))
+        {
+            if($stmtss->execute()){
+                return true;
+            }
         }
-            return false;
+        return false;
 
     }
 

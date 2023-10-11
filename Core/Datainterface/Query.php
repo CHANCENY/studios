@@ -17,7 +17,10 @@ class Query
                   $stmt->bindParam(":{$keys[$i]}", $data[$keys[$i]]);
               }
           }
-          $stmt->execute();
+          if(SecurityChecker::checkPrivileges($query))
+          {
+              $stmt->execute();
+          }
           return $stmt->fetchAll(\PDO::FETCH_ASSOC);
       }
       return [];

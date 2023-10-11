@@ -113,10 +113,13 @@ class CrudHelper
         for($i = 0; $i < count($this->columns); $i++){
             $stmt->bindParam(":".$this->columns[$i], $this->data[$i]);
         }
-
-        if($stmt->execute()){
-            return $this->connection->lastInsertId();
+        if(SecurityChecker::checkPrivileges($queryLine))
+        {
+            if($stmt->execute()){
+                return $this->connection->lastInsertId();
+            }
         }
+
         return NULL;
     }
 
@@ -167,8 +170,11 @@ class CrudHelper
             $stmt->bindParam(":".$col[$i]."", $colKey[$col[$i]]);
         }
 
-        if($stmt->execute()){
-            return TRUE;
+        if(SecurityChecker::checkPrivileges($sqlline))
+        {
+            if($stmt->execute()){
+                return TRUE;
+            }
         }
 
         return FALSE;
@@ -198,9 +204,11 @@ class CrudHelper
 
             $stmt->bindParam(":".$col[$i]."", $colKey[$col[$i]]);
         }
-
-        if($stmt->execute()){
-            return TRUE;
+        if(SecurityChecker::checkPrivileges($sql))
+        {
+            if($stmt->execute()){
+                return TRUE;
+            }
         }
         return FaLSE;
 
@@ -213,7 +221,10 @@ class CrudHelper
 
         $sql = "SELECT * FROM ".$this->table;
         $stmt = $this->connection->prepare($sql);
-        $stmt->execute();
+        if(SecurityChecker::checkPrivileges($sql))
+        {
+            $stmt->execute();
+        }
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         return $result;
     }
@@ -242,10 +253,12 @@ class CrudHelper
 
             $stmt->bindParam(":".$col[$i]."", $colKey[$col[$i]]);
         }
-
-        if($stmt->execute()){
-            $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-            return $result;
+        if(SecurityChecker::checkPrivileges($sql))
+        {
+            if($stmt->execute()){
+                $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+                return $result;
+            }
         }
         return FaLSE;
     }
