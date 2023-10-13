@@ -13,8 +13,6 @@ $shows = [];
 if($name !== "no-value" && $id !== "no-value")
 {
     $shows = (new GroupShows())->searchBYNameAndID($name, intval($id));
-    echo ApiHandlerClass::stringfiyData($shows);
-    exit;
 }
 if($name !== "no-value")
 {

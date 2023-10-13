@@ -1,4 +1,40 @@
 <?php
+
+use GlobalsFunctions\Globals;
+
+$showID = Globals::get("show-id") ?? null;
+if(empty($showID))
+{
+   Globals::redirect("/shows/listing");
+   exit;
+}
+
+$show = new \groups\GroupShows();
+$show->loadForEdit(intval($showID));
+
+if(Globals::method() === "POST" && !empty(Globals::post("show_edit")))
+{
+    $data['show_image'] = !empty(Globals::post("new_image")) ? Globals::post("new_image") : $show->image();
+    $data['title'] = Globals::post("title") ?? $show->title();
+    if(!empty(Globals::post("release_date")))
+    {
+        try {
+            $data['release_date'] = (new DateTime(str_replace("/","-",Globals::post("release_date"))))->format("d-m-Y");
+        }catch (Throwable $e){
+            $data['release_date'] = $show->date();
+        }
+    }else{
+        $data['release_date'] = $show->date();
+    }
+    $data['description'] = Globals::post("show_overview") ?? $show->overview();
+    if(\Datainterface\Updating::update("tv_shows",$data, ['show_id'=>$showID]))
+    {
+        Globals::redirect("/shows/listing");
+        exit;
+    }
+    //	2023-08-18
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -185,9 +221,9 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="card-box">
-                        <h4 class="card-title">Solid justified</h4>
+                        <h4 class="card-title"><?php echo $show->title(); ?></h4>
                         <ul class="nav nav-tabs nav-tabs-solid nav-justified">
-                            <li class="nav-item"><a class="nav-link active" href="#solid-justified-tab1" data-toggle="tab">Shows Information</a></li>
+                            <li class="nav-item"><a class="nav-link active" href="#solid-justified-tab1" data-toggle="tab">Shows</a></li>
                             <li class="nav-item"><a class="nav-link" href="#solid-justified-tab2" data-toggle="tab">Profile</a></li>
                             <li class="nav-item"><a class="nav-link" href="#solid-justified-tab3" data-toggle="tab">Messages</a></li>
                         </ul>
@@ -201,18 +237,18 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-lg-8 offset-lg-2">
-                                            <form>
+                                            <form method="POST" id="show-edit-form" action="<?php echo Globals::uri(); ?>" enctype="multipart/form-data">
                                                 <div class="row">
                                                     <div class="col-sm-6">
                                                         <div class="form-group">
                                                             <label>Show Title</label>
-                                                            <input class="form-control" name="title" id="title-show" type="text">
+                                                            <input class="form-control" value="<?php echo $show->title(); ?>" name="title" id="title-show" type="text">
                                                         </div>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <div class="form-group">
                                                             <label>Old Image</label>
-                                                            <input class="form-control" name="old_image" id="od-image-show" type="text">
+                                                            <input class="form-control" readonly value="<?php echo $show->image(); ?>" name="old_image" id="od-image-show" type="text">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -221,14 +257,14 @@
                                                         <div class="form-group">
                                                             <label>Release Date</label>
                                                             <div class="cal-icon">
-                                                                <input class="form-control datetimepicker" name="release_date" id="release-date-show" type="text">
+                                                                <input class="form-control datetimepicker" value="<?php echo $show->date(); ?>" name="release_date" id="release-date-show" type="text">
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <div class="form-group">
                                                             <label>Show Overview</label>
-                                                                <textarea cols="2" rows="2" class="form-control" name="show_overview" id="overview-show"></textarea>
+                                                                <textarea cols="2" rows="2" class="form-control" name="show_overview" id="overview-show"><?php echo $show->overview(); ?></textarea>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -236,14 +272,14 @@
                                                     <div class="col-sm-6">
                                                         <div class="form-group">
                                                             <label>New Image</label>
-                                                            <input class="form-control" name="new_image" id="new-image-show" type="file">
+                                                            <input class="form-control" name="new_image_file" onchange="uploadShowImage()" id="new-image-show" type="file">
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="attach-files">
                                                     <ul>
                                                         <li>
-                                                            <img id="old-image-preview" src="https://dashboard.streamstudios.online/assets/img/user.jpg" alt="">
+                                                            <img id="old-image-preview" src="<?php echo $show->image(); ?>" alt="<?php echo $show->title(); ?>">
                                                             <a href="#" class="fa fa-close file-remove"></a>
                                                         </li>
                                                         <li>
@@ -483,17 +519,17 @@
     </div>
 </div>
 <div class="sidebar-overlay" data-reff=""></div>
-<script src="https://dashboard.streamstudios.online/assets/js/select2.min.js"></script>
-<script src="https://dashboard.streamstudios.online/assets/js/moment.min.js"></script>
-<script src="https://dashboard.streamstudios.online/assets/js/bootstrap-datetimepicker.min.js"></script>
-<script src="https://dashboard.streamstudios.online/assets/js/app.js"></script>
 <script src="https://dashboard.streamstudios.online/assets/js/jquery-3.2.1.min.js"></script>
 <script src="https://dashboard.streamstudios.online/assets/js/popper.min.js"></script>
 <script src="https://dashboard.streamstudios.online/assets/js/bootstrap.min.js"></script>
 <script src="https://dashboard.streamstudios.online/assets/js/jquery.slimscroll.js"></script>
+<script src="https://dashboard.streamstudios.online/assets/js/select2.min.js"></script>
 <script src="https://dashboard.streamstudios.online/assets/js/app.js"></script>
+<script src="https://dashboard.streamstudios.online/assets/js/moment.min.js"></script>
+<script src="https://dashboard.streamstudios.online/assets/js/bootstrap-datetimepicker.min.js"></script>
 <script src="https://dashboard.streamstudios.online/assets/js/dashboard/users.js"></script>
 <script src="https://dashboard.streamstudios.online/assets/js/dashboard/alerts.js"></script>
+<script src="https://dashboard.streamstudios.online/assets/js/dashboard/shows_listing.js"></script>
 </body>
 
 

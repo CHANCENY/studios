@@ -193,3 +193,62 @@ function searchingShow(){
     }
 }
 searchingShow();
+
+function uploadShowImage() {
+    const fileInput = document.getElementById("new-image-show");
+    const previewImage = document.getElementById("new-image-preview");
+
+    if (fileInput.files.length > 0) {
+        const selectedFile = fileInput.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            // Display the selected image
+            previewImage.src = e.target.result;
+
+            // Convert the image to base64
+            const base64Image = e.target.result.split(",")[1]; // Extract the base64 part
+
+            // Send the base64 image using XMLHttpRequest
+            sendBase64ShowImage(selectedFile.name,base64Image);
+        };
+
+        // Read the selected file as a data URL
+        reader.readAsDataURL(selectedFile);
+    }
+}
+
+function sendBase64ShowImage(filename,base64Image) {
+    const xhr = new XMLHttpRequest();
+    const formData = new FormData();
+
+    // Append the base64 image data to the form data
+    formData.append("image", base64Image);
+    formData.append("name", filename);
+
+    // Configure the XMLHttpRequest
+    xhr.open("POST", "/shows/upload/images", true);
+
+    // Set up the onload and onerror event handlers
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            // Request was successful
+            const formEdit = document.getElementById("show-edit-form");
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.value = JSON.parse(this.responseText).link;
+            input.name = "new_image";
+            formEdit.appendChild(input);
+        } else {
+            // Request failed
+            console.error("Error sending image:", xhr.statusText);
+        }
+    };
+
+    xhr.onerror = function () {
+        console.error("Network error while sending image.");
+    };
+
+    // Send the FormData containing the base64 image
+    xhr.send(formData);
+}

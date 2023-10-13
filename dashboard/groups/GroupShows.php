@@ -6,6 +6,22 @@ use Datainterface\Query;
 
 class GroupShows
 {
+    /**
+     * @var array|mixed
+     */
+    private mixed $show;
+
+    public function __call(string $name, array $arguments)
+    {
+        return match ($name) {
+            'title' => $this->show['title'] ?? null,
+            'date' => $this->show['release_date'] ?? (new \DateTime("now"))->format("d/m/y"),
+            'overview' => $this->show['description'] ?? null,
+            'image' => $this->show['show_image'] ?? null,
+            default => $this->show,
+        };
+    }
+
     public function showsListings(): array
     {
         $query = "SELECT tv.show_id AS id, tv.title,  tv.release_date AS date,  tv.show_image AS image, CASE  WHEN ai.additional_id IS NOT NULL THEN 1  ELSE 0 END AS active FROM tv_shows AS tv
@@ -115,5 +131,17 @@ ORDER BY
             return array_values($data);
         }
         return array();
+    }
+
+    public function loadForEdit(int $id): void
+    {
+        $data = Query::query("SELECT * FROM tv_shows WHERE show_id = :id", ['id'=>$id]);
+        if(!empty($data))
+        {
+            $this->show = $data[0];
+        }
+        else{
+            $this->show = [];
+        }
     }
 }
