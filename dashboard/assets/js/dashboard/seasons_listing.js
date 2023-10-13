@@ -1,18 +1,18 @@
-const movieDisplay = document.getElementById("movie-listing-display");
+const seasonDisplay = document.getElementById("season-listing-display");
 
 // Get the URL string
-const urlString1 = window.location.href;
+const urlString3 = window.location.href;
 
 // Create a URL object
-const url1 = new URL(urlString1);
+const url3 = new URL(urlString3);
 
 // Use URLSearchParams to get the parameters
-const params1 = new URLSearchParams(url1.search);
+const params3 = new URLSearchParams(url3.search);
 
-function movieListings(page = 0)
+function seasonListings(page = 0)
 {
     const xhr = new XMLHttpRequest();
-    xhr.open("GET", "/movies-groups?page="+page, false);
+    xhr.open("GET", "/seasons/season-groups?page="+page, false);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onload = function ()
     {
@@ -23,11 +23,11 @@ function movieListings(page = 0)
                 data['results'].forEach((item, index)=>{
                     const row = buildRows(item);
                     const tr = document.createElement("tr");
-                    tr.id = "movie-tr-"+index;
+                    tr.id = "season-tr-"+index;
                     tr.innerHTML = row;
-                    if(movieDisplay !== null)
+                    if(seasonDisplay !== null)
                     {
-                        movieDisplay.appendChild(tr);
+                        seasonDisplay.appendChild(tr);
                     }
                 })
             }catch (e) {
@@ -39,25 +39,25 @@ function movieListings(page = 0)
 }
 
 function buildRows(item){
-    const status = item.active === 1 ? "active" : "inactive";
-    const statusClass = item.active === 1 ? "status-green" : "status-grey";
     const htmlRow = ` <td>
                         <img width="28" height="28" src="${item.image}" class="rounded-circle" alt="">
                         <h2>${item.name}</h2>
                       </td>
-                       <td>M-${item.id}</td>
-                      <td>${item.time}min</td>
-                      <td>${item.date}</td>
+                       <td>S-${item.id}</td>
+                      <td>${item.number}</td>
                       <td>
-                        <span class="custom-badge ${statusClass}">${status}</span>
+                        ${item.date}
+                      </td>
+                       <td>
+                        ${item.episodes}
                       </td>
                       <td class="text-right">
                         <div class="dropdown dropdown-action">
                            <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
                            <div class="dropdown-menu dropdown-menu-right">
-                              <a class="dropdown-item" href="/movies/edit-movie?movie-id=${item.id}"><i class="fa fa-pencil m-r-5"></i> Edit</a>
-                              <a class="dropdown-item" href="/search/display/full?movie-id=${item.id}"><i class="fa fa-folder-open m-r-5"></i> View</a>
-                              <a onclick="prepareDeleteMovie(${item.id})" class="dropdown-item" href="#" data-toggle="modal" data-target="#delete_employee"><i class="fa fa-trash-o m-r-5"></i> Delete</a>
+                              <a class="dropdown-item" href="/shows/edit-show?show-id=${item.entity_id}&season-id=${item.id}"><i class="fa fa-pencil m-r-5"></i> Edit</a>
+                               <a class="dropdown-item" href="/search/display/full?season-id=${item.id}"><i class="fa fa-folder-open m-r-5"></i> View</a>
+                              <a onclick="prepareDeleteSeason(${item.id})" class="dropdown-item" href="#" data-toggle="modal" data-target="#delete_employee"><i class="fa fa-trash-o m-r-5"></i> Delete</a>
                            </div>
                         </div>
                       </td>`;
@@ -65,9 +65,9 @@ function buildRows(item){
 }
 
 
-function movieListingPager()
+function seasonListingPager()
 {
-    const pageNumber = params1.get("page") || 0;
+    const pageNumber = params3.get("page") || 0;
     const currentPage = parseInt(pageNumber);
     let previous = 0;
     let first = 0;
@@ -88,22 +88,22 @@ function movieListingPager()
 
     const htmlp = `
                                 <li class="paginate_button page-item previous" id="DataTables_Table_0_previous">
-                                    <a href="/movies/listing?page=${previous}" aria-controls="DataTables_Table_0" data-dt-idx="${previous}" tabindex="0" class="page-link">Previous</a>
+                                    <a href="/seasons/listing?page=${previous}" aria-controls="DataTables_Table_0" data-dt-idx="${previous}" tabindex="0" class="page-link">Previous</a>
                                 </li>
                                  <li class="paginate_button page-item active">
-                                    <a href="/movies/listing?page=${currentPage}" aria-controls="DataTables_Table_0" data-dt-idx="${currentPage}" tabindex="0" class="page-link">${currentPage}</a>
+                                    <a href="/seasons/listing?page=${currentPage}" aria-controls="DataTables_Table_0" data-dt-idx="${currentPage}" tabindex="0" class="page-link">${currentPage}</a>
                                 </li>
                                 <li class="paginate_button page-item">
-                                    <a href="/movies/listing?page=${first}" aria-controls="DataTables_Table_0" data-dt-idx="${first}" tabindex="0" class="page-link">${first}</a>
+                                    <a href="/seasons/listing?page=${first}" aria-controls="DataTables_Table_0" data-dt-idx="${first}" tabindex="0" class="page-link">${first}</a>
                                 </li>
                                 <li class="paginate_button page-item ">
-                                    <a href="/movies/listing?page=${second}" aria-controls="DataTables_Table_0" data-dt-idx="${second}" tabindex="0" class="page-link">${second}</a>
+                                    <a href="/seasons/listing?page=${second}" aria-controls="DataTables_Table_0" data-dt-idx="${second}" tabindex="0" class="page-link">${second}</a>
                                 </li>
                                 <li class="paginate_button page-item next" id="DataTables_Table_0_next">
-                                    <a href="/movies/listing?page=${next}" aria-controls="DataTables_Table_0" data-dt-idx="${next}" tabindex="0" class="page-link">Next</a>
+                                    <a href="/seasons/listing?page=${next}" aria-controls="DataTables_Table_0" data-dt-idx="${next}" tabindex="0" class="page-link">Next</a>
                                 </li>
                             `;
-    const area = document.getElementById("pager-movies");
+    const area = document.getElementById("pager-seasons");
     if(area !== null)
     {
         const url = document.createElement("ul");
@@ -113,32 +113,32 @@ function movieListingPager()
     }
 }
 
-movieListings(params1.get("page") || 0);
+seasonListings(params3.get("page") || 0);
 
-movieListingPager();
+seasonListingPager();
 
 
-function prepareDeleteMovie(movieID)
+function prepareDeleteSeason(seasonID)
 {
-    localStorage.setItem("movie", movieID);
+    localStorage.setItem("season", seasonID);
 }
 
 
-function deleteMovieEntirely()
+function deleteSeasonEntirely()
 {
-    const movie = localStorage.getItem("movie");
+    const movie = localStorage.getItem("show");
     if(movie !== null)
     {
-        localStorage.removeItem("movie");
+        localStorage.removeItem("show");
         const xhr = new XMLHttpRequest();
-        xhr.open("POST", "/movies/delete-movie", true);
+        xhr.open("POST", "/seasons/delete-season", true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = function (){
             if(this.status === 200)
             {
                 window.location.reload();
             }else{
-                document.getElementById("message-deletes").textContent = "Failed to delete this movie";
+                document.getElementById("message-deletes").textContent = "Failed to delete this Season";
                 setTimeout(()=>{
                     window.location.reload();
                 }, 3000)
@@ -150,38 +150,38 @@ function deleteMovieEntirely()
 }
 
 
-function searchingMovies(){
+function searchingSeason(){
 
-    const searchMovie = document.getElementById("movie-filter-search");
+    const searchMovie = document.getElementById("season-filter-search");
     if(searchMovie !== null)
     {
         searchMovie.addEventListener("click", (e)=>{
             e.preventDefault();
 
-            const name = document.getElementById("movie-filter-name");
-            const id = document.getElementById("movie-filter-id");
+            const name = document.getElementById("season-filter-name");
+            const id = document.getElementById("season-filter-id");
             let searchName = name.value || "no-value";
             let searchID = id.value || "no-value";
 
             const para = new URLSearchParams({searchName, searchID});
             const xhr = new XMLHttpRequest();
 
-            xhr.open("GET", "/movies/search?"+para, true);
+            xhr.open("GET", "/seasons/search?"+para, true);
             xhr.onload = function ()
             {
                 if(this.status === 200)
                 {
                     try {
                         const data = JSON.parse(this.responseText);
-                        movieDisplay.innerHTML = "";
+                        seasonDisplay.innerHTML = "";
                         data['results'].forEach((item, index)=>{
                             const row = buildRows(item);
                             const tr = document.createElement("tr");
-                            tr.id = "movie-tr-"+index;
+                            tr.id = "season-tr-"+index;
                             tr.innerHTML = row;
-                            if(movieDisplay !== null)
+                            if(seasonDisplay !== null)
                             {
-                                movieDisplay.appendChild(tr);
+                                seasonDisplay.appendChild(tr);
                             }
                         })
                     }catch (e) {
@@ -193,4 +193,12 @@ function searchingMovies(){
         })
     }
 }
-searchingMovies();
+searchingSeason();
+
+function deleteSeason(seasonID)
+{
+    if(confirm("Are you sure you want to delete season ("+seasonID+")"))
+    {
+        alert("deleted");
+    }
+}

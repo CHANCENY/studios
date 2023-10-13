@@ -1,169 +1,39 @@
 <?php
 
 use GlobalsFunctions\Globals;
-use groups\GroupSeasons;
-use groups\GroupShows;
+use groups\GroupOverview;
 
-global $seasonIDGlobal;
-
-$showID = Globals::get("show-id") ?? null;
-$seasonIDGlobal = Globals::get("season-id") ?? null;
-if(empty($showID))
+$entity = [];
+$pageTitle = null;
+if(!empty(Globals::get("movie-id")))
 {
-    Globals::redirect("/shows/listing");
-    exit;
+    $entity = (new GroupOverview())->movie(Globals::get("movie-id"));
+    $pageTitle = "Movie Details";
+}
+if(!empty(Globals::get("show-id")))
+{
+    $entity = (new GroupOverview())->show(Globals::get("show-id"));
+    $pageTitle = "Show Details";
+}
+if(!empty(Globals::get("season-id")))
+{
+    $entity = (new GroupOverview())->season(Globals::get("season-id"));
+    $pageTitle = "Season Details";
 }
 
-$show = new GroupShows();
-$show->loadForEdit(intval($showID));
-$season = (new GroupSeasons())->loadSeasonByShoID($showID);
-$message = null;
+$title = $entity['title'] ?? $entity['season_name'] ?? null;
+$overview = $entity['description'] ?? $entity['epso_description'] ?? null;
+$date = (new DateTime($entity['release_date'] ?? $entity['air_date'] ?? "now"))->format("F d, Y");
+$image = $entity['show_image'] ?? $entity['movie_image'] ?? $entity['season_image'] ?? $entity['epso_image'] ?? null;
+$url = $entity['url'] ?? null;
 
-function buildForm(array $seasonRow, $index = 0): string
-{
-    $title = $seasonRow['season_name'] ?? null;
-    $episodeCount = $seasonRow['episode_count'] ?? null;
-    $seasonImage = $seasonRow['season_image'] ?? null;
-    $seasonDescription = $seasonRow['description'] ?? null;
-    $seasonID = $seasonRow['season_id'] ?? null;
-    $seasonDate = $seasonRow['air_date'] ?? null;
-    $uri = Globals::uri();
-    return <<<EOD
-<div class="col-md-6">
-  <div class="card-box">
-                                            <h4 class="card-title">$title</h4>
-                                            <form action="$uri" method="POST" enctype="multipart/form-data">
-                                               <input type="hidden" name="season_index" value="$index">
-                                                <div class="form-group row">
-                                                    <label class="col-md-3 col-form-label">Season Name</label>
-                                                    <div class="col-md-9">
-                                                        <input type="text" name="season_name" value="$title" class="form-control">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-md-3 col-form-label">Season Image Old</label>
-                                                    <div class="col-md-9">
-                                                        <input type="text" name="season_old_image" readonly value="$seasonImage" class="form-control">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-md-3 col-form-label">Episode Count</label>
-                                                    <div class="col-md-9">
-                                                        <input type="number" name="episode_count" value="$episodeCount" class="form-control">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-md-3 col-form-label">Season Overview</label>
-                                                    <div class="col-md-9">
-                                                        <textarea type="text" name="description" class="form-control">$seasonDescription</textarea>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-md-3 col-form-label">Season ID</label>
-                                                    <div class="col-md-9">
-                                                        <input type="text" name="season_id" value="$seasonID" readonly class="form-control">
-                                                    </div>
-                                                </div>
-                                                 <div class="form-group row">
-                                                    <label class="col-md-3 col-form-label">Season Date</label>
-                                                    <div class="col-md-9 cal-icon">
-                                                        <input type="text" name="season_date" value="$seasonDate" class="form-control datetimepicker">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-md-3 col-form-label">Season New Image</label>
-                                                    <div class="col-md-9">
-                                                        <input type="file" name="season_image_new" class="form-control">
-                                                    </div>
-                                                </div>
-                                                <div class="text-right">
-                                                     <a href="#" onclick="deleteSeason($seasonID)" class="btn btn-primary">Delete Season</a>
-                                                    <button type="submit" name="season_edit" value="$seasonID" class="btn btn-primary">Save Changes</button>
-                                                </div>
-                                            </form>
-                                        </div>
-</div>
-EOD;
-
-}
-
-if(Globals::method() === "POST" && !empty(Globals::post("show_edit")))
-{
-    $data['show_image'] = !empty(Globals::post("new_image")) ? Globals::post("new_image") : $show->image();
-    $data['title'] = Globals::post("title") ?? $show->title();
-    if(!empty(Globals::post("release_date")))
-    {
-        try {
-            $data['release_date'] = (new DateTime(str_replace("/","-",Globals::post("release_date"))))->format("d-m-Y");
-        }catch (Throwable $e){
-            $data['release_date'] = $show->date();
-        }
-    }else{
-        $data['release_date'] = $show->date();
-    }
-    $data['description'] = Globals::post("show_overview") ?? $show->overview();
-    if(\Datainterface\Updating::update("tv_shows",$data, ['show_id'=>$showID]))
-    {
-        Globals::redirect("/shows/listing");
-        exit;
-    }
-}
-
-if(Globals::method() === "POST" && !empty(Globals::post("season_edit")))
-{
-    $index = Globals::post("season_index");
-   $data['season_name'] = !empty(Globals::post("season_name")) ?
-       Globals::post("season_name") : $season[$index]['season_name'];
-   $data['description'] = !empty(Globals::post("description")) ?
-       Globals::post("description") : $season[$index]['description'];
-   $data['episode_count'] = !empty(Globals::post("episode_count")) ?
-       Globals::post("episode_count") : $season[$index]['episode_count'];
-
-   if(!empty(Globals::post("season_date")))
-   {
-       try {
-         $data['air_date'] = (new DateTime(str_replace("/", "-", Globals::post("season_date"))))->format("d-m-Y");
-       }catch (Throwable $e){
-           $data['air_date'] = $season[$index]['air_date'];
-       }
-   }else{
-       $data['air_date'] = $season[$index]['air_date'];
-   }
-
-   if(!empty(Globals::files("season_image_new")))
-   {
-       $data['season_image'] = (new GroupSeasons())->seasonImageUpload(Globals::files("season_image_new"));
-   }else{
-       $data['season_image'] = !empty(Globals::post("season_old_image")) ?
-            Globals::post("season_old_image") : $season[$index]['season_image'];
-   }
-
-   if(\Datainterface\Updating::update("seasons", $data, ["season_id"=>$season[$index]['season_id']]))
-   {
-       $message = <<<EOD
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-								<strong>Success!</strong> Updated <a href="#" class="alert-link">{$data['season_name']}</a> has been done successfully.
-								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-									<span aria-hidden="true">×</span>
-								</button>
-							</div>
-EOD;
-   }else{
-       $message = <<<EOD
-<div class="alert alert-danger alert-dismissible fade show" role="alert">
-								<strong>Error!</strong> A <a href="#" class="alert-link">problem</a> has been occurred while updating season.
-								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-									<span aria-hidden="true">×</span>
-								</button>
-							</div>
-EOD;
-   }
-}
 
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<!-- tabs23:58-->
+
+
+<!-- blog-details23:51-->
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
@@ -171,8 +41,6 @@ EOD;
     <title>Preclinic - Medical & Hospital - Bootstrap 4 Admin Template</title>
     <link rel="stylesheet" type="text/css" href="https://dashboard.streamstudios.online/assets/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="https://dashboard.streamstudios.online/assets/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="https://dashboard.streamstudios.online/assets/css/select2.min.css">
-    <link rel="stylesheet" type="text/css" href="https://dashboard.streamstudios.online/assets/css/bootstrap-datetimepicker.min.css">
     <link rel="stylesheet" type="text/css" href="https://dashboard.streamstudios.online/assets/css/style.css">
     <script src="https://dashboard.streamstudios.online/assets/js/dashboard/cookies.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -247,7 +115,7 @@ EOD;
                         <a href="/dashboard"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
                     </li>
                     <li>
-                        <a href="/users"><i class="fa fa-user-md"></i> <span>Doctors</span></a>
+                        <a href="/users"><i class="fa fa-user-md"></i> <span>Users</span></a>
                     </li>
                     <li>
                         <a href="patients.html"><i class="fa fa-wheelchair"></i> <span>Patients</span></a>
@@ -338,103 +206,29 @@ EOD;
         <div class="content">
             <div class="row">
                 <div class="col-sm-12">
-                    <h4 class="page-title">TV Shows Edit</h4>
+                    <h4 class="page-title"><?php echo $pageTitle; ?></h4>
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-12">
-                    <div class="card-box">
-                        <h4 class="card-title"><?php echo $show->title(); ?></h4><?php echo $message ?? null; ?>
-                        <ul class="nav nav-tabs nav-tabs-solid nav-justified">
-                            <li class="nav-item"><a class="nav-link <?php echo empty($seasonIDGlobal) ? 'active' : null; ?>" href="#solid-justified-tab1" data-toggle="tab">Shows</a></li>
-                            <li class="nav-item"><a class="nav-link <?php echo !empty($seasonIDGlobal) ? 'active' : null; ?>" href="#solid-justified-tab2" data-toggle="tab">Seasons</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#solid-justified-tab3" data-toggle="tab">Messages</a></li>
-                        </ul>
-                        <div class="tab-content">
-                            <div class="tab-pane <?php echo empty($seasonIDGlobal) ? 'show active' : null; ?>" id="solid-justified-tab1">
-                                <div class="content">
-                                    <div class="row">
-                                        <div class="col-lg-8 offset-lg-2">
-                                            <h4 class="page-title">Edit Show</h4>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-8 offset-lg-2">
-                                            <form method="POST" id="show-edit-form" action="<?php echo Globals::uri(); ?>" enctype="multipart/form-data">
-                                                <div class="row">
-                                                    <div class="col-sm-6">
-                                                        <div class="form-group">
-                                                            <label>Show Title</label>
-                                                            <input class="form-control" value="<?php echo $show->title(); ?>" name="title" id="title-show" type="text">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-6">
-                                                        <div class="form-group">
-                                                            <label>Old Image</label>
-                                                            <input class="form-control" readonly value="<?php echo $show->image(); ?>" name="old_image" id="od-image-show" type="text">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-sm-6">
-                                                        <div class="form-group">
-                                                            <label>Release Date</label>
-                                                            <div class="cal-icon">
-                                                                <input class="form-control datetimepicker" value="<?php echo $show->date(); ?>" name="release_date" id="release-date-show" type="text">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-6">
-                                                        <div class="form-group">
-                                                            <label>Show Overview</label>
-                                                            <textarea cols="2" rows="2" class="form-control" name="show_overview" id="overview-show"><?php echo $show->overview(); ?></textarea>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-sm-6">
-                                                        <div class="form-group">
-                                                            <label>New Image</label>
-                                                            <input class="form-control" name="new_image_file" onchange="uploadShowImage()" id="new-image-show" type="file">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="attach-files">
-                                                    <ul>
-                                                        <li>
-                                                            <img id="old-image-preview" src="<?php echo $show->image(); ?>" alt="<?php echo $show->title(); ?>">
-                                                            <a href="#" class="fa fa-close file-remove"></a>
-                                                        </li>
-                                                        <li>
-                                                            <img id="new-image-preview" src="https://dashboard.streamstudios.online/assets/img/user.jpg" alt="">
-                                                            <a href="#" class="fa fa-close file-remove"></a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                                <div class="m-t-20 text-center">
-                                                    <button type="submit" name="show_edit" value="se" class="btn btn-primary submit-btn">Save Show</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
+                <div class="col-md-8">
+                    <div class="blog-view">
+                        <article class="blog blog-single-post">
+                            <h3 class="blog-title"><?php echo $title; ?></h3>
+                            <div class="blog-info clearfix">
+                                <div class="post-left">
+                                    <ul>
+                                        <li><a href="#."><i class="fa fa-calendar"></i> <span><?php echo $date; ?></span></a></li>
+                                    </ul>
                                 </div>
+                                <div class="post-right"></div>
                             </div>
-                            <div class="tab-pane <?php echo !empty($seasonIDGlobal) ? 'show active' : null; ?>" id="solid-justified-tab2">
-                                <div class="row"><?php foreach ($season as $key=>$value): if(!empty($seasonIDGlobal) && intval($seasonIDGlobal) === intval($value['season_id'])){
-                                        echo buildForm($value, $key);
-                                        break;
-                                    }else{
-                                    if(empty($seasonIDGlobal))
-                                    {
-                                        echo buildForm($value, $key);
-                                    }
-                                    } ?>
-                                <?php endforeach; ?></div>
+                            <div class="blog-image">
+                                <a target="_blank" href="<?php echo $url; ?>"><img alt="" src="<?php echo $image; ?>" class="img-fluid"></a>
                             </div>
-                            <div class="tab-pane" id="solid-justified-tab3">
-                                Tab content 3
+                            <div class="blog-content">
+                                <p><?php echo $overview; ?></p>
                             </div>
-                        </div>
+                        </article>
                     </div>
                 </div>
             </div>
@@ -655,15 +449,11 @@ EOD;
 <script src="https://dashboard.streamstudios.online/assets/js/popper.min.js"></script>
 <script src="https://dashboard.streamstudios.online/assets/js/bootstrap.min.js"></script>
 <script src="https://dashboard.streamstudios.online/assets/js/jquery.slimscroll.js"></script>
-<script src="https://dashboard.streamstudios.online/assets/js/select2.min.js"></script>
 <script src="https://dashboard.streamstudios.online/assets/js/app.js"></script>
-<script src="https://dashboard.streamstudios.online/assets/js/moment.min.js"></script>
-<script src="https://dashboard.streamstudios.online/assets/js/bootstrap-datetimepicker.min.js"></script>
 <script src="https://dashboard.streamstudios.online/assets/js/dashboard/users.js"></script>
 <script src="https://dashboard.streamstudios.online/assets/js/dashboard/alerts.js"></script>
-<script src="https://dashboard.streamstudios.online/assets/js/dashboard/shows_listing.js"></script>
 </body>
 
 
-<!-- tabs23:59-->
+<!-- blog-details23:56-->
 </html>
