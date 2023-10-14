@@ -119,7 +119,7 @@ showListingPager();
 
 function prepareDeleteShow(showID)
 {
-    localStorage.setItem("show", ShowID);
+    localStorage.setItem("show", showID);
 }
 
 
@@ -130,7 +130,7 @@ function deleteShowEntirely()
     {
         localStorage.removeItem("show");
         const xhr = new XMLHttpRequest();
-        xhr.open("POST", "/shows/delete-show", true);
+        xhr.open("GET", "/shows/delete-show?type=show&id="+movie, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = function (){
             if(this.status === 200)
@@ -144,7 +144,7 @@ function deleteShowEntirely()
             }
 
         }
-        xhr.send(JSON.stringify({movie}));
+        xhr.send();
     }
 }
 

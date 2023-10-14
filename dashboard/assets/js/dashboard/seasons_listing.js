@@ -126,12 +126,12 @@ function prepareDeleteSeason(seasonID)
 
 function deleteSeasonEntirely()
 {
-    const movie = localStorage.getItem("show");
+    const movie = localStorage.getItem("season");
     if(movie !== null)
     {
         localStorage.removeItem("show");
         const xhr = new XMLHttpRequest();
-        xhr.open("POST", "/seasons/delete-season", true);
+        xhr.open("GET", "/shows/delete-show?type=season&id="+movie, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = function (){
             if(this.status === 200)
@@ -145,7 +145,7 @@ function deleteSeasonEntirely()
             }
 
         }
-        xhr.send(JSON.stringify({movie}));
+        xhr.send();
     }
 }
 
@@ -194,11 +194,3 @@ function searchingSeason(){
     }
 }
 searchingSeason();
-
-function deleteSeason(seasonID)
-{
-    if(confirm("Are you sure you want to delete season ("+seasonID+")"))
-    {
-        alert("deleted");
-    }
-}

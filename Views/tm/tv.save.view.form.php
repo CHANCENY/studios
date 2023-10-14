@@ -89,6 +89,4 @@ function episodeGather($show, $count){
     return $list;
 }
 
-
-
 ?>
