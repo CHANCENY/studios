@@ -150,14 +150,14 @@ function AlreadyExistToken($username): string|null
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
-    <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="https://dashboard.streamstudios.online/assets/img/favicon.ico">
     <title>Preclinic - Medical & Hospital - Bootstrap 4 Admin Template</title>
-    <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+    <link rel="stylesheet" type="text/css" href="https://dashboard.streamstudios.online/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://dashboard.streamstudios.online/assets/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="https://dashboard.streamstudios.online/assets/css/style.css">
     <!--[if lt IE 9]>
-    <script src="assets/js/html5shiv.min.js"></script>
-    <script src="assets/js/respond.min.js"></script>
+    <script src="https://dashboard.streamstudios.online/assets/js/html5shiv.min.js"></script>
+    <script src="https://dashboard.streamstudios.online/assets/js/respond.min.js"></script>
     <![endif]-->
 </head>
 
@@ -192,10 +192,10 @@ function AlreadyExistToken($username): string|null
         </div>
     </div>
 </div>
-<script src="assets/js/jquery-3.2.1.min.js"></script>
-<script src="assets/js/popper.min.js"></script>
-<script src="assets/js/bootstrap.min.js"></script>
-<script src="assets/js/app.js"></script>
+<script src="https://dashboard.streamstudios.online/assets/js/jquery-3.2.1.min.js"></script>
+<script src="https://dashboard.streamstudios.online/assets/js/popper.min.js"></script>
+<script src="https://dashboard.streamstudios.online/assets/js/bootstrap.min.js"></script>
+<script src="https://dashboard.streamstudios.online/assets/js/app.js"></script>
 </body>
 
 

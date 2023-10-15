@@ -97,7 +97,6 @@ EOD;
     <script src="https://dashboard.streamstudios.online/assets/js/respond.min.js"></script>
     <![endif]-->
 </head>
-
 <body>
     <div class="main-wrapper">
         <div class="header">

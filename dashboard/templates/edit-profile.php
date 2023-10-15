@@ -87,18 +87,18 @@ if(Globals::method() === "POST" && !empty(Globals::post("submit-profile")))
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
-    <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="https://dashboard.streamstudios.online/assets/img/favicon.ico">
     <title>Preclinic - Medical & Hospital - Bootstrap 4 Admin Template</title>
-    <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/select2.min.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/bootstrap-datetimepicker.min.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
-    <script src="assets/js/dashboard/cookies.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://dashboard.streamstudios.online/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://dashboard.streamstudios.online/assets/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="https://dashboard.streamstudios.online/assets/css/select2.min.css">
+    <link rel="stylesheet" type="text/css" href="https://dashboard.streamstudios.online/assets/css/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" type="text/css" href="https://dashboard.streamstudios.online/assets/css/style.css">
+    <script src="https://dashboard.streamstudios.online/assets/js/dashboard/cookies.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!--[if lt IE 9]>
-    <script src="assets/js/html5shiv.min.js"></script>
-    <script src="assets/js/respond.min.js"></script>
+    <script src="https://dashboard.streamstudios.online/assets/js/html5shiv.min.js"></script>
+    <script src="https://dashboard.streamstudios.online/assets/js/respond.min.js"></script>
     <![endif]-->
 </head>
 
@@ -561,16 +561,16 @@ if(Globals::method() === "POST" && !empty(Globals::post("submit-profile")))
         </div>
     </div>
     <div class="sidebar-overlay" data-reff=""></div>
-    <script src="assets/js/jquery-3.2.1.min.js"></script>
-	<script src="assets/js/popper.min.js"></script>
-    <script src="assets/js/bootstrap.min.js"></script>
-    <script src="assets/js/jquery.slimscroll.js"></script>
-    <script src="assets/js/select2.min.js"></script>
-    <script src="assets/js/moment.min.js"></script>
-    <script src="assets/js/bootstrap-datetimepicker.min.js"></script>
-    <script src="assets/js/app.js"></script>
-    <script src="assets/js/dashboard/users.js"></script>
-    <script src="assets/js/dashboard/alerts.js"></script>
+    <script src="https://dashboard.streamstudios.online/assets/js/jquery-3.2.1.min.js"></script>
+	<script src="https://dashboard.streamstudios.online/assets/js/popper.min.js"></script>
+    <script src="https://dashboard.streamstudios.online/assets/js/bootstrap.min.js"></script>
+    <script src="https://dashboard.streamstudios.online/assets/js/jquery.slimscroll.js"></script>
+    <script src="https://dashboard.streamstudios.online/assets/js/select2.min.js"></script>
+    <script src="https://dashboard.streamstudios.online/assets/js/moment.min.js"></script>
+    <script src="https://dashboard.streamstudios.online/assets/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="https://dashboard.streamstudios.online/assets/js/app.js"></script>
+    <script src="https://dashboard.streamstudios.online/assets/js/dashboard/users.js"></script>
+    <script src="https://dashboard.streamstudios.online/assets/js/dashboard/alerts.js"></script>
 </body>
 
 
