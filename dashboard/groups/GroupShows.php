@@ -3,8 +3,11 @@
 namespace groups;
 
 use Datainterface\Delete;
+use Datainterface\Insertion;
 use Datainterface\Query;
 use Datainterface\Selection;
+use GlobalsFunctions\Globals;
+use Json\Json;
 use Modules\Imports\Additionals;
 use Modules\Renders\ImageHandler;
 use Modules\Shows\ShowsHandlers;
@@ -15,6 +18,8 @@ class GroupShows
      * @var array|mixed
      */
     private mixed $show;
+
+    public array $response;
 
     public function __call(string $name, array $arguments)
     {
@@ -334,6 +339,81 @@ ORDER BY
                 }
             }
             return Delete::delete("episodes", ['episode_id'=>$episodeID]);
+        }
+        return false;
+    }
+
+    public function addShowFromNormalForm(): bool
+    {
+        $data = [];
+        $data['title'] = Globals::post("title");
+        $data['description'] = Globals::post("description");
+        try {
+            $data['release_date'] = (new \DateTime(Globals::post("release_date")))->format("d-m-Y");
+        }catch (\Throwable $e){
+            $data['release_date'] = (new \DateTime("now"))->format("d-m-Y");
+        }
+        if(!empty(Globals::files("show_image")))
+        {
+            $data['show_image'] = $this->uploadNewImage(Globals::files("show_image"), $this->expectedRowID());
+        }
+        if(!empty((new GroupSeasons())->addSeasonFromNormal()))
+        {
+            $this->response['seasons'] = "Season successfully added";
+        }
+        if(Insertion::insertRow("tv_shows", $data))
+        {
+            $this->response['shows'] = "Show added successfully";
+        }
+        return true;
+    }
+    public function uploadNewImage($file, $showID): string|false
+    {
+        $name = $file['name'];
+        $size = $file['size'];
+        $tmp = $file['tmp_name'];
+        if($size < 200000)
+        {
+            $extension = explode(".", $name);
+            $extension = end($extension);
+            if(in_array(strtolower($extension), ['jpg', 'jpeg', 'png']))
+            {
+                $imageUrl = \FileHandler\FileHandler::saveFile($name,$tmp);
+                $list = explode("/", $imageUrl);
+                $tempFile = "Files/". end($list);
+                $path = "../sites/files/images/shows/". end($list);
+                if(file_exists($path))
+                {
+                    path:
+                    $ext = explode(".",$path);
+                    $path = "../sites/files/images/shows/".Json::uuid().".".end($ext);
+                    if(file_exists($path))
+                    {
+                        goto path;
+                    }
+
+                }
+
+                if(copy($tempFile, $path)){
+                    $path = trim($path, ".");
+                    $path = trim($path, "/");
+                    $spl = new \SplFileInfo("../".$path);
+                    $data['image_extension'] = $spl->getExtension();
+                    $data['image_name'] = $spl->getFilename();
+                    $data['image_path'] = $spl->getRealPath();
+                    $data['image_size'] = $spl->getSize();
+                    $data['image_url'] = "streamstudios.online/".$path;
+                    $data['image_uuid'] = Json::uuid();
+
+                    if(Insertion::insertRow("images_managed",$data))
+                    {
+                        $newImage = "https://streamstudios.online/img?image=".$data['image_uuid'];
+                        unlink($tempFile);
+                        (new Notifications())->imageUploaded($newImage);
+                        return $newImage;
+                    }
+                }
+            }
         }
         return false;
     }

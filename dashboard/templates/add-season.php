@@ -1,353 +1,149 @@
 <?php
 
-
+use Datainterface\Query;
 use GlobalsFunctions\Globals;
-use groups\GroupShows;
+use groups\GroupSeasons;
 
 global $message;
 $message = null;
 
-function normalForm(): string
+function seasonForm(): string
 {
     global $message;
     $uri = Globals::uri();
-    $showID = (new GroupShows())->expectedRowID();
+    $id = (new GroupSeasons())->expectedRowID();
+    $title = Globals::post("season_name") ?? "No Show Selected";
     if(Globals::method() === "POST")
     {
-        postHandlers();
-        $message = <<<EOD
-<div class="col-sm-12">$message</div>
-EOD;
+        postHandler();
     }
-
-    return <<<EOD
- <div class="row">
-                 $message
-                <div class="col-sm-12"> 
-                    <form method="POST" action="$uri" enctype="multipart/form-data">
-                        <div class="row">
-                            <div class="col-sm-6 col-md-3">
-                                <div class="form-group">
-                                    <label>Title <span class="text-danger">*</span></label>
-                                    <input name="title" class="form-control" type="text">
+    return <<<FORM
+<div class="col-lg-12">
+$message
+                    <div class="card-box">
+                        <h4 class="card-title" id="card-title">$title</h4>
+                        <form action="$uri" method="POST" id="form-add-season" enctype="multipart/form-data">
+                           <div class="form-group row">
+                                <label class="col-md-3 col-form-label">Show ID</label>
+                                <div class="col-md-9">
+                                    <input type="search" name="show_search" id="field-search-show" oninput="searchShow(this)" value="" class="form-control">
+                                    <div id="show-search-result"></div>
+                                </div>
+                            </div> 
+                            <div class="form-group row">
+                                <label class="col-md-3 col-form-label">Season Name</label>
+                                <div class="col-md-9">
+                                    <input type="text" name="season_name" value="" class="form-control">
+                                </div>
+                            </div> 
+                            <div class="form-group row">
+                                <label class="col-md-3 col-form-label">Episode Count</label>
+                                <div class="col-md-9">
+                                    <input type="number" name="episode_count" value="10" class="form-control">
                                 </div>
                             </div>
-                            <div class="col-sm-6 col-md-3">
-                                <div class="form-group">
-                                   <label>Release date <span class="text-danger">*</span></label>
-                                    <div class="cal-icon">
-                                        <input name="release_date" class="form-control datetimepicker" type="text">
-                                    </div>
+                            <div class="form-group row">
+                                <label class="col-md-3 col-form-label">Season Number</label>
+                                <div class="col-md-9">
+                                    <input type="number" name="season_number" value="1" class="form-control">
                                 </div>
                             </div>
-
-                            <div class="col-sm-6 col-md-3">
-                                <div class="form-group">
-                                    <label>Image</label>
-                                    <input class="form-control" type="file" name="show_image">
+                            <div class="form-group row">
+                                <label class="col-md-3 col-form-label">Season Overview</label>
+                                <div class="col-md-9">
+                                    <textarea type="text" name="description" class="form-control"></textarea>
                                 </div>
                             </div>
-                            <div class="col-sm-6 col-md-3">
-                                <div class="form-group">
-                                    <label>Show ID</label>
-                                    <input class="form-control" type="text" value="$showID" readonly name="show_image">
+                            <div class="form-group row">
+                                <label class="col-md-3 col-form-label">Season ID</label>
+                                <div class="col-md-9">
+                                    <input type="text" name="season_id" value="$id" readonly class="form-control">
                                 </div>
                             </div>
-                            <div class="col-sm-6 col-md-3">
-                                <div class="form-group">
-                                    <label>Description</label>
-                                    <textarea class="form-control" name="description" rows="3"></textarea>
+                            <div class="form-group row">
+                                <label class="col-md-3 col-form-label">Season Date</label>
+                                <div class="col-md-9 cal-icon">
+                                    <input type="text" name="season_date" class="form-control datetimepicker">
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="table-responsive">
-                                    <table class="table table-hover table-white">
-                                        <thead>
-                                        <tr>
-                                            <th style="width: 20px">#</th>
-                                            <th class="col-sm-2">Season Name</th>
-                                            <th>Description</th>
-                                            <th>Episodes Count</th>
-                                            <th>Season Date</th>
-                                             <th>Season Image</th>
-                                            <th> </th>
-                                        </tr>
-                                        </thead>
-                                        <tbody id="season_body_fields">
-                                        <tr>
-                                            <td>1</td>
-                                            <td>
-                                                <input name="season_name_1" class="form-control" type="text">
-                                            </td>
-                                            <td>
-                                                <textarea name="season_decription_1" class="form-control"></textarea>
-                                            </td>
-                                            <td>
-                                                <input name="season_episode_count_1" class="form-control" type="text">
-                                            </td>
-                                            <td>
-                                                <div class="cal-icon">
-                                                    <input name="season_air_date_1" class="form-control datetimepicker" type="text">
-                                                 </div>
-                                            </td>
-                                            <td>
-                                                 <input name="season_image_1" class="form-control" type="file">
-                                            </td>
-                                            <td>
-                                            <a href="javascript:void(0)" onclick="addSeasonForm()" class="text-success font-18" title="Add"><i class="fa fa-plus"></i></a>
-                                            <a href="javascript:void(0)" onclick="removeSeasonForm(this)" class="text-danger font-18" title="Remove"><i class="fa fa-trash-o"></i></a>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
+                            <div class="form-group row">
+                                <label class="col-md-3 col-form-label">Season Image</label>
+                                <div class="col-md-9">
+                                    <input type="file" name="season_image_new" class="form-control">
                                 </div>
                             </div>
-                        </div>
-                        <div class="text-center m-t-20">
-                            <button class="btn btn-primary submit-btn">Save</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-EOD;
-
-}
-
-function tmdbSearchForm(): string
-{
-    $uri = Globals::uri();
-    return <<<EOD
-                    <div class="col-sm-6 col-md-6">
-                    <form method="GET" action="$uri">
-                        <div class="form-group form-focus">
-                            <label class="focus-label">Show Title</label>
-                            <input type="text" name="title" id="movie-filter-id" class="form-control floating">
-                        </div>
-                        <input type="hidden" name="type" value="tmdb">
-                    </div>
-                    <div class="col-sm-6 col-md-3">
-                        <button type="submit" class="btn btn-success btn-block"> Search </button>
-                    </div>
-                    </form>
-                
-EOD;
-
-}
-
-function buttons(): string{
-    return <<<EOD
-<div class="row filter-row">
-                    <div class="col-sm-6 col-md-3">
-                        <a href="/shows/add-show?type=tmdb" class="btn btn-success btn-block"> TMDB SHOWS </a>
-                    </div>
-                    <div class="col-sm-6 col-md-3">
-                        <a href="/shows/add-show?type=normal" class="btn btn-success btn-block"> NORMAL UPLOAD </a>
-                    </div>
-                    <div class="col-sm-6 col-md-3">
-                        <a href="/shows/listing" class="btn btn-success btn-block"> CANCEL UPLOAD </a>
+                            <div class="text-right">
+                                <button type="submit" name="season_add" value="add_season" class="btn btn-primary">Save Season</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-EOD;
-
+FORM;
 }
 
-function actions(): string
-{
-    $type = Globals::get("type");
-    if(empty($type))
-    {
-        return buttons();
-    }
-    if($type === "normal")
-    {
-        return normalForm();
-    }
-    if($type === "tmdb")
-    {
-        return tmdbSearchForm();
-    }
-    return "";
-}
-
-function tmdbSearchResults(): string
-{
-    $title = Globals::get("title");
-    $foundMovies = [];
-    if(!empty($title))
-    {
-        $title = str_replace(" ", "-", $title);
-
-        for ($i = 1; $i <= 5; $i++)
-        {
-            $data = discoverShows($title, $i);
-//            echo "<pre>";
-//            print_r($data);
-//            echo "</pre>";
-//            exit;
-            if(empty($data['error']))
-            {
-                $foundMovies[] = array_values($data['body']['results']) ?? [];
-            }
-        }
-    }
-    $card = null;
-
-    foreach ($foundMovies as $key=>$value)
-    {
-        if(gettype($value) === "array")
-        {
-            foreach ($value as $k=>$v)
-            {
-                $overview = substr($v['overview'], 0, 124) ?? null;
-                $mtitle = $v['name'] ?? $v['original_name'] ?? null;
-                $date =  (new \DateTime($v['first_air_date']))->format("F d, Y");
-                $id = $v['id'] ?? null;
-                $vote = $v['vote_average'] ?? 0.0;
-                $vote = intval($vote);
-                $popularity = $v['popularity'] ?? 0;
-                $count = $v['vote_count'] ?? 0;
-                $image = $v['poster_path'] ?? $v['backdrop_path'] ?? null;
-                $image = "https://image.tmdb.org/t/p/w92".$image;
-                $internal = Globals::get("internal");
-                if(!empty($internal))
-                {
-                    $internal = "/shows/additional-separate?show-id=$id&internal=$internal";
-                    $count = "Save";
-                }
-
-                $card .= <<<ESP
-<div class="col-sm-6 col-md-6 col-lg-4">
-                        <div class="blog grid-blog">
-                            <div class="blog-image">
-                                <a href="/shows/show-details?show-id=$id"><img class="img-fluid" src="$image" alt=""></a>
-                            </div>
-                            <div class="blog-content">
-                                <h3 class="blog-title"><a href="/shows/show-details?show-id=$id">$mtitle</a></h3>
-                                <p>$overview</p>
-                                <a href="/shows/show-details?show-id=$id" class="read-more"><i class="fa fa-long-arrow-right"></i> Read More</a>
-                                <div class="blog-info clearfix">
-                                    <div class="post-left">
-                                        <ul>
-                                            <li><a href="#."><i class="fa fa-calendar"></i> <span>$date</span></a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="post-right"><a href="#."><i class="fa fa-heart-o"></i>$vote</a> <a href="#."><i class="fa fa-eye"></i>$popularity</a> <a href="$internal"><i class="fa fa-comment-o"></i>$count</a></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-ESP;
-            }
-        }
-    }
-
-    return <<<EOD
- <div class="content">
-                <div class="row">
-                    <div class="col-sm-8 col-4">
-                        <h4 class="page-title">Results</h4>
-                    </div>
-                </div>
-                <div class="row">
-                    $card
-                </div>
-            </div>
-EOD;
-}
-
-$displaying = actions();
-
-$tmdbResults = null;
-if(Globals::get("type") === "tmdb" && !empty(Globals::get("title")))
-{
-    $tmdbResults = tmdbSearchResults();
-}
-
-function discoverShows(string $search, $page=1): array
-{$authToken = \functions\config('TMDB');
-
-    $curl = curl_init();
-    curl_setopt_array($curl, [
-        CURLOPT_URL => "https://api.themoviedb.org/3/search/tv?query=$search&include_adult=false&language=en-US&page=$page",
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => "",
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 30,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => "GET",
-        CURLOPT_HTTPHEADER => [
-            "Authorization: $authToken",
-            "accept: application/json"
-        ],
-    ]);
-    $response = curl_exec($curl);
-    $err = curl_error($curl);
-    curl_close($curl);
-    return [
-        'error'=>$err,
-        'body'=>json_decode($response, true)
-    ];
-}
-
-function postHandlers(): void
+function postHandler(): void
 {
     global $message;
-    $showAdding = new GroupShows();
-    $showAdding->addShowFromNormalForm();
-    $result = $showAdding->response;
-    if(!empty($result['seasons']))
+    $showID = Globals::post("show_id");
+    $season_number = Globals::post("season_number");
+    $episode_count = Globals::post("episode_count");
+    $data = Query::query("SELECT * FROM seasons WHERE show_id = $showID AND season_number = $season_number");
+    if(empty($data) && !empty(Globals::post("season_name")) && is_numeric($episode_count)
+     && is_numeric($season_number))
     {
-        $message .= <<<EOD
+        $data = [];
+       $data['season_name'] = Globals::post("season_name");
+       $data['description'] = Globals::post("description");
+       $data['episode_count'] = $episode_count;
+       $data['season_number'] = $season_number;
+       $data['show_id'] = $showID;
+        try
+        {
+            $data['air_date'] = (new DateTime(Globals::post('season_date')))->format("d-m-Y");
+        }catch (Throwable $e)
+        {
+            $data['air_date'] = (new DateTime('now'))->format("d-m-Y");
+        }
+        $data['season_image'] = (new GroupSeasons())->uploadNewImage(Globals::files("season_image_new"), (new GroupSeasons())->expectedRowID());
+        if(\Datainterface\Insertion::insertRow("seasons", $data))
+        {
+            $message = <<<ALERT
 <div class="alert alert-success alert-dismissible fade show" role="alert">
-								<strong>Success!</strong> Seasons <a href="#" class="alert-link">addition</a> has been done successfully.
+								<strong>Success!</strong> Season <a href="#" class="alert-link">addition</a> has been done successfully.
 								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 									<span aria-hidden="true">×</span>
 								</button>
 							</div>
-EOD;
-    }
-    else
-    {
-        $message .= <<<EOD
+ALERT;
+        }
+        else
+        {
+            exit;
+            $message = <<<ALERT
 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-								<strong>Error!</strong> A <a href="#" class="alert-link">problem</a> has been occurred while submitting your seasons data.
+								<strong>Error!</strong> A <a href="#" class="alert-link">problem</a> has been occurred while submitting your season data.
 								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 									<span aria-hidden="true">×</span>
 								</button>
 							</div>
-EOD;
-    }
-
-    if(!empty($result['shows']))
-    {
-        $message .= <<<EOD
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-								<strong>Success!</strong> Show <a href="#" class="alert-link">addition</a> has been done successfully.
-								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-									<span aria-hidden="true">×</span>
-								</button>
-							</div>
-EOD;
-    }
-    else
-    {
-        $message .= <<<EOD
+ALERT;
+        }
+    }else{
+        $message = <<<ALERT
 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-								<strong>Error!</strong> A <a href="#" class="alert-link">problem</a> has been occurred while submitting your seasons data.
+								<strong>Error!</strong> A <a href="#" class="alert-link">problem</a> has been occurred while submitting your season data.
 								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 									<span aria-hidden="true">×</span>
 								</button>
 							</div>
-EOD;
+ALERT;
     }
 }
 
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<!-- create-invoice24:07-->
+<!-- blank-page24:04-->
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
@@ -355,8 +151,6 @@ EOD;
     <title>Preclinic - Medical & Hospital - Bootstrap 4 Admin Template</title>
     <link rel="stylesheet" type="text/css" href="https://dashboard.streamstudios.online/assets/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="https://dashboard.streamstudios.online/assets/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="https://dashboard.streamstudios.online/assets/css/select2.min.css">
-    <link rel="stylesheet" type="text/css" href="https://dashboard.streamstudios.online/assets/css/bootstrap-datetimepicker.min.css">
     <link rel="stylesheet" type="text/css" href="https://dashboard.streamstudios.online/assets/css/style.css">
     <script src="https://dashboard.streamstudios.online/assets/js/dashboard/cookies.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -365,6 +159,7 @@ EOD;
     <script src="https://dashboard.streamstudios.online/assets/js/respond.min.js"></script>
     <![endif]-->
 </head>
+
 <body>
 <div class="main-wrapper">
     <div class="header">
@@ -521,13 +316,12 @@ EOD;
         <div class="content">
             <div class="row">
                 <div class="col-sm-12">
-                    <h4 class="page-title">Create Show</h4>
+                    <h4 class="page-title">Add Season</h4>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-sm-12"><?php echo $displaying; ?></div>
+            <div class="row"><?php echo seasonForm(); ?>
             </div>
-        </div><?php echo $tmdbResults; ?>
+        </div>
         <div class="notification-box">
             <div class="msg-sidebar notifications msg-noti">
                 <div class="topnav-dropdown-header">
@@ -740,7 +534,6 @@ EOD;
     </div>
 </div>
 <div class="sidebar-overlay" data-reff=""></div>
-<script type="application/javascript">window.localStorage.setItem("season_count", 1);</script>
 <script src="https://dashboard.streamstudios.online/assets/js/jquery-3.2.1.min.js"></script>
 <script src="https://dashboard.streamstudios.online/assets/js/popper.min.js"></script>
 <script src="https://dashboard.streamstudios.online/assets/js/bootstrap.min.js"></script>
@@ -753,5 +546,7 @@ EOD;
 <script src="https://dashboard.streamstudios.online/assets/js/dashboard/alerts.js"></script>
 <script src="https://dashboard.streamstudios.online/assets/js/dashboard/season_forms.js"></script>
 </body>
-<!-- create-invoice24:07-->
+
+
+<!-- blank-page24:04-->
 </html>

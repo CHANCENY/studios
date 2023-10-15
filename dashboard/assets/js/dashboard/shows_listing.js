@@ -258,6 +258,25 @@ function deleteSeason(seasonID)
 {
     if(confirm("Are you sure you want to delete season ("+seasonID+")"))
     {
-        alert("deleted");
+
+        if(seasonID !== null)
+        {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "/shows/delete-show?type=season&id="+seasonID, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onload = function (){
+                if(this.status === 200)
+                {
+                    window.location.reload();
+                }else{
+                    document.getElementById("message-deletes").textContent = "Failed to delete this season";
+                    setTimeout(()=>{
+                        window.location.reload();
+                    }, 3000)
+                }
+
+            }
+            xhr.send();
+        }
     }
 }
