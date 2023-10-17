@@ -1,18 +1,18 @@
-const movieDisplay = document.getElementById("movie-listing-display");
+const episodeDisplay = document.getElementById("episode-listing-display");
 
 // Get the URL string
-const urlString1 = window.location.href;
+const urlString5 = window.location.href;
 
 // Create a URL object
-const url1 = new URL(urlString1);
+const url5 = new URL(urlString5);
 
 // Use URLSearchParams to get the parameters
-const params1 = new URLSearchParams(url1.search);
+const params5 = new URLSearchParams(url5.search);
 
-function movieListings(page = 0)
+function episodesListings(page = 0)
 {
     const xhr = new XMLHttpRequest();
-    xhr.open("GET", "/movies-groups?page="+page, false);
+    xhr.open("GET", "/episodes-groups?page="+page, false);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onload = function ()
     {
@@ -23,11 +23,11 @@ function movieListings(page = 0)
                 data['results'].forEach((item, index)=>{
                     const row = buildRows(item);
                     const tr = document.createElement("tr");
-                    tr.id = "movie-tr-"+index;
+                    tr.id = "episode-tr-"+index;
                     tr.innerHTML = row;
-                    if(movieDisplay !== null)
+                    if(episodeDisplay !== null)
                     {
-                        movieDisplay.appendChild(tr);
+                        episodeDisplay.appendChild(tr);
                     }
                 })
             }catch (e) {
@@ -39,8 +39,8 @@ function movieListings(page = 0)
 }
 
 function buildRows(item){
-    const status = item.active === 1 ? "active" : "inactive";
-    const statusClass = item.active === 1 ? "status-green" : "status-grey";
+    const status = item.active === "yes" ? "active" : "inactive";
+    const statusClass = item.active === "yes" ? "status-green" : "status-grey";
     const htmlRow = ` <td>
                         <img width="28" height="28" src="${item.image}" class="rounded-circle" alt="">
                         <h2>${item.name}</h2>
@@ -55,17 +55,17 @@ function buildRows(item){
                         <div class="dropdown dropdown-action">
                            <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
                            <div class="dropdown-menu dropdown-menu-right">
-                              <a class="dropdown-item" href="/movies/edit-movie?movie-id=${item.id}"><i class="fa fa-pencil m-r-5"></i> Edit</a>
-                              <a class="dropdown-item" href="/search/display/full?movie-id=${item.id}"><i class="fa fa-folder-open m-r-5"></i> View</a>
-                              <a onclick="prepareDeleteMovie(${item.id})" class="dropdown-item" href="#" data-toggle="modal" data-target="#delete_employee"><i class="fa fa-trash-o m-r-5"></i> Delete</a>
+                              <a class="dropdown-item" href="/episodes/edit-episode?episode-id=${item.id}"><i class="fa fa-pencil m-r-5"></i> Edit</a>
+                              <a class="dropdown-item" href="/search/display/full?episode-id=${item.id}"><i class="fa fa-folder-open m-r-5"></i> View</a>
+                              <a onclick="prepareDeleteEpisode(${item.id})" class="dropdown-item" href="#" data-toggle="modal" data-target="#delete_employee"><i class="fa fa-trash-o m-r-5"></i> Delete</a>
                            </div>
                         </div>
                       </td>`;
     return htmlRow;
 }
-function movieListingPager()
+function episodeListingPager()
 {
-    const pageNumber = params1.get("page") || 0;
+    const pageNumber = params5.get("page") || 0;
     const currentPage = parseInt(pageNumber);
     let previous = 0;
     let first = 0;
@@ -86,22 +86,22 @@ function movieListingPager()
 
     const htmlp = `
                                 <li class="paginate_button page-item previous" id="DataTables_Table_0_previous">
-                                    <a href="/movies/listing?page=${previous}" aria-controls="DataTables_Table_0" data-dt-idx="${previous}" tabindex="0" class="page-link">Previous</a>
+                                    <a href="/episodes/listing?page=${previous}" aria-controls="DataTables_Table_0" data-dt-idx="${previous}" tabindex="0" class="page-link">Previous</a>
                                 </li>
                                  <li class="paginate_button page-item active">
-                                    <a href="/movies/listing?page=${currentPage}" aria-controls="DataTables_Table_0" data-dt-idx="${currentPage}" tabindex="0" class="page-link">${currentPage}</a>
+                                    <a href="/episodes/listing?page=${currentPage}" aria-controls="DataTables_Table_0" data-dt-idx="${currentPage}" tabindex="0" class="page-link">${currentPage}</a>
                                 </li>
                                 <li class="paginate_button page-item">
-                                    <a href="/movies/listing?page=${first}" aria-controls="DataTables_Table_0" data-dt-idx="${first}" tabindex="0" class="page-link">${first}</a>
+                                    <a href="/episodes/listing?page=${first}" aria-controls="DataTables_Table_0" data-dt-idx="${first}" tabindex="0" class="page-link">${first}</a>
                                 </li>
                                 <li class="paginate_button page-item ">
-                                    <a href="/movies/listing?page=${second}" aria-controls="DataTables_Table_0" data-dt-idx="${second}" tabindex="0" class="page-link">${second}</a>
+                                    <a href="/episodes/listing?page=${second}" aria-controls="DataTables_Table_0" data-dt-idx="${second}" tabindex="0" class="page-link">${second}</a>
                                 </li>
                                 <li class="paginate_button page-item next" id="DataTables_Table_0_next">
-                                    <a href="/movies/listing?page=${next}" aria-controls="DataTables_Table_0" data-dt-idx="${next}" tabindex="0" class="page-link">Next</a>
+                                    <a href="/episodes/listing?page=${next}" aria-controls="DataTables_Table_0" data-dt-idx="${next}" tabindex="0" class="page-link">Next</a>
                                 </li>
                             `;
-    const area = document.getElementById("pager-movies");
+    const area = document.getElementById("pager-episodes");
     if(area !== null)
     {
         const url = document.createElement("ul");
@@ -111,74 +111,72 @@ function movieListingPager()
     }
 }
 
-movieListings(params1.get("page") || 0);
+episodesListings(params5.get("page") || 0);
 
-movieListingPager();
+episodeListingPager();
 
-function prepareDeleteMovie(movieID)
+function prepareDeleteEpisode(episodeID)
 {
-    localStorage.setItem("movie", movieID);
+    localStorage.setItem("episode", episodeID);
 }
 
-
-function deleteMovieEntirely()
+function deleteEpisodeEntirely()
 {
-    const movie = localStorage.getItem("movie");
+    const movie = localStorage.getItem("episode");
     if(movie !== null)
     {
-        localStorage.removeItem("movie");
+        localStorage.removeItem("show");
         const xhr = new XMLHttpRequest();
-        xhr.open("POST", "/movies/delete-movie", true);
+        xhr.open("GET", "/shows/delete-show?type=episode&id="+movie, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = function (){
             if(this.status === 200)
             {
                 window.location.reload();
             }else{
-                document.getElementById("message-deletes").textContent = "Failed to delete this movie";
+                document.getElementById("message-deletes").textContent = "Failed to delete this Episode";
                 setTimeout(()=>{
                     window.location.reload();
                 }, 3000)
             }
 
         }
-        xhr.send(JSON.stringify({movie}));
+        xhr.send();
     }
 }
 
+function searchingEpisode(){
 
-function searchingMovies(){
-
-    const searchMovie = document.getElementById("movie-filter-search");
+    const searchMovie = document.getElementById("episode-filter-search");
     if(searchMovie !== null)
     {
         searchMovie.addEventListener("click", (e)=>{
             e.preventDefault();
 
-            const name = document.getElementById("movie-filter-name");
-            const id = document.getElementById("movie-filter-id");
+            const name = document.getElementById("episode-filter-name");
+            const id = document.getElementById("episode-filter-id");
             let searchName = name.value || "no-value";
             let searchID = id.value || "no-value";
 
             const para = new URLSearchParams({searchName, searchID});
             const xhr = new XMLHttpRequest();
 
-            xhr.open("GET", "/movies/search?"+para, true);
+            xhr.open("GET", "/episodes/search?"+para, true);
             xhr.onload = function ()
             {
                 if(this.status === 200)
                 {
                     try {
                         const data = JSON.parse(this.responseText);
-                        movieDisplay.innerHTML = "";
+                        episodeDisplay.innerHTML = "";
                         data['results'].forEach((item, index)=>{
                             const row = buildRows(item);
                             const tr = document.createElement("tr");
                             tr.id = "movie-tr-"+index;
                             tr.innerHTML = row;
-                            if(movieDisplay !== null)
+                            if(episodeDisplay !== null)
                             {
-                                movieDisplay.appendChild(tr);
+                                episodeDisplay.appendChild(tr);
                             }
                         })
                     }catch (e) {
@@ -190,4 +188,6 @@ function searchingMovies(){
         })
     }
 }
-searchingMovies();
+
+
+searchingEpisode();

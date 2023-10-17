@@ -13,6 +13,7 @@ class GroupOverview
             'movie' => $this->details("movies", $arguments[0], "movie_id")[0] ?? [],
             'show' => $this->details("tv_shows",$arguments[0], "show_id")[0] ?? [],
             'season' => $this->details("seasons",$arguments[0],"season_id")[0] ?? [],
+            'episode'=>$this->details("episodes", $arguments[0], 'episode_id')[0] ?? [],
             default => null,
         };
     }

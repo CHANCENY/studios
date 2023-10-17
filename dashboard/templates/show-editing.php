@@ -18,6 +18,7 @@ $show = new GroupShows();
 $show->loadForEdit(intval($showID));
 $season = (new GroupSeasons())->loadSeasonByShoID($showID);
 $message = null;
+$episodes = (new \groups\GroupEpisodes())->loadEpisodesByShowID($showID);
 
 function buildForm(array $seasonRow, $index = 0): string
 {
@@ -160,6 +161,99 @@ EOD;
    }
 }
 
+function buildFormForEpisodes($episodes): array
+{
+    $allEpisodes = [];
+
+    foreach ($episodes as $key=>$value)
+    {
+        $seasonID = $value['sid'];
+        $seasonName = $value['sname'];
+        $forms = <<<WRAPPER
+ <div class="ac"><h2 class="ac-header"><button class="ac-trigger">$seasonName</button></h2><div class="ac-panel"> <div class="row mt-4">
+WRAPPER;
+
+        foreach ($value['episodes'] as $k=>$episode){
+            $checked1 = $episode['publish'] === "yes" ? "checked" : null;
+            $checked2 = $episode['publish'] === "no" ? "checked" : (empty($episode['publish']) ? "checked" : null);
+            $forms .= <<<FORM
+<div class="col-md-6">
+                                                        <div class="card-box">
+                                                            <h4 class="card-title">{$episode['title']}</h4>
+                                                            <form action="#">
+                                                                <div class="form-group row">
+                                                                    <label class="col-md-3 col-form-label">Episode Title</label>
+                                                                    <div class="col-md-9">
+                                                                        <input type="text" name="episode_title_$k" value="{$episode['title']}" class="form-control">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row">
+                                                                    <label class="col-md-3 col-form-label">Episode URL</label>
+                                                                    <div class="col-md-9">
+                                                                        <input type="url" name="episode_url_$k" value="{$episode['url']}" class="form-control">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row">
+                                                                    <label class="col-md-3 col-form-label">Episode Old Image</label>
+                                                                    <div class="col-md-9">
+                                                                        <input type="url" name="episode_old_image_$k" value="{$episode['image']}" readonly class="form-control">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row">
+                                                                    <label class="col-md-3 col-form-label">Description</label>
+                                                                    <div class="col-md-9">
+                                                                        <textarea name="episode_overview_$k" cols="2" rows="2" class="form-control">{$episode['overview']}</textarea>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row">
+                                                                    <label class="col-md-3 col-form-label">Episode Number</label>
+                                                                    <div class="col-md-9">
+                                                                        <input type="number" name="episode_number_$k" value="{$episode['number']}" class="form-control">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row">
+                                                                    <label class="col-md-3 col-form-label">Episode Duration</label>
+                                                                    <div class="col-md-9">
+                                                                        <input type="text" name="episode_duration_$k" value="{$episode['duration']}" class="form-control">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row">
+                                                                    <label class="col-md-3 col-form-label">Episode New Image</label>
+                                                                    <div class="col-md-9">
+                                                                        <input type="file" name="episode_new_image_$k"  class="form-control">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row">
+                                            <label class="col-md-3 col-form-label">Published</label>
+                                            <div class="col-md-9">
+												<div class="form-check form-check-inline">
+													<input class="form-check-input" type="radio" name="publish" id="gender_male" value="yes" $checked1 >
+													<label class="form-check-label" for="gender_male">
+													Yes
+													</label>
+												</div>
+												<div class="form-check form-check-inline">
+													<input class="form-check-input" type="radio" name="publish" id="gender_female" value="no" $checked2>
+													<label class="form-check-label" for="gender_female">
+													No
+													</label>
+												</div>
+                                            </div>
+                                        </div>
+                                                                <div class="text-right">
+                                                                    <button type="submit" name="edit_episode" value="{$episode['id']}" class="btn btn-primary">Submit</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+FORM;
+        }
+        $allEpisodes[] = $forms . "</div></div></div>";
+    }
+    return $allEpisodes;
+}
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -180,6 +274,7 @@ EOD;
     <script src="https://dashboard.streamstudios.online/assets/js/html5shiv.min.js"></script>
     <script src="https://dashboard.streamstudios.online/assets/js/respond.min.js"></script>
     <![endif]-->
+    <link rel="stylesheet" href="https://dashboard.streamstudios.online/assets/accordion/accordion.min.css">
 </head>
 
 <body>
@@ -348,7 +443,7 @@ EOD;
                         <ul class="nav nav-tabs nav-tabs-solid nav-justified">
                             <li class="nav-item"><a class="nav-link <?php echo empty($seasonIDGlobal) ? 'active' : null; ?>" href="#solid-justified-tab1" data-toggle="tab">Shows</a></li>
                             <li class="nav-item"><a class="nav-link <?php echo !empty($seasonIDGlobal) ? 'active' : null; ?>" href="#solid-justified-tab2" data-toggle="tab">Seasons</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#solid-justified-tab3" data-toggle="tab">Messages</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#solid-justified-tab3" data-toggle="tab">Episodes</a></li>
                         </ul>
                         <div class="tab-content">
                             <div class="tab-pane <?php echo empty($seasonIDGlobal) ? 'show active' : null; ?>" id="solid-justified-tab1">
@@ -432,7 +527,11 @@ EOD;
                                 <?php endforeach; ?></div>
                             </div>
                             <div class="tab-pane" id="solid-justified-tab3">
-                                Tab content 3
+                                <div class="row">
+                                    <!--accordion-->
+                                    <div class="accordion-container col-lg-12"><?php $triggers = buildFormForEpisodes($episodes); if(!empty($triggers)): foreach ($triggers as $key=>$value): echo $value; ?>
+                                    <?php endforeach; endif; ?></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -662,6 +761,10 @@ EOD;
 <script src="https://dashboard.streamstudios.online/assets/js/dashboard/users.js"></script>
 <script src="https://dashboard.streamstudios.online/assets/js/dashboard/alerts.js"></script>
 <script src="https://dashboard.streamstudios.online/assets/js/dashboard/shows_listing.js"></script>
+<script src="https://dashboard.streamstudios.online/assets/accordion/accordion.min.js"></script>
+<script type="application/javascript">
+    var accordion = new Accordion('.accordion-container');
+</script>
 </body>
 
 
