@@ -55,7 +55,7 @@ function buildRows(item){
                         <div class="dropdown dropdown-action">
                            <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
                            <div class="dropdown-menu dropdown-menu-right">
-                              <a class="dropdown-item" href="/episodes/edit-episode?episode-id=${item.id}"><i class="fa fa-pencil m-r-5"></i> Edit</a>
+                              <a class="dropdown-item" href="/shows/edit-show?episode-id=${item.id}&sid=${item.sid}&show-id=${item.show_id}"><i class="fa fa-pencil m-r-5"></i> Edit</a>
                               <a class="dropdown-item" href="/search/display/full?episode-id=${item.id}"><i class="fa fa-folder-open m-r-5"></i> View</a>
                               <a onclick="prepareDeleteEpisode(${item.id})" class="dropdown-item" href="#" data-toggle="modal" data-target="#delete_employee"><i class="fa fa-trash-o m-r-5"></i> Delete</a>
                            </div>

@@ -5,9 +5,14 @@ use groups\GroupSeasons;
 use groups\GroupShows;
 
 global $seasonIDGlobal;
+global $episodeGlobal;
+global $seasonEpiGlobal;
 
 $showID = Globals::get("show-id") ?? null;
 $seasonIDGlobal = Globals::get("season-id") ?? null;
+$episodeGlobal = Globals::get("episode-id");
+$seasonEpiGlobal = Globals::get("sid");
+
 if(empty($showID))
 {
     Globals::redirect("/shows/listing");
@@ -161,22 +166,27 @@ EOD;
    }
 }
 
-function buildFormForEpisodes($episodes): array
+function buildFormForEpisodes($episodes): array|string
 {
+    global $episodeGlobal;
+    global $seasonEpiGlobal;
     $allEpisodes = [];
 
     foreach ($episodes as $key=>$value)
     {
         $seasonID = $value['sid'];
         $seasonName = $value['sname'];
-        $forms = <<<WRAPPER
- <div class="ac"><h2 class="ac-header"><button class="ac-trigger">$seasonName</button></h2><div class="ac-panel"> <div class="row mt-4">
-WRAPPER;
-
-        foreach ($value['episodes'] as $k=>$episode){
-            $checked1 = $episode['publish'] === "yes" ? "checked" : null;
-            $checked2 = $episode['publish'] === "no" ? "checked" : (empty($episode['publish']) ? "checked" : null);
-            $forms .= <<<FORM
+        $forms = "";
+        if(!empty($seasonEpiGlobal) && !empty($episodeGlobal))
+        {
+            if($seasonEpiGlobal == $seasonID)
+            {
+                foreach ($value['episodes'] as $k=>$episode){
+                    $checked1 = $episode['publish'] === "yes" ? "checked" : null;
+                    $checked2 = $episode['publish'] === "no" ? "checked" : (empty($episode['publish']) ? "checked" : null);
+                    if($episodeGlobal == $episode['id'])
+                    {
+                        return <<<FORM
 <div class="col-md-6">
                                                         <div class="card-box">
                                                             <h4 class="card-title">{$episode['title']}</h4>
@@ -247,7 +257,93 @@ WRAPPER;
                                                         </div>
                                                     </div>
 FORM;
+                    }
+                }
+            }
         }
+
+        elseif(empty($seasonEpiGlobal) && empty($episodeGlobal))
+        {
+            $forms = <<<WRAPPER
+ <div class="ac"><h2 class="ac-header"><button class="ac-trigger">$seasonName</button></h2><div class="ac-panel"> <div class="row mt-4">
+WRAPPER;
+            foreach ($value['episodes'] as $k=>$episode){
+                $checked1 = $episode['publish'] === "yes" ? "checked" : null;
+                $checked2 = $episode['publish'] === "no" ? "checked" : (empty($episode['publish']) ? "checked" : null);
+                $forms .= <<<FORM
+<div class="col-md-6">
+                                                        <div class="card-box">
+                                                            <h4 class="card-title">{$episode['title']}</h4>
+                                                            <form action="#">
+                                                                <div class="form-group row">
+                                                                    <label class="col-md-3 col-form-label">Episode Title</label>
+                                                                    <div class="col-md-9">
+                                                                        <input type="text" name="episode_title_$k" value="{$episode['title']}" class="form-control">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row">
+                                                                    <label class="col-md-3 col-form-label">Episode URL</label>
+                                                                    <div class="col-md-9">
+                                                                        <input type="url" name="episode_url_$k" value="{$episode['url']}" class="form-control">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row">
+                                                                    <label class="col-md-3 col-form-label">Episode Old Image</label>
+                                                                    <div class="col-md-9">
+                                                                        <input type="url" name="episode_old_image_$k" value="{$episode['image']}" readonly class="form-control">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row">
+                                                                    <label class="col-md-3 col-form-label">Description</label>
+                                                                    <div class="col-md-9">
+                                                                        <textarea name="episode_overview_$k" cols="2" rows="2" class="form-control">{$episode['overview']}</textarea>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row">
+                                                                    <label class="col-md-3 col-form-label">Episode Number</label>
+                                                                    <div class="col-md-9">
+                                                                        <input type="number" name="episode_number_$k" value="{$episode['number']}" class="form-control">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row">
+                                                                    <label class="col-md-3 col-form-label">Episode Duration</label>
+                                                                    <div class="col-md-9">
+                                                                        <input type="text" name="episode_duration_$k" value="{$episode['duration']}" class="form-control">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row">
+                                                                    <label class="col-md-3 col-form-label">Episode New Image</label>
+                                                                    <div class="col-md-9">
+                                                                        <input type="file" name="episode_new_image_$k"  class="form-control">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row">
+                                            <label class="col-md-3 col-form-label">Published</label>
+                                            <div class="col-md-9">
+												<div class="form-check form-check-inline">
+													<input class="form-check-input" type="radio" name="publish" id="gender_male" value="yes" $checked1 >
+													<label class="form-check-label" for="gender_male">
+													Yes
+													</label>
+												</div>
+												<div class="form-check form-check-inline">
+													<input class="form-check-input" type="radio" name="publish" id="gender_female" value="no" $checked2>
+													<label class="form-check-label" for="gender_female">
+													No
+													</label>
+												</div>
+                                            </div>
+                                        </div>
+                                                                <div class="text-right">
+                                                                    <button type="submit" name="edit_episode" value="{$episode['id']}" class="btn btn-primary">Submit</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+FORM;
+            }
+        }
+
         $allEpisodes[] = $forms . "</div></div></div>";
     }
     return $allEpisodes;
@@ -529,8 +625,8 @@ FORM;
                             <div class="tab-pane" id="solid-justified-tab3">
                                 <div class="row">
                                     <!--accordion-->
-                                    <div class="accordion-container col-lg-12"><?php $triggers = buildFormForEpisodes($episodes); if(!empty($triggers)): foreach ($triggers as $key=>$value): echo $value; ?>
-                                    <?php endforeach; endif; ?></div>
+                                    <div class="accordion-container col-lg-12"><?php $triggers = buildFormForEpisodes($episodes); if(!empty($triggers) && gettype($triggers) === "array"): foreach ($triggers as $key=>$value): echo $value; ?>
+                                    <?php endforeach; else: echo $triggers; endif; ?></div>
                                 </div>
                             </div>
                         </div>

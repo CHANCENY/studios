@@ -3,16 +3,21 @@
 namespace groups;
 
 use Datainterface\Query;
+use Datainterface\Selection;
 
 class GroupEpisodes
 {
     public function latestMoviesUploaded(): array
     {
         $episodes = Query::query("SELECT title AS name, episode_id AS id, epso_image AS image, 
-        air_date AS date, publish AS active, duration AS time FROM episodes ORDER BY created DESC");
+        air_date AS date, publish AS active, duration AS time, season_id AS sid FROM episodes ORDER BY created DESC");
 
         if(!empty($episodes))
         {
+            foreach ($episodes as $key=>$value){
+                $value['show_id'] = $this->show($value['sid']);
+                $episodes[$key] = $value;
+            }
             return array_values($episodes);
         }
         return array();
@@ -21,10 +26,13 @@ class GroupEpisodes
     public function searchByName(string $name): array
     {
         $movies = Query::query("SELECT title AS name, episode_id AS id, epso_image AS image, 
-        air_date AS date, publish AS active, duration AS time FROM episodes WHERE title LIKE '%$name%' ORDER BY created DESC");
+        air_date AS date, publish AS active, duration AS time, season_id AS sid FROM episodes WHERE title LIKE '%$name%' ORDER BY created DESC");
 
         if(!empty($movies))
         {
+            foreach ($movies as $key=>$value){
+                $movies[$key]['show_id'] =  $this->show($value['sid']);
+            }
             return array_values($movies);
         }
         return array();
@@ -33,10 +41,13 @@ class GroupEpisodes
     public function searchByID(int $id): array
     {
         $movies = Query::query("SELECT title AS name, episode_id AS id, epso_image AS image, 
-        air_date AS date, publish AS active, duration AS time FROM episodes WHERE episode_id = :id ORDER BY created DESC", ['id'=>$id]);
+        air_date AS date, publish AS active, duration AS time, season_id AS sid FROM episodes WHERE episode_id = :id ORDER BY created DESC", ['id'=>$id]);
 
         if(!empty($movies))
         {
+            foreach ($movies as $key=>$value){
+                $movies[$key]['show_id'] =  $this->show($value['sid']);
+            }
             return array_values($movies);
         }
         return array();
@@ -44,10 +55,13 @@ class GroupEpisodes
 
     public function searchBYNameAndID(string $name, int $id): array{
         $movies = Query::query("SELECT title AS name, episode_id AS id, epso_image AS image, 
-        air_date AS date, publish AS active, duration AS time FROM episodes WHERE title = :name AND episode_id = :id ORDER BY created DESC", ['id'=>$id, "name"=>$name]);
+        air_date AS date, publish AS active, duration AS time, season_id AS sid FROM episodes WHERE title = :name AND episode_id = :id ORDER BY created DESC", ['id'=>$id, "name"=>$name]);
 
         if(!empty($movies))
         {
+            foreach ($movies as $key=>$value){
+                $movies[$key]['show_id'] =  $this->show($value['sid']);
+            }
             return array_values($movies);
         }
         return array();
@@ -72,6 +86,12 @@ class GroupEpisodes
             }
             return $collection;
         }
+    }
+
+    private function show($seasonID): int
+    {
+        $seasonID = intval($seasonID);
+        return Selection::selectById("seasons",['season_id'=>$seasonID])[0]['show_id'] ?? 0;
     }
 
 }
